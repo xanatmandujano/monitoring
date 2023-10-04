@@ -1,0 +1,29 @@
+import React from "react";
+//Bootstrap
+import Form from "react-bootstrap/Form";
+//Formik
+import { useField } from "formik";
+
+const TextField = ({ ...props }) => {
+  const [field, meta] = useField(props.name);
+
+  return (
+    <Form.Group className="text-field">
+      <Form.Label htmlFor={field.name} className="form-label">
+        {props.label}
+      </Form.Label>
+      <Form.Control
+        {...field}
+        {...props}
+        isInvalid={meta.touched && !!meta.error}
+      />
+      {meta.error && meta.touched && (
+        <Form.Control.Feedback type="invalid" className="form-control">
+          {props.errors}
+        </Form.Control.Feedback>
+      )}
+    </Form.Group>
+  );
+};
+
+export default TextField;

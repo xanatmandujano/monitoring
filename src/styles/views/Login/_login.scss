@@ -1,0 +1,32 @@
+.login-container {
+  margin: 2rem auto 1rem;
+  padding: 2rem;
+
+  width: 22rem; /*cambiar*/
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  box-shadow: 3px 4px 18px 1px rgba(0, 0, 0, 0.24);
+  border-radius: 15px;
+
+  font-family: $fonts;
+
+  p {
+    margin: 1rem auto 0;
+    font-weight: 500;
+    color: $main;
+  }
+
+  form {
+    min-width: 30%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .btn-login {
+    margin: 1.5rem auto;
+  }
+}

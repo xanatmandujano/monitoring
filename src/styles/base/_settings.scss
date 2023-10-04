@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+
+/*Colors*/
+$main: #573b95;
+$transparency: #573b9542;
+$secondary: #fff;
+
+/*Theme colors*/
+$theme-colors: (
+  "main": $main,
+  "transparency": $transparency,
+  "secondary": $secondary,
+);
+
+/*Fonts*/
+$fonts: "Signika", sans-serif;
+$spacing: 2rem;
+
+/*Breakpoints*/
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);

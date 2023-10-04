@@ -1,0 +1,16 @@
+//UI settings
+@import "./base/settings";
+@import "./base/main";
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+//Views
+@import "./views/Login/login";
+@import "./views/AlarmsPanel/alarmsPanel";
+
+//Components
+@import "./components/PasswordField/passwordField";
+@import "./components/TextField/textField";
+@import "./components/AlarmCard/alarmCard";
+@import "./components/NavBar/navBar";
