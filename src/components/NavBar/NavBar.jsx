@@ -60,7 +60,11 @@ const NavBar = () => {
             <Offcanvas.Body>
               {isLoggedIn ? (
                 <Nav className="justify-content-end flex-grow-1 pe-3">
-                  <Button onClick={() => setModalShow(true)} variant="main">
+                  <Button
+                    onClick={() => setModalShow(true)}
+                    variant="main"
+                    className="btn-logout"
+                  >
                     Cerrar sesión
                   </Button>
                 </Nav>

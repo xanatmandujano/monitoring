@@ -1,16 +1,20 @@
 .alarm-card {
   width: 22rem;
-  background-color: $transparency;
-
-  font-family: $fonts;
+  background-color: $secondary;
+  color: $tertiary-color;
+  border-radius: 15px;
 
   .bell-icon {
     color: red;
   }
 
+  .card-text {
+    font-weight: 300;
+  }
+
   .btn-alarm {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
   }
 }

@@ -3,19 +3,23 @@
 }
 
 /*Colors*/
-$main: #573b95;
-$transparency: #573b9542;
-$secondary: #fff;
+$main: #d70e11;
+$transparency: #d70e1185;
+$secondary: #000;
+$transparency-second: #1b171798;
+$tertiary-color: #fff;
+$transparency-tertiary: #ffffff8f;
 
 /*Theme colors*/
 $theme-colors: (
   "main": $main,
   "transparency": $transparency,
   "secondary": $secondary,
+  "transparency-second": $transparency-second,
 );
 
 /*Fonts*/
-$fonts: "Signika", sans-serif;
+$fonts: "Kanit", sans-serif;
 $spacing: 2rem;
 
 /*Breakpoints*/

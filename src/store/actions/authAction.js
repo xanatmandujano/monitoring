@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 //Slice
 import { setMessage } from "../slices/messageSlice";
+import { setIsSuccess } from "../slices/authSlice";
 //Services
 import { login, logout } from "../../services/authService";
 
@@ -8,8 +9,18 @@ export const userLogin = createAsyncThunk(
   "auth/login",
   async ({ email, password }, thunkAPI) => {
     try {
-      const data = await login(email, password);
-      return data;
+      const data = await login(email, password).then((res) => {
+        if (res.data.isSuccess) {
+          thunkAPI.dispatch(setIsSuccess(res.data.isSuccess));
+          //console.log(res);
+          return res;
+        } else {
+          thunkAPI.dispatch(setMessage(res.data.message));
+          thunkAPI.dispatch(setIsSuccess(res.data.isSuccess));
+          //console.log(res);
+          return res.data.isSuccess;
+        }
+      });
     } catch (error) {
       console.log(error);
       const message =

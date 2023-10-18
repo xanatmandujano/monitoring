@@ -20,7 +20,7 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 const Login = () => {
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, isSuccess } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
@@ -38,16 +38,21 @@ const Login = () => {
     dispatch(userLogin({ email: values.email, password: values.password }))
       .unwrap()
       .then(() => {
-        navigate("alarms-panel");
-        window.location.reload();
+        if (isSuccess) {
+          navigate("alarms-panel");
+          window.location.reload();
+        } else {
+          setLoader(false);
+          setModalShow(true);
+        }
       })
       .catch(() => {
         setLoader(false);
-        !isLoggedIn ? setModalShow(true) : setModalShow(false);
+        isSuccess ? setModalShow(true) : setModalShow(false);
       });
   };
 
-  if (isLoggedIn) {
+  if (isSuccess) {
     return <Navigate to="alarms-panel" />;
   }
 
@@ -57,7 +62,7 @@ const Login = () => {
   });
 
   return (
-    <Container className="login-container">
+    <Container className="login-container sm">
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={validationSchema}
@@ -72,7 +77,7 @@ const Login = () => {
               label="Correo electrónico"
               name="email"
               type="text"
-              value={props.values.user}
+              value={props.values.email}
               onChange={props.handleChange}
               errors="Correo no válido"
               placeholder="nombre@ejemplo.com"
@@ -92,7 +97,7 @@ const Login = () => {
                 type="submit"
                 disabled={loader && <Loader />}
               >
-                {loader ? <Loader /> : "Iniciar sesión"}
+                {loader ? <Loader /> : "Entrar"}
               </Button>
             </div>
 

@@ -5,14 +5,16 @@ const ErrorMessage = ({ ...props }) => {
   return (
     <Modal
       {...props}
-      size="md"
+      size="sm"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header>
-        <Modal.Title>{props.headermessage}</Modal.Title>
-        <Modal.Body>{props.message}</Modal.Body>
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {props.headermessage}
+        </Modal.Title>
       </Modal.Header>
+      <Modal.Body>{props.message}</Modal.Body>
     </Modal>
   );
 };

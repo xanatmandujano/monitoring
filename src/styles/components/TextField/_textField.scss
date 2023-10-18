@@ -6,16 +6,20 @@
   .form-label {
     margin-bottom: 0.5rem;
 
-    font-weight: 600;
-    color: $main;
+    font-weight: 300;
+    color: $tertiary-color;
   }
 
   .form-control {
-    font-weight: 300;
+    font-weight: 200;
+    color: $tertiary-color;
   }
+
   .invalid-feedback {
     padding: 0;
     margin-top: 0.5rem;
     border-style: none;
+    background: none;
+    color: $red-500;
   }
 }

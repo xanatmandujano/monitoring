@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
+import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
 import { getTodayAlarms } from "../../services/alarmsService";
 
 const AlarmsPanel = () => {
@@ -17,12 +18,10 @@ const AlarmsPanel = () => {
       <Row>
         <Col sm={4}>
           <div className="alarms-side-bar">
-            <AlarmCard />
+            <AlarmsSidebar />
           </div>
         </Col>
-        <Col sm={8}>
-          <div className="alarm-details">Alarm details</div>
-        </Col>
+        <Col sm={8}>Alarm details</Col>
       </Row>
     </Container>
   );

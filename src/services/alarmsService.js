@@ -23,10 +23,43 @@ export const getTodayAlarms = async (
       sortDirection: sortDirection,
       searchText: searchText,
     },
-  }).then((res) => {
-    if (res.data.isSuccess) {
-      console.log(res.data.result);
-      return res;
-    } else console.log(res);
   });
+  if (response.data.isSuccess) {
+    //console.log(response.data.result);
+    return response.data.result;
+  } else console.log(response);
+};
+
+export const getAlarmAttachments = async (alarmId) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/alarm/getalarmattachments`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: alarmId,
+  });
+  if (response.data.isSuccess) {
+    //console.log(res.data.result);
+    return response;
+  } else console.log(response);
+};
+
+export const getAlarmData = async (code) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/alarm/getalarmdata`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      code: code,
+    },
+  });
+  if (response.data.isSuccess) {
+    //console.log(response);
+    return response;
+  } else {
+    return console.log(response);
+  }
 };

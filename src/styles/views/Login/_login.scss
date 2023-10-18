@@ -10,13 +10,14 @@
 
   box-shadow: 3px 4px 18px 1px rgba(0, 0, 0, 0.24);
   border-radius: 15px;
+  background-color: $secondary;
 
   font-family: $fonts;
 
   p {
     margin: 1rem auto 0;
     font-weight: 500;
-    color: $main;
+    color: $tertiary-color;
   }
 
   form {

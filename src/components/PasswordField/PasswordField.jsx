@@ -21,7 +21,7 @@ const PasswordField = ({ ...props }) => {
   };
 
   return (
-    <Form.Group className="password-field">
+    <Form.Group className="password-field" data-bs-theme="dark">
       <Form.Label htmlFor={field.name}>{props.label}</Form.Label>
       <Form.Control
         {...field}

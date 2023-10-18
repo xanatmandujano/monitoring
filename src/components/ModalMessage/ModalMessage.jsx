@@ -11,7 +11,9 @@ const ModalMessage = ({ ...props }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>{props.headermessage}</Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {props.headermessage}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>{props.message}</Modal.Body>
       <Modal.Footer>
