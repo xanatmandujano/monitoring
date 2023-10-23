@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { HubConnectionBuilder } from "@microsoft/signalr";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -25,20 +24,20 @@ const AlarmsSidebar = () => {
 
   useEffect(() => {
     dispatch(clearMessage());
-    dispatch(
-      alarmNotificationHub({
-        url: "https://192.168.1.120:8091/hubs/notifications",
-      })
-    )
-      .unwrap()
-      .then(() => {
-        //Change this logic
-        // const newAlarmCode = alarmNotification.Code;
-        // const updatedAlarms = [...latestAlarm.current];
-        // setAlarm(updatedAlarms);
-        console.log(alarmInfo);
-      });
-    dispatch(todayAlarms({ pageNumber: 1, pageSize: 50 }))
+    // dispatch(
+    //   alarmNotificationHub({
+    //     url: "https://192.168.1.120:8091/hubs/notifications",
+    //   })
+    // )
+    //   .unwrap()
+    //   .then(() => {
+    //     //Change this logic
+    //     // const newAlarmCode = alarmNotification.Code;
+    //     // const updatedAlarms = [...latestAlarm.current];
+    //     // setAlarm(updatedAlarms);
+    //     console.log(alarmInfo);
+    //   });
+    dispatch(todayAlarms({ pageNumber: 1, pageSize: 100 }))
       .unwrap()
       .then(() => {
         console.log(alarms);
@@ -46,52 +45,19 @@ const AlarmsSidebar = () => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   const newAlarmCode = alarmNotification.Code;
-  //   console.log(newAlarmCode);
-  //   if (alarmNotification.Code) {
-  //     dispatch(alarmData({ code: newAlarmCode }))
-  //       .unwrap()
-  //       .then(() => {
-  //         console.log(alarmInfo);
-  //       });
-  //   }
-  // }, [alarmNotification.Code]);
-
-  //latestAlarm.current = alarm;
-
-  //Hub connection
-  // useEffect(() => {
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://192.168.1.120:8091/hubs/notifications")
-  //     .withAutomaticReconnect()
-  //     .build();
-
-  //   if (newConnection) {
-  //     newConnection
-  //       .start()
-  //       .then(() => {
-  //         console.log("Conected!");
-  //       })
-  //       .catch((e) => console.log(`Connection failed: ${e}`));
-
-  //     newConnection.on("ReceiveMessage", (message) => {
-  //       setAlarm(message.message);
-  //     });
-  //   }
-  //   console.log(alarm);
-  // }, [alarm]);
-
   return (
-    <Container>
+    <Container className="alarms-side-bar">
       {alarms &&
         alarms.map((item) => (
           <AlarmCard
+            key={item.alarmId}
             alarmCode={item.alarmCode}
+            alarmIcon={item.alarmTypeIcon}
             alarmDescription={item.alarmDescription}
             locationInfo={item.locationInfo}
             deviceCodeIPAddress={item.deviceCodeIPAddress}
             creationDate={item.creationDate}
+            alarmParams={`${item.alarmId}`}
           />
         ))}
     </Container>

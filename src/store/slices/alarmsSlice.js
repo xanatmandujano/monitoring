@@ -9,7 +9,7 @@ const initialState = {
   alarmNotification: "",
   alarms: [],
   alarmsCount: "",
-  alarmAttachments: "",
+  alarmFiles: "",
   alarmInfo: "",
 };
 
@@ -51,7 +51,7 @@ export const alarmsSlice = createSlice({
       .addCase(alarmAttachments.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
-        state.alarmAttachments = action.payload;
+        state.alarmFiles = action.payload;
       })
       .addCase(alarmAttachments.rejected, (state, action) => {
         state.status = "rejected";

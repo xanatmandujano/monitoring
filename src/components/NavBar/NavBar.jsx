@@ -24,6 +24,7 @@ const NavBar = () => {
 
   const [loader, setLoader] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const userLogged = sessionStorage.getItem("userLogged");
 
   //Logout
   const logoutUser = () => {
@@ -35,6 +36,11 @@ const NavBar = () => {
         window.location.reload();
       });
   };
+
+  // const handleOnClick = (e) => {
+  //   e.stopPropagation();
+  //   logoutUser();
+  // };
 
   return (
     <>
@@ -58,7 +64,7 @@ const NavBar = () => {
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              {isLoggedIn ? (
+              {userLogged ? (
                 <Nav className="justify-content-end flex-grow-1 pe-3">
                   <Button
                     onClick={() => setModalShow(true)}
@@ -78,7 +84,7 @@ const NavBar = () => {
           onHide={() => setModalShow(false)}
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"
-          onClick={logoutUser}
+          logout={logoutUser}
           btntext="Aceptar"
         />
       </Navbar>

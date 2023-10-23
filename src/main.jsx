@@ -11,10 +11,12 @@ import Root from "./routes/Root.jsx";
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx";
 import Login from "./views/Login/Login";
 import AlarmsPanel from "./views/AlarmsPanel/AlarmsPanel";
+import TestElement from "./views/TestElement/TestElement";
 //Redux
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Private from "./routes/Private";
+import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 
 const router = createHashRouter([
   {
@@ -29,6 +31,18 @@ const router = createHashRouter([
           {
             path: "alarms-panel",
             element: <AlarmsPanel />,
+            errorElement: <ErrorPage />,
+            children: [
+              {
+                path: ":id",
+                element: <AlarmDetails />,
+                errorElement: <ErrorPage />,
+              },
+            ],
+          },
+          {
+            path: "test-component",
+            element: <TestElement />,
             errorElement: <ErrorPage />,
           },
         ],

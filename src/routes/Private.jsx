@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 const Private = () => {
   //Redux
   const { isLoggedIn } = useSelector((state) => state.auth);
+  //const isLogged = sessionStorage.getItem("userLogged");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

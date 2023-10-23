@@ -31,18 +31,24 @@ export const getTodayAlarms = async (
 };
 
 export const getAlarmAttachments = async (alarmId) => {
-  const response = await axios({
-    method: "GET",
-    url: `${baseURL}/alarm/getalarmattachments`,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: alarmId,
-  });
-  if (response.data.isSuccess) {
-    //console.log(res.data.result);
-    return response;
-  } else console.log(response);
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `${baseURL}/alarm/getalarmattachments`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        alarmId: alarmId,
+      },
+    });
+    if (response.data.isSuccess) {
+      //console.log(response.data.result);
+      return response.data.result;
+    } else return console.log(response);
+  } catch (error) {
+    console.log(error.message);
+  }
 };
 
 export const getAlarmData = async (code) => {

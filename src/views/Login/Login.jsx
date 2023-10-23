@@ -20,7 +20,7 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 const Login = () => {
   const navigate = useNavigate();
 
-  const { isLoggedIn, isSuccess } = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
@@ -31,28 +31,21 @@ const Login = () => {
     dispatch(clearMessage());
   }, [dispatch]);
 
-  //Login
   const loginUser = (values) => {
     setLoader(true);
-
     dispatch(userLogin({ email: values.email, password: values.password }))
       .unwrap()
       .then(() => {
-        if (isSuccess) {
-          navigate("alarms-panel");
-          window.location.reload();
-        } else {
-          setLoader(false);
-          setModalShow(true);
-        }
+        navigate("alarms-panel");
+        window.location.reload();
       })
       .catch(() => {
         setLoader(false);
-        isSuccess ? setModalShow(true) : setModalShow(false);
+        !isLoggedIn ? setModalShow(true) : setModalShow(false);
       });
   };
 
-  if (isSuccess) {
+  if (isLoggedIn) {
     return <Navigate to="alarms-panel" />;
   }
 

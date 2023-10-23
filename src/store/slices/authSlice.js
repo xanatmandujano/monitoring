@@ -19,7 +19,6 @@ const isLoggedIn = sessionStorage.getItem("userLogged")
 const initialState = {
   loading: false,
   isLoggedIn: isLoggedIn,
-  isSuccess: "",
   status: "idle",
   email,
   userName,
@@ -29,14 +28,6 @@ const initialState = {
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    setIsSuccess(state, action) {
-      return { isSuccess: action.payload };
-    },
-    clearIsSuccess(state, action) {
-      return { isSuccess: "" };
-    },
-  },
   extraReducers(builder) {
     builder
       .addCase(userLogin.pending, (state, action) => {
@@ -62,5 +53,4 @@ export const authSlice = createSlice({
 });
 
 export const { reducer } = authSlice;
-export const { setIsSuccess, clearIsSuccess } = authSlice.actions;
 export default reducer;

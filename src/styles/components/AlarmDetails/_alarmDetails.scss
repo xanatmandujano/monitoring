@@ -1,0 +1,19 @@
+.alarm-details {
+  padding: 1rem;
+
+  .btns-container {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 0.5rem;
+  }
+
+  .alarm-data {
+    background-color: gray;
+    padding: 0.5rem;
+    margin-top: 2rem;
+    height: 92%;
+    border-radius: 15px;
+    color: $tertiary-color;
+  }
+}
