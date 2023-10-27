@@ -26,7 +26,7 @@ export const getTodayAlarms = async (
   });
   if (response.data.isSuccess) {
     //console.log(response.data.result);
-    return response.data.result;
+    return response.data;
   } else console.log(response);
 };
 

@@ -3,14 +3,15 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { alarmAttachments } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { getAlarmAttachments } from "../../services/alarmsService";
 //React router dom
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
@@ -27,32 +28,37 @@ const AlarmDetails = () => {
   useEffect(() => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: id })).unwrap();
-    console.log(id);
+    //console.log(id);
   }, [id, dispatch]);
 
-  useEffect(() => {
-    const findImages = () => {
-      let filtered =
-        alarmFiles &&
-        alarmFiles.attachments.filter((el) => el.attachmentTypeId === 1);
-      setImages(filtered);
-      console.log(images);
-    };
+  // useEffect(() => {
+  //   const findImages = () => {
+  //     let filtered =
+  //       alarmFiles &&
+  //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 1);
+  //     setImages(filtered);
+  //     //console.log(images);
+  //   };
 
-    const findURL = () => {
-      let filtered =
-        alarmFiles &&
-        alarmFiles.attachments.filter((el) => el.attachmentTypeId === 5);
-      setUrls(filtered);
-      console.log(urls);
-    };
+  //   const findURL = () => {
+  //     let filtered =
+  //       alarmFiles &&
+  //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 5);
+  //     setUrls(filtered);
+  //   };
 
-    findImages();
-    findURL();
-  }, [alarmFiles]);
+  //   findImages();
+  //   findURL();
+  // }, [alarmFiles]);
+
+  const dateTime = () => {
+    const alarmDateTime = new Date(alarmFiles.creationDate);
+    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
+    return alarmTime;
+  };
 
   return (
-    <Container className="alarm-details">
+    <Container className="alarm-details" fluid>
       <div className="btns-container">
         <Button variant="main" size="sm">
           Aceptar
@@ -62,35 +68,58 @@ const AlarmDetails = () => {
         </Button>
       </div>
       <Row>
-        <Col sm={8}>
-          {/* <video src="" autoPlay height="100%" width="100%" controls>
-            Tu navegador no admite el elemento <code>video</code>.
-          </video> */}
-          <Image
-            src={`data:image/png;base64,${alarmFiles.attachments[1].attachmentValue}`}
-            alt="image"
-            width="100%"
-          />
-          {/* <Image
-            src={`data:image/png;base64,${images && images[1].attachmentValue}`}
-            alt="image"
-            width="100%"
-          /> */}
+        <Col sm={9} className="main-image">
+          {alarmFiles ? (
+            <Image
+              src={`data:image/png;base64,${alarmFiles.attachments[1].attachmentValue}`}
+              alt="image"
+              width="100%"
+            />
+          ) : (
+            <p>No se encontró información</p>
+          )}
         </Col>
-        <Col sm={4}>
+        <Col sm={3}>
           <div className="alarm-data">
             {alarmFiles ? (
               <>
                 <p>
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
+                </p>
+                <p>
                   Número de placa: <br />
                   {alarmFiles.additionalInformation} <br />
-                  Ubicación <br />
-                  {`${alarmFiles.branchCode} - ${alarmFiles.brachName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
-                  <br />
-                  Hora de la alarma: <br />
-                  {alarmFiles.creationDate}
                 </p>
+                <p>
+                  Ubicación: <br />
+                  {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
+                </p>
+                <p>
+                  Hora de la alarma: <br />
+                  {dateTime()}
+                </p>
+                <Tabs
+                  defaultActiveKey="placa"
+                  id="fill-tab-example"
+                  className="mb-3"
+                  data-bs-theme="dark"
+                  fill
+                >
+                  <Tab eventKey="placa" title="Placa">
+                    <img
+                      src={`data:image/png;base64,${alarmFiles.attachments[0].attachmentValue}`}
+                      alt="Placa"
+                      className="tab-image"
+                    />
+                  </Tab>
+                  <Tab eventKey="vehiculo" title="Vehiculo">
+                    <img
+                      src={`data:image/png;base64,${alarmFiles.attachments[1].attachmentValue}`}
+                      alt="Vehículo"
+                      className="tab-image"
+                    />
+                  </Tab>
+                </Tabs>
               </>
             ) : (
               <p>No se encontró información</p>

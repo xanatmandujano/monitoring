@@ -2,7 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 //Slice
 import { setMessage } from "../slices/messageSlice";
-import { setAlarmNotification, setNewAlarm } from "../slices/alarmsSlice";
+import {
+  setAlarmNotification,
+  setAlarmsCount,
+  setNewAlarm,
+} from "../slices/alarmsSlice";
 //Services
 import {
   getTodayAlarms,
@@ -26,7 +30,8 @@ export const todayAlarms = createAsyncThunk(
         sortDirection,
         searchText
       );
-      return data;
+      thunkAPI.dispatch(setAlarmsCount(data.totalRecords));
+      return data.result;
     } catch (error) {
       console.log(error);
       const message =

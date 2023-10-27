@@ -17,6 +17,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Private from "./routes/Private";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
+import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
 
 const router = createHashRouter([
   {
@@ -38,12 +39,12 @@ const router = createHashRouter([
                 element: <AlarmDetails />,
                 errorElement: <ErrorPage />,
               },
+              {
+                path: "seproban/:idVideo",
+                element: <AlarmDetailsVideo />,
+                errorElement: <ErrorPage />,
+              },
             ],
-          },
-          {
-            path: "test-component",
-            element: <TestElement />,
-            errorElement: <ErrorPage />,
           },
         ],
       },

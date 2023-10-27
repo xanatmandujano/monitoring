@@ -2,15 +2,18 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
-//Icons
-import { FaBell } from "react-icons/fa";
 
 const AlarmCard = ({ ...props }) => {
+  const dateTime = (creationDate) => {
+    const alarmDateTime = new Date(creationDate);
+    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
+    return alarmTime;
+  };
+
   return (
     <Card className="alarm-card">
       <Card.Body>
         <Card.Title>
-          {/* <FaBell className="bell-icon" />{" "} */}
           <img
             src={`data:image/png;base64,${props.alarmIcon}`}
             width="20px"
@@ -22,13 +25,14 @@ const AlarmCard = ({ ...props }) => {
           {`${props.locationInfo}`}
           <br />
           Dispositivo: {props.deviceCodeIPAddress} <br />
-          Hora: {props.creationDate}
+          Hora: {dateTime(props.creationDate)}
         </Card.Text>
         <div className="btn-alarm">
           <Link to={`${props.alarmParams}`}>
-            <Button variant="main">Ver</Button>
+            <Button variant="main" size="md">
+              Ver
+            </Button>
           </Link>
-          {/* <Button variant="main">Descartar</Button> */}
         </div>
       </Card.Body>
     </Card>

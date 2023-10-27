@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 
 const IdleAlarm = () => {
   return (
-    <Container className="idle-alarm">
+    <Container className="idle-alarm" fluid>
       <BsFillBellSlashFill className="bell-idle-alarm" />
       <p>Ninguna alarma seleccionada</p>
     </Container>

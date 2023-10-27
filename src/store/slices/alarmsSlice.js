@@ -26,6 +26,9 @@ export const alarmsSlice = createSlice({
     setAlarmsCount(state, action) {
       return { alarmsCount: action.payload };
     },
+    clearAlarmFiles(state, action) {
+      return { alarmFiles: "" };
+    },
   },
   extraReducers(builder) {
     builder
@@ -57,24 +60,14 @@ export const alarmsSlice = createSlice({
         state.status = "rejected";
         state.loading = false;
       });
-    //Get alarm data
-    // .addCase(alarmData.pending, (state, action) => {
-    //   state.status = "loading";
-    //   state.loading = true;
-    // })
-    // .addCase(alarmData.fulfilled, (state, action) => {
-    //   state.status = "succedded";
-    //   state.loading = false;
-    //   //state.alarmInfo = action.payload;
-    // })
-    // .addCase(alarmData.rejected, (state, action) => {
-    //   state.status = "rejected";
-    //   state.loading = false;
-    // });
   },
 });
 
 export const { reducer } = alarmsSlice;
-export const { setAlarmNotification, setNewAlarm, setAlarmsCount } =
-  alarmsSlice.actions;
+export const {
+  setAlarmNotification,
+  setNewAlarm,
+  setAlarmsCount,
+  clearAlarmFiles,
+} = alarmsSlice.actions;
 export default reducer;

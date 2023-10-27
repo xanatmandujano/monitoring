@@ -9,27 +9,32 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 //Components
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
-import AlarmDetails from "../../components/AlarmDetails/AlarmDetails";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
+import NewAlarm from "./NewAlarm";
 
 const AlarmsPanel = () => {
   const dispatch = useDispatch();
+  const { alarms, alarmsCount } = useSelector((state) => state.alarms);
 
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
 
   return (
-    <Container fluid className="alarms-panel">
-      <Row>
-        <Col sm={3}>
-          <AlarmsSidebar />
-        </Col>
-        <Col sm={9}>
-          <Outlet />
-        </Col>
-      </Row>
-    </Container>
+    <>
+      {/* <NewAlarm /> */}
+      <Container fluid className="alarms-panel">
+        <Row>
+          <Col sm={2} style={{ paddingRight: "0" }}>
+            <code>{alarmsCount}</code>
+            <AlarmsSidebar />
+          </Col>
+          <Col sm={10}>
+            {alarms && alarms.length >= 1 ? <Outlet /> : <IdleAlarm />}
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 };
 

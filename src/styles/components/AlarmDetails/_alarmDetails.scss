@@ -1,5 +1,6 @@
 .alarm-details {
   padding: 1rem;
+  width: 100%;
 
   .btns-container {
     display: flex;
@@ -15,5 +16,20 @@
     height: 92%;
     border-radius: 15px;
     color: $tertiary-color;
+  }
+
+  .main-image {
+    margin-top: 2rem;
+
+    img {
+      border-style: solid;
+      border-width: 2px;
+      border-color: grey;
+      border-radius: 15px;
+    }
+  }
+
+  .tab-image {
+    width: 100%;
   }
 }

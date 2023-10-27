@@ -19,8 +19,12 @@
   }
 
   .btn-alarm {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    a {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
   }
 }

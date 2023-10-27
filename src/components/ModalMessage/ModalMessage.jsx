@@ -3,16 +3,14 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 const ModalMessage = ({ ...props }) => {
-  // const handleClick = (e) => {
-  //   e.stopPropagation();
-  // };
-
   return (
     <Modal
       {...props}
-      size="md"
+      size="sm"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      className="modal-message"
+      data-bs-theme="dark"
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">

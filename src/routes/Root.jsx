@@ -3,6 +3,7 @@ import React, { Suspense } from "react";
 import ThemeProvider from "react-bootstrap/ThemeProvider";
 //Components
 import NavBar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
 import { Outlet } from "react-router-dom";
 
 const Root = () => {
@@ -15,6 +16,7 @@ const Root = () => {
         >
           <NavBar />
           <Outlet />
+          <Footer />
         </ThemeProvider>
       </Suspense>
     </>

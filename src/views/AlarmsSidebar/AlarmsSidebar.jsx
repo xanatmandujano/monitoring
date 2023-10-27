@@ -13,37 +13,29 @@ import AlarmCard from "../../components/AlarmCard/AlarmCard";
 
 const AlarmsSidebar = () => {
   const [alarm, setAlarm] = useState([]);
-  const latestAlarm = useRef(null);
-  latestAlarm.current = alarm;
+  const [path, setPath] = useState("");
 
-  const { alarmNotification, alarms, alarmsCount, alarmInfo } = useSelector(
+  const { alarmNotification, alarms, alarmsCount } = useSelector(
     (state) => state.alarms
   );
-  const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(clearMessage());
-    // dispatch(
-    //   alarmNotificationHub({
-    //     url: "https://192.168.1.120:8091/hubs/notifications",
-    //   })
-    // )
-    //   .unwrap()
-    //   .then(() => {
-    //     //Change this logic
-    //     // const newAlarmCode = alarmNotification.Code;
-    //     // const updatedAlarms = [...latestAlarm.current];
-    //     // setAlarm(updatedAlarms);
-    //     console.log(alarmInfo);
-    //   });
-    dispatch(todayAlarms({ pageNumber: 1, pageSize: 100 }))
+    dispatch(todayAlarms({ pageNumber: 1, pageSize: 25 }))
       .unwrap()
       .then(() => {
-        console.log(alarms);
         console.log("Today alarms succedded");
       });
-  }, []);
+  }, [dispatch]);
+
+  const alarmType = (alarmTypeId, alarmId) => {
+    if (alarmTypeId === 1) {
+      return `seproban/${alarmId}`;
+    } else if (alarmTypeId === 2) {
+      return alarmId;
+    }
+  };
 
   return (
     <Container className="alarms-side-bar">
@@ -57,7 +49,7 @@ const AlarmsSidebar = () => {
             locationInfo={item.locationInfo}
             deviceCodeIPAddress={item.deviceCodeIPAddress}
             creationDate={item.creationDate}
-            alarmParams={`${item.alarmId}`}
+            alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
           />
         ))}
     </Container>
