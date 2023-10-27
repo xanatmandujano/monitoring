@@ -24,7 +24,8 @@ const AlarmCard = ({ ...props }) => {
         <Card.Text>
           {`${props.locationInfo}`}
           <br />
-          Dispositivo: {props.deviceCodeIPAddress} <br />
+          Dispositivo: {props.deviceCode} <br />
+          Dirección IP: {props.deviceIPAddress} <br />
           Hora: {dateTime(props.creationDate)}
         </Card.Text>
         <div className="btn-alarm">

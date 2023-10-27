@@ -19,7 +19,7 @@ const ModalMessage = ({ ...props }) => {
       </Modal.Header>
       <Modal.Body>{props.message}</Modal.Body>
       <Modal.Footer>
-        <Button variant="main" onClick={props.logout}>
+        <Button variant="main" onClick={props.btnaction}>
           {props.btntext}
         </Button>
       </Modal.Footer>

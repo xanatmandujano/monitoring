@@ -10,7 +10,7 @@ import Container from "react-bootstrap/Container";
 //Dispatch notification
 
 const NewAlarm = () => {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const [alarm, setAlarm] = useState([]);
   const latestAlarm = useRef();
   latestAlarm.current = alarm;
@@ -18,22 +18,23 @@ const NewAlarm = () => {
   const dispatch = useDispatch();
   const { alarmNotification, alarmInfo } = useSelector((state) => state.alarms);
 
-  // useEffect(() => {
-  //   dispatch(clearMessage());
-  //   dispatch(
-  //     alarmNotificationHub({
-  //       url: "https://192.168.1.120:8091/hubs/notifications",
-  //     })
-  //   )
-  //     .unwrap()
-  //     .then(() => {
-  //       const newAlarmCode = alarmNotification.Code;
-  //       const updatedAlarms = [...latestAlarm.current];
-  //       console.log(alarmInfo);
-  //       console.log(newAlarmCode);
-  //       setAlarm(updatedAlarms);
-  //     });
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(clearMessage());
+    dispatch(
+      alarmNotificationHub({
+        url: "https://192.168.1.120:8091/hubs/notifications",
+      })
+    )
+      .unwrap()
+      .then(() => {
+        const newAlarmCode = alarmNotification && alarmNotification.Code;
+        const updatedAlarms = [...latestAlarm.current];
+        console.log(alarmInfo);
+        console.log(newAlarmCode);
+        setShow(true);
+        setAlarm(updatedAlarms);
+      });
+  }, [dispatch]);
 
   return (
     <>

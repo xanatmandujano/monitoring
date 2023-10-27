@@ -10,14 +10,10 @@ import { clearMessage } from "../../store/slices/messageSlice";
 import Container from "react-bootstrap/Container";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
+import SearchField from "../../components/SearchField/SearchField";
 
 const AlarmsSidebar = () => {
-  const [alarm, setAlarm] = useState([]);
-  const [path, setPath] = useState("");
-
-  const { alarmNotification, alarms, alarmsCount } = useSelector(
-    (state) => state.alarms
-  );
+  const { alarmNotification, alarms } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,8 +22,27 @@ const AlarmsSidebar = () => {
       .unwrap()
       .then(() => {
         console.log("Today alarms succedded");
+        //alarms.reverse();
       });
   }, [dispatch]);
+
+  //Search bar
+  const [search, setSearch] = useState("");
+  let handleSearch = (e) => {
+    var toLowerCase = e.target.value.toLowerCase();
+    setSearch(toLowerCase);
+  };
+
+  //Filter alarms
+  const filteredAlarms =
+    alarms &&
+    alarms.filter((el) => {
+      if (search === "") {
+        return el;
+      } else {
+        return el.alarmCode.toLowerCase().includes(search);
+      }
+    });
 
   const alarmType = (alarmTypeId, alarmId) => {
     if (alarmTypeId === 1) {
@@ -38,21 +53,27 @@ const AlarmsSidebar = () => {
   };
 
   return (
-    <Container className="alarms-side-bar">
-      {alarms &&
-        alarms.map((item) => (
-          <AlarmCard
-            key={item.alarmId}
-            alarmCode={item.alarmCode}
-            alarmIcon={item.alarmTypeIcon}
-            alarmDescription={item.alarmDescription}
-            locationInfo={item.locationInfo}
-            deviceCodeIPAddress={item.deviceCodeIPAddress}
-            creationDate={item.creationDate}
-            alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
-          />
-        ))}
-    </Container>
+    <>
+      <div className="search-bar">
+        <SearchField changeEvent={handleSearch} disabled={alarms > 0} />
+      </div>
+      <Container className="alarms-side-bar">
+        {filteredAlarms &&
+          filteredAlarms.map((item) => (
+            <AlarmCard
+              key={item.alarmId}
+              alarmCode={item.alarmCode}
+              alarmIcon={item.alarmTypeIcon}
+              alarmDescription={item.alarmDescription}
+              locationInfo={item.locationInfo}
+              deviceCode={item.deviceCode}
+              deviceIPAddress={item.deviceIPAddress}
+              creationDate={item.creationDate}
+              alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
+            />
+          ))}
+      </Container>
+    </>
   );
 };
 

@@ -4,7 +4,7 @@ import { setMessage } from "../slices/messageSlice";
 //Services
 import { login, logout } from "../../services/authService";
 
-export const userLogin = createAsyncThunk(
+export const USER_LOGIN = createAsyncThunk(
   "auth/login",
   async ({ email, password }, thunkAPI) => {
     try {
@@ -24,6 +24,6 @@ export const userLogin = createAsyncThunk(
   }
 );
 
-export const userLogout = createAsyncThunk("auth/logout", async () => {
+export const USER_LOGOUT = createAsyncThunk("auth/logout", async () => {
   logout();
 });

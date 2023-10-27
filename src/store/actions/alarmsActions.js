@@ -31,7 +31,9 @@ export const todayAlarms = createAsyncThunk(
         searchText
       );
       thunkAPI.dispatch(setAlarmsCount(data.totalRecords));
-      return data.result;
+      let reverseAlarms = data.result.reverse();
+
+      return reverseAlarms;
     } catch (error) {
       console.log(error);
       const message =

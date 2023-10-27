@@ -79,13 +79,17 @@ const AlarmDetailsVideo = () => {
                 <p>
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
                 </p>
-                <p>
+                {/* <p>
                   Panel: <br />
                   {`${alarmFiles.panelCode}`}
+                </p> */}
+                <p>
+                  Dispositivo: <br />
+                  {`${alarmFiles.deviceCode}`}
                 </p>
                 <p>
-                  Cámara: <br />
-                  {`${alarmFiles.deviceCode} - ${alarmFiles.deviceIPAddress}`}
+                  Dirección IP: <br />
+                  {`${alarmFiles.deviceIPAddress}`}
                 </p>
                 <p>
                   Ubicación: <br />

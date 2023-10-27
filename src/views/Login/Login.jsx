@@ -4,7 +4,7 @@ import { Form, Formik } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../../store/actions/authAction";
+import { USER_LOGIN } from "../../store/actions/authAction";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
 import { Navigate, useNavigate } from "react-router-dom";
@@ -33,7 +33,7 @@ const Login = () => {
 
   const loginUser = (values) => {
     setLoader(true);
-    dispatch(userLogin({ email: values.email, password: values.password }))
+    dispatch(USER_LOGIN({ email: values.email, password: values.password }))
       .unwrap()
       .then(() => {
         navigate("alarms-panel");

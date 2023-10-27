@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { userLogin, userLogout } from "../actions/authAction";
+import { USER_LOGIN, USER_LOGOUT } from "../actions/authAction";
 
 const userToken = sessionStorage.getItem("userToken")
   ? sessionStorage.getItem("userToken")
@@ -30,20 +30,20 @@ export const authSlice = createSlice({
   initialState,
   extraReducers(builder) {
     builder
-      .addCase(userLogin.pending, (state, action) => {
+      .addCase(USER_LOGIN.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(userLogin.fulfilled, (state, action) => {
+      .addCase(USER_LOGIN.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
       })
-      .addCase(userLogin.rejected, (state, action) => {
+      .addCase(USER_LOGIN.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
         state.email = null;
       })
-      .addCase(userLogout.fulfilled, (state, action) => {
+      .addCase(USER_LOGOUT.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
         state.email = null;

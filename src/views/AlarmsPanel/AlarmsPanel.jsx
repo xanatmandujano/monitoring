@@ -22,11 +22,13 @@ const AlarmsPanel = () => {
 
   return (
     <>
-      {/* <NewAlarm /> */}
+      <NewAlarm />
       <Container fluid className="alarms-panel">
+        {/* <div className="search-bar">
+          <p>{`Total de alarmas: ${alarmsCount}`}</p>
+        </div> */}
         <Row>
           <Col sm={2} style={{ paddingRight: "0" }}>
-            <code>{alarmsCount}</code>
             <AlarmsSidebar />
           </Col>
           <Col sm={10}>

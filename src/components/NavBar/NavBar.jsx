@@ -11,7 +11,7 @@ import Banbajio from "../../assets/images/Banbajio.png";
 import Caelum from "../../assets/images/Caelum.png";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { userLogout } from "../../store/actions/authAction";
+import { USER_LOGOUT } from "../../store/actions/authAction";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
 import { Navigate, useNavigate } from "react-router-dom";
@@ -29,18 +29,13 @@ const NavBar = () => {
   //Logout
   const logoutUser = () => {
     setLoader(true);
-    dispatch(userLogout())
+    dispatch(USER_LOGOUT())
       .unwrap()
       .then(() => {
         navigate("/");
         window.location.reload();
       });
   };
-
-  // const handleOnClick = (e) => {
-  //   e.stopPropagation();
-  //   logoutUser();
-  // };
 
   return (
     <>
@@ -84,7 +79,7 @@ const NavBar = () => {
           onHide={() => setModalShow(false)}
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"
-          logout={logoutUser}
+          btnaction={logoutUser}
           btntext="Aceptar"
         />
       </Navbar>
