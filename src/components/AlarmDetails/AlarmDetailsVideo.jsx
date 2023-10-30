@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmAttachments } from "../../store/actions/alarmsActions";
+import {
+  alarmAttachments,
+  validateCurrentAlarm,
+} from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React router dom
 import { useParams } from "react-router-dom";
@@ -11,6 +14,8 @@ import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+//Components
+import CheckInput from "../CheckInput/CheckInput";
 
 const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
@@ -28,8 +33,25 @@ const AlarmDetailsVideo = () => {
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
-    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
+    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return alarmTime;
+  };
+
+  const acceptAlarm = (values) => {
+    dispatch(
+      validateCurrentAlarm({
+        alarmId: values.alarmId,
+        userId: values.userId,
+        comments: values.comments,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        console.log("Alarma validada con éxito");
+      });
   };
 
   return (
@@ -42,10 +64,18 @@ const AlarmDetailsVideo = () => {
           Descartar
         </Button>
       </div>
+      {/* Dewarped selection */}
+      <div className="btns-container">
+        <p style={{ color: "#fff" }}>Seleccion de videos</p>
+        <CheckInput label="Video 1" type="checkbox" data-bs-theme="dark" />
+      </div>
+
       <Row>
         <Col sm={9} className="main-image">
           <Tabs
-            defaultActiveKey={`video${videoCount}`}
+            defaultActiveKey={
+              alarmFiles && alarmFiles.attachments[0].deviceName
+            }
             id="fill-tab-example"
             className="mb-3"
             data-bs-theme="dark"
@@ -54,8 +84,8 @@ const AlarmDetailsVideo = () => {
             {alarmFiles &&
               alarmFiles.attachments.map((item) => (
                 <Tab
-                  eventKey={`video${videoCount}`}
-                  title={`Video ${videoCount++}`}
+                  eventKey={item.deviceName}
+                  title={item.deviceName}
                   key={item.attachmentName}
                 >
                   <video
@@ -64,7 +94,7 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    src={`data:video/mp4;base64,${item.attachmentValue}`}
+                    src={item.attachmentValue}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>

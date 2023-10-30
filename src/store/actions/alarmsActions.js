@@ -6,12 +6,14 @@ import {
   setAlarmNotification,
   setAlarmsCount,
   setNewAlarm,
+  setAlarmsPages,
 } from "../slices/alarmsSlice";
 //Services
 import {
   getTodayAlarms,
   getAlarmAttachments,
   getAlarmData,
+  validateAlarm,
 } from "../../services/alarmsService";
 //Signalr
 import { HubConnectionBuilder } from "@microsoft/signalr";
@@ -31,6 +33,7 @@ export const todayAlarms = createAsyncThunk(
         searchText
       );
       thunkAPI.dispatch(setAlarmsCount(data.totalRecords));
+      thunkAPI.dispatch(setAlarmsPages(data.totalPages));
       let reverseAlarms = data.result.reverse();
 
       return reverseAlarms;
@@ -81,7 +84,7 @@ export const alarmNotificationHub = createAsyncThunk(
         newConnection
           .start()
           .then(() => {
-            //console.log("Connected!");
+            console.log("Connected!");
           })
           .catch((e) => console.log(`Connection failed: ${e}`));
 
@@ -144,3 +147,23 @@ export const alarmNotificationHub = createAsyncThunk(
 //     }
 //   }
 // );
+
+export const validateCurrentAlarm = createAsyncThunk(
+  "alarms/validateAlarm",
+  async ({ alarmId, userId, comments }, thunkAPI) => {
+    try {
+      const data = await validateAlarm(alarmId, userId, comments);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);

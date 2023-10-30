@@ -1,7 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { todayAlarms, alarmAttachments } from "../actions/alarmsActions";
+import {
+  todayAlarms,
+  alarmAttachments,
+  validateCurrentAlarm,
+} from "../actions/alarmsActions";
 
 const initialState = {
   loading: false,
@@ -9,6 +13,7 @@ const initialState = {
   alarmNotification: "",
   alarms: [],
   alarmsCount: "",
+  alarmsPages: "",
   alarmFiles: "",
   alarmInfo: "",
 };
@@ -25,6 +30,9 @@ export const alarmsSlice = createSlice({
     },
     setAlarmsCount(state, action) {
       return { alarmsCount: action.payload };
+    },
+    setAlarmsPages(state, action) {
+      return { alarmsPages: action.payload };
     },
     clearAlarmFiles(state, action) {
       return { alarmFiles: "" };
@@ -59,6 +67,19 @@ export const alarmsSlice = createSlice({
       .addCase(alarmAttachments.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
+      })
+      //Validate alarm
+      .addCase(validateCurrentAlarm.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(validateCurrentAlarm.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(validateCurrentAlarm.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
       });
   },
 });
@@ -68,6 +89,7 @@ export const {
   setAlarmNotification,
   setNewAlarm,
   setAlarmsCount,
+  setAlarmsPages,
   clearAlarmFiles,
 } = alarmsSlice.actions;
 export default reducer;

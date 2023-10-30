@@ -69,3 +69,23 @@ export const getAlarmData = async (code) => {
     return console.log(response);
   }
 };
+
+export const validateAlarm = async (alarmId, userId, comments) => {
+  const response = await axios({
+    method: "POST",
+    url: `${baseURL}/validatealarm`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      alarmId: alarmId,
+      userId: userId,
+      comments: comments,
+    },
+  });
+  if (response.data.isSuccess) {
+    return response;
+  } else {
+    return console.log(response);
+  }
+};

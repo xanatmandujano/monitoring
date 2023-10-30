@@ -13,16 +13,17 @@ import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
 
 const AlarmsSidebar = () => {
-  const { alarmNotification, alarms } = useSelector((state) => state.alarms);
+  const { alarmNotification, alarms, alarmsPages } = useSelector(
+    (state) => state.alarms
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(clearMessage());
-    dispatch(todayAlarms({ pageNumber: 1, pageSize: 25 }))
+    dispatch(todayAlarms({ pageNumber: alarmsPages, pageSize: 25 }))
       .unwrap()
       .then(() => {
         console.log("Today alarms succedded");
-        //alarms.reverse();
       });
   }, [dispatch]);
 

@@ -6,7 +6,10 @@ import { Link } from "react-router-dom";
 const AlarmCard = ({ ...props }) => {
   const dateTime = (creationDate) => {
     const alarmDateTime = new Date(creationDate);
-    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
+    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return alarmTime;
   };
 
@@ -14,11 +17,7 @@ const AlarmCard = ({ ...props }) => {
     <Card className="alarm-card">
       <Card.Body>
         <Card.Title>
-          <img
-            src={`data:image/png;base64,${props.alarmIcon}`}
-            width="20px"
-            height="20px"
-          />
+          <img src={props.alarmIcon} width="20px" height="20px" />
           {`${props.alarmCode} - ${props.alarmDescription}`}
         </Card.Title>
         <Card.Text>
