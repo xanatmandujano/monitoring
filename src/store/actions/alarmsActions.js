@@ -71,69 +71,44 @@ export const alarmAttachments = createAsyncThunk(
   }
 );
 
-export const alarmNotificationHub = createAsyncThunk(
-  "alarm/alarmNotificationHub",
-  async ({ url }, thunkAPI) => {
-    try {
-      const newConnection = new HubConnectionBuilder()
-        .withUrl(url)
-        .withAutomaticReconnect()
-        .build();
-
-      if (newConnection) {
-        newConnection
-          .start()
-          .then(() => {
-            console.log("Connected!");
-          })
-          .catch((e) => console.log(`Connection failed: ${e}`));
-
-        newConnection.on("ReceiveMessage", (message) => {
-          thunkAPI.dispatch(setAlarmNotification(JSON.parse(message.message)));
-          let newAlarm = JSON.parse(message.message);
-          let newAlarmCode = newAlarm.Code;
-
-          const alarmData = async () => {
-            try {
-              const data = await getAlarmData(newAlarmCode).then((res) => {
-                if (res.data.isSuccess) {
-                  thunkAPI.dispatch(setNewAlarm(res.data.result));
-                }
-                //console.log(res);
-              });
-            } catch (error) {
-              console.log(error);
-            }
-          };
-
-          alarmData();
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue();
-    }
-  }
-);
-
-// export const alarmData = createAsyncThunk(
-//   "alarms/alarmData",
-//   async ({ code }, thunkAPI) => {
+// export const alarmNotificationHub = createAsyncThunk(
+//   "alarm/alarmNotificationHub",
+//   async ({ url }, thunkAPI) => {
 //     try {
-//       const data = await getAlarmData(code).then((res) => {
-//         if (res.data.isSuccess) {
-//           thunkAPI.dispatch(setNewAlarm(res.data.result));
-//         }
-//       });
-//       console.log(data);
-//       return data;
+//       const newConnection = new HubConnectionBuilder()
+//         .withUrl(url)
+//         .withAutomaticReconnect()
+//         .build();
+
+//       if (newConnection) {
+//         newConnection
+//           .start()
+//           .then(() => {
+//             console.log("Connected!");
+//           })
+//           .catch((e) => console.log(`Connection failed: ${e}`));
+
+//         newConnection.on("ReceiveMessage", (message) => {
+//           thunkAPI.dispatch(setAlarmNotification(JSON.parse(message.message)));
+//           let newAlarm = JSON.parse(message.message);
+//           let newAlarmCode = newAlarm.Code;
+
+//           const alarmData = async () => {
+//             try {
+//               const data = await getAlarmData(newAlarmCode).then((res) => {
+//                 if (res.data.isSuccess) {
+//                   thunkAPI.dispatch(setNewAlarm(res.data.result));
+//                 }
+//                 //console.log(res);
+//               });
+//             } catch (error) {
+//               console.log(error);
+//             }
+//           };
+
+//           alarmData();
+//         });
+//       }
 //     } catch (error) {
 //       console.log(error);
 //       const message =
@@ -147,6 +122,31 @@ export const alarmNotificationHub = createAsyncThunk(
 //     }
 //   }
 // );
+
+export const alarmData = createAsyncThunk(
+  "alarms/alarmData",
+  async ({ code }, thunkAPI) => {
+    try {
+      const data = await getAlarmData(code).then((res) => {
+        if (res.data.isSuccess) {
+          thunkAPI.dispatch(setNewAlarm(res.data.result));
+        }
+      });
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
 
 export const validateCurrentAlarm = createAsyncThunk(
   "alarms/validateAlarm",

@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   todayAlarms,
   alarmAttachments,
+  alarmData,
   validateCurrentAlarm,
 } from "../actions/alarmsActions";
 
@@ -51,6 +52,19 @@ export const alarmsSlice = createSlice({
         state.alarms = action.payload;
       })
       .addCase(todayAlarms.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Alarm data
+      .addCase(alarmData.pending, (state, action) => {
+        (state.status = "loading"), (state.loading = true);
+      })
+      .addCase(alarmData.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+        state.alarmInfo = action.payload;
+      })
+      .addCase(alarmData.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       })

@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import {
-  alarmNotificationHub,
-  todayAlarms,
-} from "../../store/actions/alarmsActions";
+import { todayAlarms } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //Bootstrap
 import Container from "react-bootstrap/Container";
@@ -20,7 +17,7 @@ const AlarmsSidebar = () => {
 
   useEffect(() => {
     dispatch(clearMessage());
-    dispatch(todayAlarms({ pageNumber: alarmsPages, pageSize: 25 }))
+    dispatch(todayAlarms({ pageNumber: alarmsPages, pageSize: 50 }))
       .unwrap()
       .then(() => {
         console.log("Today alarms succedded");
