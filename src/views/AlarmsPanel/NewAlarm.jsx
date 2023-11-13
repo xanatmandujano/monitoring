@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 //Redux
-import { useSelector, useDispatch } from "react-redux";
-import { alarmData } from "../../store/actions/alarmsActions";
+import { useDispatch } from "react-redux";
 import { clearMessage } from "../../store/slices/messageSlice";
-import {
-  setAlarmNotification,
-  setNewAlarm,
-} from "../../store/slices/alarmsSlice";
 //Hub
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { getAlarmData } from "../../services/alarmsService";
 //Components
 import AlarmNotification from "../../components/AlarmNotification/AlarmNotification";
-import Container from "react-bootstrap/Container";
-import { getAlarmData } from "../../services/alarmsService";
+import AlarmCard from "../../components/AlarmCard/AlarmCard";
 
 const NewAlarm = () => {
   const [show, setShow] = useState(false);
@@ -22,25 +17,6 @@ const NewAlarm = () => {
   latestAlarm.current = alarm;
 
   const dispatch = useDispatch();
-  const { alarmNotification, alarmInfo } = useSelector((state) => state.alarms);
-
-  // useEffect(() => {
-  //   dispatch(clearMessage());
-  //   dispatch(
-  //     alarmNotificationHub({
-  //       url: "https://192.168.1.120:8091/hubs/notifications",
-  //     })
-  //   )
-  //     .unwrap()
-  //     .then(() => {
-  //       const newAlarmCode = alarmNotification && alarmNotification.Code;
-  //       const updatedAlarms = [...latestAlarm.current];
-  //       console.log(alarmInfo);
-  //       console.log(newAlarmCode);
-  //       setShow(true);
-  //       setAlarm(updatedAlarms);
-  //     });
-  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -78,7 +54,7 @@ const NewAlarm = () => {
         alarmData();
       });
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

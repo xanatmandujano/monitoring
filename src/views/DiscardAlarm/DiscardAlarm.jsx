@@ -1,33 +1,29 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import DiscardAlarmForm from "./DiscardAlarmForm";
 
-const ModalMessage = ({ ...props }) => {
+const DiscardAlarm = ({ ...props }) => {
   return (
     <Modal
       {...props}
-      size="sm"
+      size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
       className="modal-message"
       data-bs-theme="dark"
+      backdrop="static"
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.headermessage}
+          Descartar alarma
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>{props.message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="main" onClick={props.btnaction}>
-          {props.btntext}
-        </Button>
-        {/* <Button variant="main" onClick={props.onHide}>
-          Cancelar
-        </Button> */}
-      </Modal.Footer>
+      <Modal.Body>
+        <DiscardAlarmForm />
+      </Modal.Body>
     </Modal>
   );
 };
 
-export default ModalMessage;
+export default DiscardAlarm;

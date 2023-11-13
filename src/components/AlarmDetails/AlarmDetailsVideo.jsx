@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import {
-  alarmAttachments,
-  validateCurrentAlarm,
-} from "../../store/actions/alarmsActions";
+import { alarmAttachments } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React router dom
 import { useParams } from "react-router-dom";
@@ -14,12 +11,16 @@ import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+//Redux
+import { alarmStatus } from "../../store/actions/alarmsActions";
 //Components
-import CheckInput from "../CheckInput/CheckInput";
+import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
+import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 
 const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
-  let [videoCount, setVideoCount] = useState(1);
+  const [show, setShow] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const { idVideo } = useParams();
 
@@ -29,6 +30,13 @@ const AlarmDetailsVideo = () => {
   useEffect(() => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+    dispatch(
+      alarmStatus({
+        alarmId: idVideo,
+        statusId: 2,
+        comments: null,
+      })
+    );
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
@@ -40,34 +48,15 @@ const AlarmDetailsVideo = () => {
     return alarmTime;
   };
 
-  const acceptAlarm = (values) => {
-    dispatch(
-      validateCurrentAlarm({
-        alarmId: values.alarmId,
-        userId: values.userId,
-        comments: values.comments,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        console.log("Alarma validada con éxito");
-      });
-  };
-
   return (
     <Container fluid className="alarm-details">
       <div className="btns-container">
-        <Button variant="main" size="sm">
-          Aceptar
+        <Button variant="main" size="sm" onClick={() => setShow(true)}>
+          Validar
         </Button>
-        <Button variant="main" size="sm">
+        <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
           Descartar
         </Button>
-      </div>
-      {/* Dewarped selection */}
-      <div className="btns-container">
-        <p style={{ color: "#fff" }}>Seleccion de videos</p>
-        <CheckInput label="Video 1" type="checkbox" data-bs-theme="dark" />
       </div>
 
       <Row>
@@ -109,10 +98,6 @@ const AlarmDetailsVideo = () => {
                 <p>
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
                 </p>
-                {/* <p>
-                  Panel: <br />
-                  {`${alarmFiles.panelCode}`}
-                </p> */}
                 <p>
                   Dispositivo: <br />
                   {`${alarmFiles.deviceCode}`}
@@ -136,6 +121,9 @@ const AlarmDetailsVideo = () => {
           </div>
         </Col>
       </Row>
+
+      <AcceptAlarm show={show} onHide={() => setShow(false)} />
+      <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
     </Container>
   );
 };

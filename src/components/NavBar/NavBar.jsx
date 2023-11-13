@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 //Bootstrap
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
@@ -19,7 +20,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 const NavBar = () => {
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, userName } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const [loader, setLoader] = useState(false);
@@ -60,7 +61,11 @@ const NavBar = () => {
             </Offcanvas.Header>
             <Offcanvas.Body>
               {userLogged ? (
-                <Nav className="justify-content-end flex-grow-1 pe-3">
+                <Nav
+                  className="justify-content-end flex-grow-1 pe-3"
+                  style={{ alignItems: "center" }}
+                >
+                  <p className="user-name">{userName}</p>
                   <Button
                     onClick={() => setModalShow(true)}
                     variant="main"

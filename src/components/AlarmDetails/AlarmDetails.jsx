@@ -37,7 +37,7 @@ const AlarmDetails = () => {
   //       alarmFiles &&
   //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 1);
   //     setImages(filtered);
-  //     //console.log(images);
+  //     console.log(images);
   //   };
 
   //   const findURL = () => {
@@ -45,6 +45,7 @@ const AlarmDetails = () => {
   //       alarmFiles &&
   //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 5);
   //     setUrls(filtered);
+  //     console.log(filtered);
   //   };
 
   //   findImages();
@@ -71,7 +72,7 @@ const AlarmDetails = () => {
         <Col sm={9} className="main-image">
           {alarmFiles ? (
             <Image
-              src={`data:image/png;base64,${alarmFiles.attachments[1].attachmentValue}`}
+              src={`${alarmFiles.attachments[1].attachmentValue}`}
               alt="image"
               width="100%"
             />
@@ -91,6 +92,9 @@ const AlarmDetails = () => {
                   {alarmFiles.additionalInformation} <br />
                 </p>
                 <p>
+                  {alarmFiles.comments} <br />
+                </p>
+                <p>
                   Ubicación: <br />
                   {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
                 </p>
@@ -107,14 +111,14 @@ const AlarmDetails = () => {
                 >
                   <Tab eventKey="placa" title="Placa">
                     <img
-                      src={`data:image/png;base64,${alarmFiles.attachments[0].attachmentValue}`}
+                      src={`${alarmFiles.attachments[0].attachmentValue}`}
                       alt="Placa"
                       className="tab-image"
                     />
                   </Tab>
                   <Tab eventKey="vehiculo" title="Vehiculo">
                     <img
-                      src={`data:image/png;base64,${alarmFiles.attachments[1].attachmentValue}`}
+                      src={`${alarmFiles.attachments[1].attachmentValue}`}
                       alt="Vehículo"
                       className="tab-image"
                     />

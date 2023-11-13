@@ -20,6 +20,7 @@ export const login = async (email, password) => {
     sessionStorage.setItem("userToken", response.data.token.accessToken);
     sessionStorage.setItem("userLogged", response.data.isSuccess);
     sessionStorage.setItem("userName", response.data.fullName);
+    sessionStorage.setItem("userId", response.data.userId);
     console.log(response);
     return response;
   } else {
@@ -33,4 +34,5 @@ export const logout = () => {
   sessionStorage.removeItem("userToken");
   sessionStorage.removeItem("userLogged");
   sessionStorage.removeItem("userName");
+  sessionStorage.removeItem("userId");
 };

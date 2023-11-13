@@ -1,21 +1,21 @@
 import React from "react";
+//Bootstrap
 import Form from "react-bootstrap/Form";
 //Formik
 import { useField } from "formik";
 
-const CheckInput = ({ ...props }) => {
+const TextFieldArea = ({ ...props }) => {
   const [field, meta] = useField(props.name);
 
   return (
-    <Form.Group>
-      <Form.Check
+    <Form.Group className="text-field" data-bs-theme="dark">
+      <Form.Label htmlFor={field.name} className="form-label">
+        {props.label}
+      </Form.Label>
+      <Form.Control
         {...field}
         {...props}
-        htmlFor={field.name}
-        type={props.type}
-        id={`default-${props.type}`}
-        label={props.label}
-        style={{ color: "#fff" }}
+        as="textarea"
         isInvalid={meta.touched && !!meta.error}
       />
       {meta.error && meta.touched && (
@@ -27,4 +27,4 @@ const CheckInput = ({ ...props }) => {
   );
 };
 
-export default CheckInput;
+export default TextFieldArea;

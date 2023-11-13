@@ -1,37 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+//Components
+import AcceptAlarmForm from "./AcceptAlarmForm";
 
 const AcceptAlarm = ({ ...props }) => {
   return (
     <Modal
       {...props}
-      size="sm"
+      size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
       className="modal-message"
       data-bs-theme="dark"
+      backdrop="static"
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.headermessage}
+          Validar alarma
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form.Group>
-          <Form.Label>{props.label}</Form.Label>
-          <Form.Control as="textarea" />
-        </Form.Group>
+        <AcceptAlarmForm />
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="main" onClick={props.btnaction}>
-          {props.btntext}
+      {/* <Modal.Footer>
+        <Button variant="main" type="submit">
+          Aceptar
         </Button>
-        <Button variant="main" onClick={props.btncancel}>
+        <Button variant="main" onClick={props.onHide}>
           Cancelar
         </Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   );
 };

@@ -6,12 +6,13 @@ import {
   alarmAttachments,
   alarmData,
   validateCurrentAlarm,
+  alarmStatus,
 } from "../actions/alarmsActions";
 
 const initialState = {
   loading: false,
   status: "idle",
-  alarmNotification: "",
+  alarmNotification: [],
   alarms: [],
   alarmsCount: "",
   alarmsPages: "",
@@ -23,9 +24,6 @@ export const alarmsSlice = createSlice({
   name: "alarms",
   initialState,
   reducers: {
-    setAlarmNotification(state, action) {
-      return { alarmNotification: action.payload };
-    },
     setNewAlarm(state, action) {
       return { alarmInfo: action.payload };
     },
@@ -94,16 +92,23 @@ export const alarmsSlice = createSlice({
       .addCase(validateCurrentAlarm.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
+      })
+      .addCase(alarmStatus.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(alarmStatus.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(alarmStatus.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
       });
   },
 });
 
 export const { reducer } = alarmsSlice;
-export const {
-  setAlarmNotification,
-  setNewAlarm,
-  setAlarmsCount,
-  setAlarmsPages,
-  clearAlarmFiles,
-} = alarmsSlice.actions;
+export const { setNewAlarm, setAlarmsCount, setAlarmsPages, clearAlarmFiles } =
+  alarmsSlice.actions;
 export default reducer;

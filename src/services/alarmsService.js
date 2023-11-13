@@ -2,6 +2,7 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BASE_API;
 const token = sessionStorage.getItem("userToken");
+const userId = sessionStorage.getItem("userId");
 
 export const getTodayAlarms = async (
   pageNumber,
@@ -70,22 +71,48 @@ export const getAlarmData = async (code) => {
   }
 };
 
-export const validateAlarm = async (alarmId, userId, comments) => {
+export const validateAlarm = async (alarmId, comments, devices) => {
   const response = await axios({
     method: "POST",
-    url: `${baseURL}/validatealarm`,
+    url: `${baseURL}/seproban/sendtoseproban`,
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: {
+    data: {
       alarmId: alarmId,
       userId: userId,
       comments: comments,
+      devices: devices,
     },
   });
   if (response.data.isSuccess) {
     return response;
   } else {
     return console.log(response);
+  }
+};
+
+export const setAlarmStatus = async (alarmId, statusId, comments) => {
+  try {
+    const response = await axios({
+      method: "PATCH",
+      url: `${baseURL}/alarm/setalarmstatus`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        alarmId: alarmId,
+        statusId: statusId,
+        userId: userId,
+        comments: comments,
+      },
+    });
+    if (response.data.isSuccess) {
+      return response;
+    } else {
+      return console.log(response);
+    }
+  } catch (error) {
+    console.log(error.message);
   }
 };

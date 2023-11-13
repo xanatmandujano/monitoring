@@ -8,7 +8,7 @@ const AlarmNotification = ({ ...props }) => {
       <Toast
         show={props.toastShow}
         autohide
-        delay={100_000}
+        delay={10000}
         onClose={props.hideToast}
         key={"Danger"}
         bg={"danger"}

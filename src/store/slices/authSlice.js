@@ -15,6 +15,9 @@ const userName = sessionStorage.getItem("userName")
 const isLoggedIn = sessionStorage.getItem("userLogged")
   ? sessionStorage.getItem("userLogged")
   : false;
+const userId = sessionStorage.getItem("userId")
+  ? sessionStorage.getItem("userId")
+  : null;
 
 const initialState = {
   loading: false,
@@ -23,6 +26,7 @@ const initialState = {
   email,
   userName,
   userToken,
+  userId,
 };
 
 export const authSlice = createSlice({

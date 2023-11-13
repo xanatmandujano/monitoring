@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const AlarmCard = ({ ...props }) => {
   const dateTime = (creationDate) => {
     const alarmDateTime = new Date(creationDate);
-    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+    const alarmTime = alarmDateTime.toLocaleTimeString("es-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -14,7 +14,11 @@ const AlarmCard = ({ ...props }) => {
   };
 
   return (
-    <Card className="alarm-card">
+    <Card
+      className={`alarm-card ${props.classN}`}
+      style={props.display}
+      id={props.activeId}
+    >
       <Card.Body>
         <Card.Title>
           <img src={props.alarmIcon} width="20px" height="20px" />
