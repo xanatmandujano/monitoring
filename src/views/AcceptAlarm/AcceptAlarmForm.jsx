@@ -69,12 +69,12 @@ const AcceptAlarmForm = () => {
         devices: [
           {
             deviceId: values.normalDevices[0],
-            quadrants: values.singleQuad,
+            quadrants: null,
           },
-          {
-            deviceId: values.quadDevices[0],
-            quadrants: values.quads,
-          },
+          // {
+          //   deviceId: values.quadDevices[0],
+          //   quadrants: values.quads,
+          // },
           {
             deviceId: values.doubleDevices[0],
             quadrants: values.double,
@@ -103,7 +103,7 @@ const AcceptAlarmForm = () => {
           normalDevices: [],
           doubleDevices: [],
           quadDevices: [],
-          singleQuad: [0],
+          singleQuad: null,
           quads: [],
           double: [],
         }}

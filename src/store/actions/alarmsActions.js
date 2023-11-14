@@ -97,7 +97,7 @@ export const validateCurrentAlarm = createAsyncThunk(
   async ({ alarmId, comments, devices }, thunkAPI) => {
     try {
       const data = await validateAlarm(alarmId, comments, devices);
-      //console.log(data);
+      console.log(data);
       return data;
     } catch (error) {
       console.log(error);

@@ -18,7 +18,6 @@ const AlarmsSidebar = () => {
   const dispatch = useDispatch();
   const [show, setShow] = useState("none");
   const [prevAlarm, setPrevAlarm] = useState("");
-  const location = useLocation();
   const { idVideo } = useParams();
   const latestAlarm = useRef();
   latestAlarm.current = prevAlarm;
