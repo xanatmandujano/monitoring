@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { todayAlarms } from "../../store/actions/alarmsActions";
 import { alarmNotificationHub } from "../../store/actions/notificationActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { HubConnectionBuilder } from "@microsoft/signalr";
+import { getAlarmData } from "../../services/alarmsService";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 //React-router-dom
@@ -11,6 +13,7 @@ import { useLocation, useParams } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
+import NewAlarmCard from "./NewAlarmCard";
 
 const AlarmsSidebar = () => {
   const { alarms, alarmsCount } = useSelector((state) => state.alarms);
@@ -33,18 +36,14 @@ const AlarmsSidebar = () => {
       .then(() => {
         //setShow("block");
         setPrevAlarm(newAlarm);
-      });
-    dispatch(
-      todayAlarms({
-        pageNumber: 1,
-        pageSize: 0,
-        columnName: "creationDate",
-        sortDirection: "desc",
-      })
-    )
-      .unwrap()
-      .then(() => {
-        console.log("Today alarms succedded");
+        dispatch(
+          todayAlarms({
+            pageNumber: 1,
+            pageSize: 0,
+            columnName: "creationDate",
+            sortDirection: "desc",
+          })
+        ).unwrap();
       });
   }, [dispatch, newAlarm]);
 
@@ -71,6 +70,10 @@ const AlarmsSidebar = () => {
       return `seproban/${alarmId}`;
     } else if (alarmTypeId === 2) {
       return alarmId;
+    } else if (alarmTypeId === 3) {
+      return `blackList/${alarmId}`;
+    } else if (alarmTypeId === 4) {
+      return `whiteList/${alarmId}`;
     }
   };
 
@@ -80,7 +83,7 @@ const AlarmsSidebar = () => {
         <SearchField changeEvent={handleSearch} disabled={alarms > 0} />
       </div>
       <Container className="alarms-side-bar">
-        {newAlarm && (
+        {/* {newAlarm && (
           <AlarmCard
             key={newAlarm.alarmId}
             alarmCode={newAlarm.alarmCode}
@@ -94,7 +97,8 @@ const AlarmsSidebar = () => {
             display={{ display: show }}
             classN="newAlarm"
           />
-        )}
+        )} */}
+
         {filteredAlarms &&
           filteredAlarms.map((item) => (
             <AlarmCard

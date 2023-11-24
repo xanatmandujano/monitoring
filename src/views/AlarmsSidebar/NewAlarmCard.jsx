@@ -18,55 +18,62 @@ const NewAlarmCard = () => {
   const dispatch = useDispatch();
   const { newAlarm } = useSelector((state) => state.notifications);
 
-  // useEffect(() => {
-  //   dispatch(clearMessage());
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://192.168.1.120:8091/hubs/notifications")
-  //     .withAutomaticReconnect()
-  //     .build();
-
-  //   if (newConnection) {
-  //     newConnection
-  //       .start()
-  //       .then(() => {
-  //         console.log("Alarm card conected!");
-  //         newConnection.on("ReceiveMessage", (message) => {
-  //           let newAlarm = JSON.parse(message.message);
-  //           let newAlarmCode = newAlarm.Code;
-
-  //           const alarmData = async () => {
-  //             try {
-  //               const data = await getAlarmData(newAlarmCode).then((res) => {
-  //                 if (res.data.isSuccess) {
-  //                   const updatedAlarms = [...latestAlarm.current];
-  //                   updatedAlarms.push(res.data.result);
-
-  //                   setAlarm(updatedAlarms);
-  //                   setShow("block");
-  //                 }
-  //               });
-  //             } catch (error) {
-  //               console.log(error.message);
-  //             }
-  //           };
-
-  //           alarmData();
-  //         });
-  //       })
-  //       .catch((e) => console.log(`Connection failed: ${e}`));
-  //   }
-  // }, [dispatch]);
-
   useEffect(() => {
     dispatch(clearMessage());
-    dispatch(
-      alarmNotificationHub({
-        url: "https://192.168.1.120:8091/hubs/notifications",
-      })
-    ).then(() => {
-      setShow("block");
-    });
-  }, [dispatch, newAlarm]);
+    const newConnection = new HubConnectionBuilder()
+      .withUrl("https://192.168.1.120:8091/hubs/notifications")
+      .withAutomaticReconnect()
+      .build();
+
+    if (newConnection) {
+      newConnection
+        .start()
+        .then(() => {
+          console.log("Alarm card conected!");
+          newConnection.on("ReceiveMessage", (message) => {
+            let newAlarm = JSON.parse(message.message);
+            let newAlarmCode = newAlarm.Code;
+
+            const alarmData = async () => {
+              try {
+                const data = await getAlarmData(newAlarmCode).then((res) => {
+                  if (res.data.isSuccess) {
+                    const updatedAlarms = [...latestAlarm.current];
+                    updatedAlarms.push(res.data.result);
+
+                    let result = updatedAlarms.filter((item, index) => {
+                      return (
+                        updatedAlarms.indexOf(item.alarmId) === index.alarmId
+                      );
+                    });
+                    console.log(result);
+
+                    setAlarm(updatedAlarms);
+                    setShow("block");
+                  }
+                });
+              } catch (error) {
+                console.log(error.message);
+              }
+            };
+
+            alarmData();
+          });
+        })
+        .catch((e) => console.log(`Connection failed: ${e}`));
+    }
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   dispatch(clearMessage());
+  //   dispatch(
+  //     alarmNotificationHub({
+  //       url: "https://192.168.1.120:8091/hubs/notifications",
+  //     })
+  //   ).then(() => {
+  //     setShow("block");
+  //   });
+  // }, [dispatch, newAlarm]);
 
   const alarmType = (alarmTypeId, alarmId) => {
     if (alarmTypeId === 1) {
@@ -78,10 +85,10 @@ const NewAlarmCard = () => {
 
   return (
     <>
-      {newAlarm &&
-        newAlarm.map((item) => (
+      {alarm &&
+        alarm.map((item) => (
           <AlarmCard
-            key={item.alarmId}
+            key={item.alarmId + 1}
             alarmCode={item.alarmCode}
             alarmIcon={item.alarmTypeIcon}
             alarmDescription={item.alarmDescription}
@@ -94,17 +101,17 @@ const NewAlarmCard = () => {
           />
         ))}
 
-      {/* {newAlarm && (
+      {/* {alarm && (
         <AlarmCard
-          key={newAlarm.alarmId}
-          alarmCode={newAlarm.alarmCode}
-          alarmIcon={newAlarm.alarmTypeIcon}
-          alarmDescription={newAlarm.alarmDescription}
-          locationInfo={newAlarm.locationInfo}
-          deviceCode={newAlarm.deviceCode}
-          deviceIPAddress={newAlarm.deviceIPAddress}
-          creationDate={newAlarm.creationDate}
-          alarmParams={alarmType(newAlarm.alarmTypeId, newAlarm.alarmId)}
+          key={alarm.alarmId}
+          alarmCode={alarm.alarmCode}
+          alarmIcon={alarm.alarmTypeIcon}
+          alarmDescription={alarm.alarmDescription}
+          locationInfo={alarm.locationInfo}
+          deviceCode={alarm.deviceCode}
+          deviceIPAddress={alarm.deviceIPAddress}
+          creationDate={alarm.creationDate}
+          alarmParams={alarmType(alarm.alarmTypeId, alarm.alarmId)}
           display={{ display: show }}
         />
       )} */}

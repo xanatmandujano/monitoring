@@ -20,7 +20,7 @@ export const alarmNotificationHub = createAsyncThunk(
         newConnection
           .start()
           .then(() => {
-            console.log("Connected with store!");
+            //console.log("Connected with store!");
             newConnection.on("ReceiveMessage", (message) => {
               let newAlarm = JSON.parse(message.message);
               let newAlarmCode = newAlarm.Code;
@@ -30,7 +30,7 @@ export const alarmNotificationHub = createAsyncThunk(
                   const data = await getAlarmData(newAlarmCode).then((res) => {
                     if (res.data.isSuccess) {
                       thunkAPI.dispatch(setNewAlarm(res.data.result));
-                      //return res.data.result;
+                      return res.data.result;
                     }
                   });
                 } catch (error) {

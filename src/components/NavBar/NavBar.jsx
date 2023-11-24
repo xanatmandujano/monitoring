@@ -81,10 +81,10 @@ const NavBar = () => {
 
         <ModalMessage
           show={modalShow}
+          btnaction={logoutUser}
           onHide={() => setModalShow(false)}
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"
-          btnaction={logoutUser}
           btntext="Aceptar"
         />
       </Navbar>

@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 //Actions
 import {
   todayAlarms,
-  alarmAttachments,
   alarmData,
+  validateSeprobanAlarm,
   validateCurrentAlarm,
   alarmStatus,
 } from "../actions/alarmsActions";
@@ -55,7 +55,8 @@ export const alarmsSlice = createSlice({
       })
       //Alarm data
       .addCase(alarmData.pending, (state, action) => {
-        (state.status = "loading"), (state.loading = true);
+        state.status = "loading";
+        state.loading = true;
       })
       .addCase(alarmData.fulfilled, (state, action) => {
         state.status = "succedded";
@@ -66,21 +67,20 @@ export const alarmsSlice = createSlice({
         state.status = "rejected";
         state.loading = false;
       })
-      //Get alarm attachments
-      .addCase(alarmAttachments.pending, (state, action) => {
+      //Validate Seproban alarm
+      .addCase(validateSeprobanAlarm.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(alarmAttachments.fulfilled, (state, action) => {
+      .addCase(validateSeprobanAlarm.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
-        state.alarmFiles = action.payload;
       })
-      .addCase(alarmAttachments.rejected, (state, action) => {
+      .addCase(validateSeprobanAlarm.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       })
-      //Validate alarm
+      //Validate image alarm
       .addCase(validateCurrentAlarm.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
@@ -93,6 +93,7 @@ export const alarmsSlice = createSlice({
         state.status = "rejected";
         state.loading = false;
       })
+      //Alarm status
       .addCase(alarmStatus.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;

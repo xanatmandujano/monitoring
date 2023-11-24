@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from "react";
-//redux
+import React, { useState, useEffect } from "react";
+//Redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-//React router dom
+//React-router-dom
 import { useParams } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
+import Image from "react-bootstrap/Image";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 //Components
-import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
+import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
 
-const AlarmDetailsVideo = () => {
-  const [loader, setLoader] = useState(false);
+const FaceRecognitionAlarm = () => {
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
-
   const { idVideo } = useParams();
-
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
 
@@ -39,59 +37,36 @@ const AlarmDetailsVideo = () => {
       .then(() => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
+    //console.log(id);
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
-    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const alarmTime = alarmDateTime.toLocaleDateString("es-MX");
     return alarmTime;
   };
 
   return (
-    <Container fluid className="alarm-details">
+    <Container className="alarm-details" fluid>
       <div className="btns-container">
         <Button variant="main" size="sm" onClick={() => setShow(true)}>
-          Validar
+          Aceptar
         </Button>
         <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
           Descartar
         </Button>
       </div>
-
       <Row>
         <Col sm={9} className="main-image">
-          <Tabs
-            defaultActiveKey={
-              alarmFiles && alarmFiles.attachments[0].deviceId + 1
-            }
-            id="fill-tab-example"
-            className="mb-3"
-            data-bs-theme="dark"
-            fill
-          >
-            {alarmFiles &&
-              alarmFiles.attachments.map((item) => (
-                <Tab
-                  eventKey={item.deviceId + 1}
-                  title={item.deviceName}
-                  key={item.attachmentName}
-                >
-                  <video
-                    autoPlay
-                    loop
-                    height="100%"
-                    width="100%"
-                    controls
-                    src={item.attachmentValue}
-                  >
-                    Tu navegador no admite el elemento <code>video</code>
-                  </video>
-                </Tab>
-              ))}
-          </Tabs>
+          {alarmFiles ? (
+            <Image
+              src={`${alarmFiles.attachments[0].attachmentValue}`}
+              alt="rostro"
+              width="100%"
+            />
+          ) : (
+            <p>No se encontró información</p>
+          )}
         </Col>
         <Col sm={3}>
           <div className="alarm-data">
@@ -101,13 +76,12 @@ const AlarmDetailsVideo = () => {
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
                 </p>
                 <p>
-                  Dispositivo: <br />
-                  {`${alarmFiles.deviceCode}`}
+                  Información registrada: <br />
+                  {alarmFiles.additionalInformation} <br />
                 </p>
-                <p>
-                  Dirección IP: <br />
-                  {`${alarmFiles.deviceIPAddress}`}
-                </p>
+                {/* <p>
+                  {alarmFiles.comments} <br />
+                </p> */}
                 <p>
                   Ubicación: <br />
                   {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
@@ -116,6 +90,13 @@ const AlarmDetailsVideo = () => {
                   Hora de la alarma: <br />
                   {dateTime()}
                 </p>
+                <div className="face-container">
+                  <img
+                    src={`${alarmFiles.attachments[1].attachmentValue}`}
+                    alt="Rostro"
+                    className="face-image"
+                  />
+                </div>
               </>
             ) : (
               <p>No se encontró información</p>
@@ -124,10 +105,10 @@ const AlarmDetailsVideo = () => {
         </Col>
       </Row>
 
-      <AcceptAlarm show={show} onHide={() => setShow(false)} />
+      <AcceptAlarmFR show={show} onHide={() => setShow(false)} />
       <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
     </Container>
   );
 };
 
-export default AlarmDetailsVideo;
+export default FaceRecognitionAlarm;

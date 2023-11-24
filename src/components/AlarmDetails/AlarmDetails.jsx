@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmAttachments } from "../../store/actions/alarmsActions";
+import { alarmStatus } from "../../store/actions/alarmsActions";
+import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React router dom
 import { useParams } from "react-router-dom";
@@ -12,24 +13,33 @@ import { Row, Col } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+//Components
+import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
+import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
   const [images, setImages] = useState([]);
   const [urls, setUrls] = useState([]);
+  const [show, setShow] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
-  //let location = useLocation();
-  //let alarmID = location.state;
-  const { id } = useParams();
+  const { idVideo } = useParams();
 
   const dispatch = useDispatch();
-  const { alarmFiles } = useSelector((state) => state.alarms);
+  const { alarmFiles } = useSelector((state) => state.attachments);
 
   useEffect(() => {
     dispatch(clearMessage());
-    dispatch(alarmAttachments({ alarmId: id })).unwrap();
-    //console.log(id);
-  }, [id, dispatch]);
+    dispatch(
+      alarmStatus({
+        alarmId: idVideo,
+        statusId: 2,
+        comments: "",
+      })
+    ).unwrap();
+    dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+  }, [idVideo, dispatch]);
 
   // useEffect(() => {
   //   const findImages = () => {
@@ -61,10 +71,10 @@ const AlarmDetails = () => {
   return (
     <Container className="alarm-details" fluid>
       <div className="btns-container">
-        <Button variant="main" size="sm">
+        <Button variant="main" size="sm" onClick={() => setShow(true)}>
           Aceptar
         </Button>
-        <Button variant="main" size="sm">
+        <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
           Descartar
         </Button>
       </div>
@@ -131,6 +141,9 @@ const AlarmDetails = () => {
           </div>
         </Col>
       </Row>
+
+      <AcceptAlarmFR show={show} onHide={() => setShow(false)} />
+      <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
     </Container>
   );
 };

@@ -11,13 +11,14 @@ import Root from "./routes/Root.jsx";
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx";
 import Login from "./views/Login/Login";
 import AlarmsPanel from "./views/AlarmsPanel/AlarmsPanel";
-import TestElement from "./views/TestElement/TestElement";
+import TestElement from "./views/TestElement/TestElement.jsx";
 //Redux
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Private from "./routes/Private";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
+import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
 
 const router = createHashRouter([
   {
@@ -35,13 +36,23 @@ const router = createHashRouter([
             errorElement: <ErrorPage />,
             children: [
               {
-                path: ":id",
+                path: ":idVideo",
                 element: <AlarmDetails />,
                 errorElement: <ErrorPage />,
               },
               {
                 path: "seproban/:idVideo",
                 element: <AlarmDetailsVideo />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "whiteList/:idVideo",
+                element: <FaceRecognitionAlarm />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "blackList/:idVideo",
+                element: <FaceRecognitionAlarm />,
                 errorElement: <ErrorPage />,
               },
             ],

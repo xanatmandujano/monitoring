@@ -92,6 +92,26 @@ export const validateAlarm = async (alarmId, comments, devices) => {
   }
 };
 
+export const validateImageAlarm = async (alarmId, comments) => {
+  const response = await axios({
+    method: "POST",
+    url: `${baseURL}/alarm/validatealarm`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      alarmId: alarmId,
+      userId: userId,
+      comments: comments,
+    },
+  });
+  if (response.data.isSuccess) {
+    return response;
+  } else {
+    return console.log(response);
+  }
+};
+
 export const setAlarmStatus = async (alarmId, statusId, comments) => {
   try {
     const response = await axios({

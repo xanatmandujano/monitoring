@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-//Components
-import AcceptAlarmForm from "./AcceptAlarmForm";
+import AcceptFRForm from "./AcceptFRForm";
 
-const AcceptAlarm = ({ ...props }) => {
+const AcceptAlarmFR = ({ ...props }) => {
   return (
     <Modal
       {...props}
@@ -21,10 +19,10 @@ const AcceptAlarm = ({ ...props }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AcceptAlarmForm onHide={props.onHide} />
+        <AcceptFRForm onHide={props.onHide} />
       </Modal.Body>
     </Modal>
   );
 };
 
-export default AcceptAlarm;
+export default AcceptAlarmFR;

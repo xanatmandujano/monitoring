@@ -20,7 +20,7 @@ const DiscardAlarm = ({ ...props }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <DiscardAlarmForm />
+        <DiscardAlarmForm onHide={props.onHide} />
       </Modal.Body>
     </Modal>
   );

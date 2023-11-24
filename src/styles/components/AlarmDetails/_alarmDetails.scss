@@ -13,7 +13,7 @@
     background-color: gray;
     padding: 0.5rem;
     margin-top: 2rem;
-    height: 92%;
+    height: 95%;
     border-radius: 15px;
     color: $tertiary-color;
   }
@@ -31,5 +31,16 @@
 
   .tab-image {
     width: 100%;
+  }
+
+  .face-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    .face-image {
+      width: 75%;
+      border-radius: 15px;
+    }
   }
 }

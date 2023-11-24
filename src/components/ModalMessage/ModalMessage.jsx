@@ -18,13 +18,13 @@ const ModalMessage = ({ ...props }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>{props.message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="main" onClick={props.btnaction}>
+      <Modal.Footer className="btns-container">
+        <Button variant="outline-light" onClick={props.onHide} size="sm">
+          Cancelar
+        </Button>
+        <Button variant="main" onClick={props.btnaction} size="sm">
           {props.btntext}
         </Button>
-        {/* <Button variant="main" onClick={props.onHide}>
-          Cancelar
-        </Button> */}
       </Modal.Footer>
     </Modal>
   );

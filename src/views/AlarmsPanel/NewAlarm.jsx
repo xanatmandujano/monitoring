@@ -13,8 +13,6 @@ const NewAlarm = () => {
   const [show, setShow] = useState(false);
   const [alarm, setAlarm] = useState("");
   let [alarmCode, setAlarmCode] = useState("");
-  const latestAlarm = useRef();
-  latestAlarm.current = alarm;
 
   const dispatch = useDispatch();
 
@@ -29,7 +27,7 @@ const NewAlarm = () => {
       newConnection
         .start()
         .then(() => {
-          console.log("Conected!");
+          //console.log("Conected!");
         })
         .catch((e) => console.log(`Connection failed: ${e}`));
 

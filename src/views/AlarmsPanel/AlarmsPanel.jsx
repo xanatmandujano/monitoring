@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { useDispatch, useSelector } from "react-redux";
 //React router dom
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+//Formik & yup
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus } from "../../store/actions/alarmsActions";
+import { validateCurrentAlarm } from "../../store/actions/alarmsActions";
 //React-router-dom
 import { Navigate, useNavigate } from "react-router-dom";
 //Components
@@ -12,25 +13,28 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Loader from "../../components/Loader/Loader";
 
-const DiscardAlarmForm = ({ onHide }) => {
+const AcceptFRForm = ({ onHide }) => {
+  //State
   const [loader, setLoader] = useState(false);
+  const [show, setShow] = useState("none");
   const [disabled, setDisabled] = useState(false);
-  const dispatch = useDispatch();
-  const { alarmFiles } = useSelector((state) => state.attachments);
-  const navigate = useNavigate();
 
-  const discardAlarm = (values) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { alarmFiles } = useSelector((state) => state.alarms);
+
+  const sendAlarm = (values) => {
     setLoader(true);
     setDisabled(true);
     dispatch(
-      alarmStatus({
-        alarmId: alarmFiles.alarmId,
-        statusId: 4,
+      validateCurrentAlarm({
+        alarmId: alarmFiles && alarmFiles.alarmId,
         comments: values.comments,
       })
     )
       .unwrap()
       .then(() => {
+        console.log("Succedded");
         setLoader(false);
         setDisabled(false);
         navigate("/alarms-panel");
@@ -38,7 +42,6 @@ const DiscardAlarmForm = ({ onHide }) => {
       })
       .catch(() => {
         setLoader(false);
-        setDisabled(false);
       });
   };
 
@@ -52,7 +55,7 @@ const DiscardAlarmForm = ({ onHide }) => {
         initialValues={{ comments: "" }}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
-          discardAlarm(values);
+          sendAlarm(values);
         }}
       >
         {(props) => (
@@ -63,12 +66,11 @@ const DiscardAlarmForm = ({ onHide }) => {
               type="text"
               value={props.values.comments}
               onChange={props.handleChange}
-              placeholder="La alarma se descartó por..."
+              placeholder="La alarma se validó por..."
               disabled={disabled}
               readOnly={disabled}
               errors="Escriba un comentario"
             />
-
             <div className="btns-container">
               <Button variant="outline-light" onClick={onHide}>
                 Cancelar
@@ -89,4 +91,4 @@ const DiscardAlarmForm = ({ onHide }) => {
   );
 };
 
-export default DiscardAlarmForm;
+export default AcceptFRForm;
