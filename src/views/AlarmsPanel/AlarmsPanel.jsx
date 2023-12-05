@@ -11,6 +11,7 @@ import Col from "react-bootstrap/Col";
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
 import NewAlarm from "./NewAlarm";
+import AlarmsHistory from "../AlarmsHistory/AlarmsHistory";
 
 const AlarmsPanel = () => {
   const { idVideo } = useParams();

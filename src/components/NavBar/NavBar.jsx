@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 //Bootstrap
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -8,8 +8,8 @@ import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ModalMessage from "../ModalMessage/ModalMessage";
 //Logo
-import Banbajio from "../../assets/images/Banbajio.png";
-import Caelum from "../../assets/images/Caelum.png";
+import logo from "/config.json";
+
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
@@ -42,17 +42,33 @@ const NavBar = () => {
     <>
       <Navbar key="lg" expand="lg" className="nav-bar-main">
         <Container fluid>
-          <Navbar.Brand href="#">
-            <img src={Banbajio} alt="logo-banbajio" width={100} />
+          <Navbar.Brand href="#alarms-panel">
+            <img src={logo.assets.logo} alt="logo-banbajio" width={100} />
           </Navbar.Brand>
-          <Navbar.Brand href="#" className="page-title">
-            Panel de alarmas
-          </Navbar.Brand>
+          {userLogged ? (
+            <>
+              <Nav.Link href="#alarms-panel" className="page-title">
+                Panel de alarmas
+              </Nav.Link>
+              <Nav.Link
+                href="#alarms-history"
+                style={{ color: "white", marginLeft: "1rem" }}
+                className="page-title"
+              >
+                Historial de alarmas
+              </Nav.Link>
+            </>
+          ) : (
+            <Nav.Link href="#" className="page-title">
+              Panel de alarmas
+            </Nav.Link>
+          )}
+
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${"lg"}`} />
           <Navbar.Offcanvas
             id={`offcanvasNavbar-expand-lg`}
             aria-labelledby={`offcanvasNavbarLabel-expand-lg`}
-            placement="end"
+            placement="start"
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title id={`offcanvasNavbarLabel-expand-lg`}>
@@ -65,7 +81,7 @@ const NavBar = () => {
                   className="justify-content-end flex-grow-1 pe-3"
                   style={{ alignItems: "center" }}
                 >
-                  <p className="user-name">{userName}</p>
+                  <Nav.Item className="user-name">{userName}</Nav.Item>
                   <Button
                     onClick={() => setModalShow(true)}
                     variant="main"

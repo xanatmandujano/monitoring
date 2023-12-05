@@ -8,6 +8,7 @@ import {
 } from "../slices/alarmsSlice";
 //Services
 import {
+  getAlarmsHistory,
   getTodayAlarms,
   getAlarmData,
   validateAlarm,
@@ -32,6 +33,35 @@ export const todayAlarms = createAsyncThunk(
       thunkAPI.dispatch(setAlarmsCount(data.totalRecords));
       //thunkAPI.dispatch(setAlarmsPages(data.totalPages));
 
+      return data.result;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const alarmsHistory = createAsyncThunk(
+  "alarms/alarmsHistory",
+  async (
+    { pageNumber, pageSize, columnName, sortDirection, searchText },
+    thunkAPI
+  ) => {
+    try {
+      const data = await getAlarmsHistory(
+        pageNumber,
+        pageSize,
+        columnName,
+        sortDirection,
+        searchText
+      );
       return data.result;
     } catch (error) {
       console.log(error);

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import url from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { clearMessage } from "../../store/slices/messageSlice";
@@ -14,6 +15,7 @@ const NewAlarmCard = () => {
   //let [alarmCode, setAlarmCode] = useState("");
   const latestAlarm = useRef();
   latestAlarm.current = alarm;
+  const hubUrl = url.server.apiUrl;
 
   const dispatch = useDispatch();
   const { newAlarm } = useSelector((state) => state.notifications);
@@ -21,7 +23,7 @@ const NewAlarmCard = () => {
   useEffect(() => {
     dispatch(clearMessage());
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://192.168.1.120:8091/hubs/notifications")
+      .withUrl(`${hubUrl}/hubs/notifications`)
       .withAutomaticReconnect()
       .build();
 

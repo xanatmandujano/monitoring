@@ -21,14 +21,14 @@ const AcceptFRForm = ({ onHide }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { alarmFiles } = useSelector((state) => state.alarms);
+  const { alarmFiles } = useSelector((state) => state.attachments);
 
   const sendAlarm = (values) => {
     setLoader(true);
     setDisabled(true);
     dispatch(
       validateCurrentAlarm({
-        alarmId: alarmFiles && alarmFiles.alarmId,
+        alarmId: alarmFiles.alarmId,
         comments: values.comments,
       })
     )

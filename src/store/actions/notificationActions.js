@@ -24,6 +24,7 @@ export const alarmNotificationHub = createAsyncThunk(
             newConnection.on("ReceiveMessage", (message) => {
               let newAlarm = JSON.parse(message.message);
               let newAlarmCode = newAlarm.Code;
+              //console.log(newAlarm);
 
               const alarmData = async () => {
                 try {

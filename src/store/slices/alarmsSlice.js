@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
 import {
+  alarmsHistory,
   todayAlarms,
   alarmData,
   validateSeprobanAlarm,
@@ -14,6 +15,7 @@ const initialState = {
   status: "idle",
   alarmNotification: [],
   alarms: [],
+  allAlarms: [],
   alarmsCount: "",
   alarmsPages: "",
   alarmFiles: "",
@@ -39,6 +41,20 @@ export const alarmsSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      //Alarms history
+      .addCase(alarmsHistory.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(alarmsHistory.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+        state.allAlarms = action.payload;
+      })
+      .addCase(alarmsHistory.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
       //Get today alarms
       .addCase(todayAlarms.pending, (state, action) => {
         state.status = "loading";

@@ -1,7 +1,8 @@
 //Axios
 import axios from "axios";
+import url from "/config.json";
 
-const baseURL = import.meta.env.VITE_BASE_API;
+const baseURL = url.server.apiUrl;
 
 export const login = async (email, password) => {
   const response = await axios({

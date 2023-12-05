@@ -5,6 +5,7 @@ import { clearMessage } from "../../store/slices/messageSlice";
 //Hub
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { getAlarmData } from "../../services/alarmsService";
+import url from "/config.json";
 //Components
 import AlarmNotification from "../../components/AlarmNotification/AlarmNotification";
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
@@ -13,13 +14,14 @@ const NewAlarm = () => {
   const [show, setShow] = useState(false);
   const [alarm, setAlarm] = useState("");
   let [alarmCode, setAlarmCode] = useState("");
+  const hubUrl = url.server.apiUrl;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(clearMessage());
+    //dispatch(clearMessage());
     const newConnection = new HubConnectionBuilder()
-      .withUrl("https://192.168.1.120:8091/hubs/notifications")
+      .withUrl(`${hubUrl}/hubs/notifications`)
       .withAutomaticReconnect()
       .build();
 
@@ -27,13 +29,14 @@ const NewAlarm = () => {
       newConnection
         .start()
         .then(() => {
-          //console.log("Conected!");
+          console.log("Conected!");
         })
         .catch((e) => console.log(`Connection failed: ${e}`));
 
       newConnection.on("ReceiveMessage", (message) => {
         let newAlarm = JSON.parse(message.message);
         let newAlarmCode = newAlarm.Code;
+        console.log(newAlarm);
 
         const alarmData = async () => {
           try {

@@ -1,8 +1,36 @@
 import axios from "axios";
+import url from "/config.json";
 
-const baseURL = import.meta.env.VITE_BASE_API;
+const baseURL = url.server.apiUrl;
 const token = sessionStorage.getItem("userToken");
 const userId = sessionStorage.getItem("userId");
+
+export const getAlarmsHistory = async (
+  pageNumber,
+  pageSize,
+  columnName,
+  sortDirection,
+  searchText
+) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/alarm/getalarms`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+      columnName: columnName,
+      sortDirection: sortDirection,
+      searchText: searchText,
+    },
+  });
+  if (response.data.isSuccess) {
+    //console.log(response.data.result);
+    return response.data;
+  } else console.log(response);
+};
 
 export const getTodayAlarms = async (
   pageNumber,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import url from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { todayAlarms } from "../../store/actions/alarmsActions";
@@ -16,7 +17,7 @@ import SearchField from "../../components/SearchField/SearchField";
 import NewAlarmCard from "./NewAlarmCard";
 
 const AlarmsSidebar = () => {
-  const { alarms, alarmsCount } = useSelector((state) => state.alarms);
+  const { alarms } = useSelector((state) => state.alarms);
   const { newAlarm } = useSelector((state) => state.notifications);
   const dispatch = useDispatch();
   const [show, setShow] = useState("none");
@@ -24,18 +25,19 @@ const AlarmsSidebar = () => {
   const { idVideo } = useParams();
   const latestAlarm = useRef();
   latestAlarm.current = prevAlarm;
+  const hubUrl = url.server.apiUrl;
 
   useEffect(() => {
     dispatch(clearMessage());
     dispatch(
       alarmNotificationHub({
-        url: "https://192.168.1.120:8091/hubs/notifications",
+        url: `${hubUrl}/hubs/notifications`,
       })
     )
       .unwrap()
       .then(() => {
         //setShow("block");
-        setPrevAlarm(newAlarm);
+        //setPrevAlarm(newAlarm);
         dispatch(
           todayAlarms({
             pageNumber: 1,

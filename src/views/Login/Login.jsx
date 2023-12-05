@@ -88,9 +88,9 @@ const Login = () => {
               <Button
                 variant="main"
                 type="submit"
-                disabled={loader && <Loader />}
+                disabled={loader && <Loader size="sm" />}
               >
-                {loader ? <Loader /> : "Entrar"}
+                {loader ? <Loader size="sm" /> : "Entrar"}
               </Button>
             </div>
 
