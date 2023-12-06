@@ -2,34 +2,45 @@ import React, { useState } from "react";
 //Formik
 import { Form, Formik } from "formik";
 import * as yup from "yup";
+import FormikObserver from "../../components/FormikObserver/FormikObserver";
 //Components
-import TextField from "../../components/TextField/TextField";
-import Loader from "../../components/Loader/Loader";
+import TextFieldControl from "../../components/TextField/TextFieldControl";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import SelectField from "../../components/SelectField/SelectField";
 import { BsSearch } from "react-icons/bs";
-import { Row, Col } from "react-bootstrap";
 
 const SearchBar = ({ submit }) => {
-  const [loader, setLoader] = useState(false);
-
+  const [placeholder, setPlaceholder] = useState("");
   return (
-    <Container>
+    <>
       <Formik initialValues={{ search: "", filter: "" }} onSubmit={submit}>
         {(props) => (
-          <Form className="search-bar">
-            <TextField
-              //label="Búsqueda"
+          <Form className="search-field">
+            <FormikObserver
+              onChange={(values, initialValues) => {
+                if (values.values.filter === "creationDate") {
+                  setPlaceholder("aaaa/mm/dd");
+                } else {
+                  setPlaceholder("Búsqueda...");
+                }
+              }}
+            />
+            <TextFieldControl
               name="search"
               type="text"
               value={props.values.search}
               onChange={props.handleChange}
-              placeholder="Búsqueda..."
+              placeholder={placeholder}
             />
 
-            <SelectField value={props.values.filter} name="filter">
+            <SelectField
+              value={props.values.filter}
+              name="filter"
+              onChange={props.handleChange}
+              aria-label="Default select example"
+            >
+              <option value="">--Selecciona--</option>
               <option value="creationDate">Fecha</option>
               <option value="branchCode">Clave de sucursal</option>
               <option value="deviceIPAddress">IP del panel</option>
@@ -42,7 +53,7 @@ const SearchBar = ({ submit }) => {
           </Form>
         )}
       </Formik>
-    </Container>
+    </>
   );
 };
 

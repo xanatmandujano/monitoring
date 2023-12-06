@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 
 //React router dom
 import { RouterProvider, createHashRouter } from "react-router-dom";
+//Helmet provider
+import { HelmetProvider } from "react-helmet-async";
 //Styles
 import "./styles/styles.scss";
 //Views
@@ -92,8 +94,10 @@ const router = createHashRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );

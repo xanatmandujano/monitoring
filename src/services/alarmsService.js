@@ -27,7 +27,7 @@ export const getAlarmsHistory = async (
     },
   });
   if (response.data.isSuccess) {
-    //console.log(response.data.result);
+    //console.log(response);
     return response.data;
   } else console.log(response);
 };

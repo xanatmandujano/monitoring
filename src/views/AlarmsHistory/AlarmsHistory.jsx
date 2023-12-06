@@ -3,10 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { alarmsHistory } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-//Formik
-import { Form, Formik } from "formik";
 //React-router-dom
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useParams, Link } from "react-router-dom";
 //Components
 import AlarmHistoryData from "../../components/AlarmDetails/AlarmHistoryData";
 import Container from "react-bootstrap/Container";
@@ -28,7 +26,7 @@ const AlarmsHistory = () => {
         pageNumber: 1,
         pageSize: 50,
         columnName: "creationDate",
-        sortDirection: "asc",
+        sortDirection: "desc",
         searchText: "",
       })
     )
@@ -38,36 +36,30 @@ const AlarmsHistory = () => {
       });
   }, [dispatch]);
 
-  const alarmType = (alarmTypeId, alarmId) => {
-    if (alarmTypeId === 1) {
-      return `seproban/${alarmId}`;
-    } else if (alarmTypeId === 2) {
-      return alarmId;
-    } else if (alarmTypeId === 3) {
-      return `blackList/${alarmId}`;
-    } else if (alarmTypeId === 4) {
-      return `whiteList/${alarmId}`;
-    }
+  const search = (values) => {
+    dispatch(
+      alarmsHistory({
+        pageNumber: 1,
+        pageSize: 50,
+        columnName: values.filter,
+        sortDirection: "asc",
+        searchText: values.search,
+      })
+    ).unwrap();
   };
 
   return (
     <Container className="alarms-history">
-      <SearchBar />
+      <SearchBar
+        submit={async (values) => {
+          search(values);
+        }}
+      />
+
       {loader ? (
-        <Loader size="lg" />
+        <Loader />
       ) : !idVideo ? (
-        allAlarms &&
-        allAlarms.map((item) => (
-          <AlarmHistoryData
-            key={item.alarmId}
-            alarmDescription={item.alarmDescription}
-            branchCode={item.branchCode}
-            creationDate={item.creationDate}
-            alarmStatus={item.status}
-            alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
-            btnText="Ver alarma"
-          />
-        ))
+        <AlarmHistoryData alarms={allAlarms} />
       ) : (
         <Outlet />
       )}

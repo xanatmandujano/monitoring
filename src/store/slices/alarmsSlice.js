@@ -38,6 +38,9 @@ export const alarmsSlice = createSlice({
     clearAlarmFiles(state, action) {
       return { alarmFiles: "" };
     },
+    clearAllAlarms(state, action) {
+      return { allAlarms: "" };
+    },
   },
   extraReducers(builder) {
     builder
@@ -126,6 +129,11 @@ export const alarmsSlice = createSlice({
 });
 
 export const { reducer } = alarmsSlice;
-export const { setNewAlarm, setAlarmsCount, setAlarmsPages, clearAlarmFiles } =
-  alarmsSlice.actions;
+export const {
+  setNewAlarm,
+  setAlarmsCount,
+  setAlarmsPages,
+  clearAlarmFiles,
+  clearAllAlarms,
+} = alarmsSlice.actions;
 export default reducer;

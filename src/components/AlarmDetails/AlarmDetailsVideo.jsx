@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+//Helmet
+import { Helmet } from "react-helmet-async";
+import { webRTC } from "../../scripts/webrtc";
 //React router dom
 import { useParams } from "react-router-dom";
 //Bootstrap
@@ -20,6 +23,7 @@ const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [videoId, setVideoId] = useState("videoElement");
 
   const { idVideo } = useParams();
 
@@ -39,6 +43,8 @@ const AlarmDetailsVideo = () => {
       .then(() => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
+
+    webRTC("reowhite", "videoElement");
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
@@ -85,7 +91,8 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    src={item.attachmentValue}
+                    //src={item.attachmentValue}
+                    id={"videoElement"}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>

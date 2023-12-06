@@ -4,25 +4,23 @@ import Form from "react-bootstrap/Form";
 //Formik
 import { useField } from "formik";
 
-const SelectField = ({ ...props }) => {
+const TextFieldControl = ({ ...props }) => {
   const [field, meta] = useField(props.name);
+
   return (
-    <Form.Group style={{ marginRight: "1rem" }}>
-      <Form.Select
-        {...props}
+    <Form.Group data-bs-theme="dark" style={{ marginRight: "1rem" }}>
+      <Form.Control
         {...field}
+        {...props}
         isInvalid={meta.touched && !!meta.error}
-        size="md"
-        placeholder={props.placeholder}
-        data-bs-theme="dark"
-      ></Form.Select>
+      />
       {meta.error && meta.touched && (
         <Form.Control.Feedback type="invalid">
-          {meta.error}
+          {props.errors}
         </Form.Control.Feedback>
       )}
     </Form.Group>
   );
 };
 
-export default SelectField;
+export default TextFieldControl;
