@@ -15,6 +15,7 @@ import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import Nav from "react-bootstrap/Nav";
 //Components
 import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
@@ -23,7 +24,7 @@ const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
-  const [videoId, setVideoId] = useState("videoElement");
+  const [elementId, setElementId] = useState("");
 
   const { idVideo } = useParams();
 
@@ -44,7 +45,7 @@ const AlarmDetailsVideo = () => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
 
-    webRTC("reowhite", "videoElement");
+    //webRTC("videoElement");
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
@@ -54,6 +55,14 @@ const AlarmDetailsVideo = () => {
       minute: "2-digit",
     });
     return alarmTime;
+  };
+
+  const fetchRtcp = (k, rtcp) => {
+    // alarmFiles &&
+    //   alarmFiles.attachments.map((item) => {
+    //     webRTC(`${item.deviceId}`, k, item.attachmentValue);
+    //   });
+    webRTC(`${k}`, k, rtcp);
   };
 
   return (
@@ -70,20 +79,20 @@ const AlarmDetailsVideo = () => {
       <Row>
         <Col sm={9} className="main-image">
           <Tabs
-            defaultActiveKey={
-              alarmFiles && alarmFiles.attachments[0].deviceId + 1
-            }
+            defaultActiveKey={alarmFiles && alarmFiles.attachments[0].deviceId}
             id="fill-tab-example"
             className="mb-3"
             data-bs-theme="dark"
             fill
+            onSelect={(k) => fetchRtcp(k)}
           >
             {alarmFiles &&
               alarmFiles.attachments.map((item) => (
-                <Tab
-                  eventKey={item.deviceId + 1}
+                <Tab.Container
+                  eventKey={item.deviceId}
                   title={item.deviceName}
-                  key={item.attachmentName}
+                  key={item.deviceId}
+                  rtcp={item.attachmentValue}
                 >
                   <video
                     autoPlay
@@ -91,12 +100,11 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    //src={item.attachmentValue}
-                    id={"videoElement"}
+                    id={`${item.deviceId}`}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>
-                </Tab>
+                </Tab.Container>
               ))}
           </Tabs>
         </Col>

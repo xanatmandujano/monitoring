@@ -19,9 +19,9 @@ async function log(...msg) {
   return json;
 }*/
 
-export async function webRTC(streamName = null, elementName = null) {
+export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
   //if (!config) config = await getConfig();
-  const suuid = streamName || "reowhite";
+  //const suuid = streamName || "reowhite";
   log("client starting");
   //log(`server: http://${location.hostname}${config.server.encoderPort} stream: ${suuid}`);
   const stream = new MediaStream();
@@ -32,19 +32,19 @@ export async function webRTC(streamName = null, elementName = null) {
     const offer = await connection.createOffer();
     await connection.setLocalDescription(offer);
     const res = await fetch(
-      `https://192.168.1.120:8002/stream/receiver/${suuid}`,
+      `https://192.168.1.120:8002/stream/receiver/${deviceId}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         },
         body: new URLSearchParams({
-          suuid: `1`, //id de la camara
+          suuid: `${deviceId}`,
           data: `${btoa(connection.localDescription?.sdp || "")}`,
-          url: "rtsp://192.168.1.242:554/", //rtcp
         }),
       }
     );
+    console.log(res);
     const data = res && res.ok ? await res.text() : "";
     if (data.length === 0) {
       log("cannot connect:", `https://192.168.1.120:8002`);
@@ -72,7 +72,19 @@ export async function webRTC(streamName = null, elementName = null) {
     log("received track:", event.track, event.track.getSettings());
   };
 
-  const res = await fetch(`https://192.168.1.120:8002/stream/codec/${suuid}`);
+  const res = await fetch(
+    `https://192.168.1.120:8002/stream/codec/${deviceId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body: new URLSearchParams({
+        uuid: `${deviceId}`,
+        url: `${rtcp}`,
+      }),
+    }
+  );
   let streams = [];
   try {
     streams = res && res.ok ? await res.json() : [];
@@ -88,7 +100,7 @@ export async function webRTC(streamName = null, elementName = null) {
     connection.addTransceiver(s.Type, { direction: "sendrecv" });
   }
 
-  const channel = connection.createDataChannel(suuid, { maxRetransmits: 10 });
+  const channel = connection.createDataChannel(deviceId);
   channel.onmessage = (e) =>
     log("channel message:", channel.label, "payload", e.data);
   channel.onerror = (e) => log("channel error:", channel.label, "payload", e);
@@ -99,4 +111,4 @@ export async function webRTC(streamName = null, elementName = null) {
   };
 }
 
-window.onload = () => webRTC("reowhite", "videoElem");
+//window.onload = () => webRTC(2, "videoElem");
