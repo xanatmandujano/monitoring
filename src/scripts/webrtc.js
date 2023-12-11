@@ -1,3 +1,7 @@
+
+export var dataChannel = null;
+export var mediaST = null;
+export var peerConn = null;
 async function log(...msg) {
   //if (config?.client?.debug) {
   const dt = new Date();
@@ -13,24 +17,19 @@ async function log(...msg) {
   // }
 }
 
-/*async function getConfig() {
-  const res = await fetch('/config.json');
-  const json = await res.json();
-  return json;
-}*/
 
 export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
   //if (!config) config = await getConfig();
   //const suuid = streamName || "reowhite";
   log("client starting");
   //log(`server: http://${location.hostname}${config.server.encoderPort} stream: ${suuid}`);
-  const stream = new MediaStream();
-  const connection = new RTCPeerConnection();
-  connection.oniceconnectionstatechange = () =>
-    log("connection", connection.iceConnectionState);
-  connection.onnegotiationneeded = async () => {
-    const offer = await connection.createOffer();
-    await connection.setLocalDescription(offer);
+    peerConn = new RTCPeerConnection();
+    mediaST = new MediaStream();
+    peerConn.oniceconnectionstatechange = () =>
+        log("connection", peerConn.iceConnectionState);
+    peerConn.onnegotiationneeded = async () => {
+        const offer = await peerConn.createOffer();
+        await peerConn.setLocalDescription(offer);
     const res = await fetch(
       `https://192.168.1.120:8002/stream/receiver/${deviceId}`,
       {
@@ -40,7 +39,7 @@ export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
         },
         body: new URLSearchParams({
           suuid: `${deviceId}`,
-          data: `${btoa(connection.localDescription?.sdp || "")}`,
+            data: `${btoa(peerConn.localDescription?.sdp || "")}`,
         }),
       }
     );
@@ -49,7 +48,7 @@ export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
     if (data.length === 0) {
       log("cannot connect:", `https://192.168.1.120:8002`);
     } else {
-      connection.setRemoteDescription(
+        peerConn.setRemoteDescription(
         new RTCSessionDescription({
           type: "answer",
           sdp: atob(data),
@@ -58,14 +57,14 @@ export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
       log("negotiation start:", offer);
     }
   };
-  connection.ontrack = (event) => {
-    stream.addTrack(event.track);
+    peerConn.ontrack = (event) => {
+        mediaST.addTrack(event.track);
     const video =
       typeof elementName === "string"
         ? document.getElementById(elementName)
         : elementName;
     // @ts-ignore
-    if (video instanceof HTMLVideoElement) video.srcObject = stream;
+        if (video instanceof HTMLVideoElement) video.srcObject = mediaST;
     else log("element is not a video element:", elementName);
     video.onloadeddata = async () =>
       log("resolution:", video.videoWidth, video.videoHeight);
@@ -97,18 +96,18 @@ export async function webRTC(elementName = null, deviceId = null, rtcp = null) {
   }
   log("received streams:", streams);
   for (const s of streams) {
-    connection.addTransceiver(s.Type, { direction: "sendrecv" });
+      peerConn.addTransceiver(s.Type, { direction: "sendrecv" });
   }
 
-  const channel = connection.createDataChannel(deviceId);
-  channel.onmessage = (e) =>
-    log("channel message:", channel.label, "payload", e.data);
-  channel.onerror = (e) => log("channel error:", channel.label, "payload", e);
-  channel.onclose = () => log("channel close");
-  channel.onopen = () => {
+  dataChannel = peerConn.createDataChannel(deviceId);
+  dataChannel.onmessage = (e) =>
+    log("channel message:", dataChannel.label, "payload", e.data);
+    dataChannel.onerror = (e) => log("channel error:", channel.label, "payload", e);
+    dataChannel.onclose = () => log("channel close");
+  dataChannel.onopen = () => {
     log("channel open");
-    setInterval(() => channel.send("ping"), 1000); // send ping becouse PION doesn't handle RTCSessionDescription.close()
-  };
+    setInterval(() => dataChannel.send("ping"), 1000); // send ping becouse PION doesn't handle RTCSessionDescription.close()
+    };
 }
 
 //window.onload = () => webRTC(2, "videoElem");

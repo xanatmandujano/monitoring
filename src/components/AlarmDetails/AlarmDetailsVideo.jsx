@@ -6,7 +6,7 @@ import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //Helmet
 import { Helmet } from "react-helmet-async";
-import { webRTC } from "../../scripts/webrtc";
+import { webRTC,dataChannel,peerConn } from "../../scripts/webrtc";
 //React router dom
 import { useParams } from "react-router-dom";
 //Bootstrap
@@ -57,12 +57,20 @@ const AlarmDetailsVideo = () => {
     return alarmTime;
   };
 
-  const fetchRtcp = (k, rtcp) => {
+  const fetchRtcp = (k) => {
     // alarmFiles &&
     //   alarmFiles.attachments.map((item) => {
     //     webRTC(`${item.deviceId}`, k, item.attachmentValue);
     //   });
-    webRTC(`${k}`, k, rtcp);
+    if(dataChannel!==null && dataChannel.readyState=="open"){
+        dataChannel.close();
+    }
+    if(peerConn !=null && peerConn.iceConnectionState =="connected"){
+      peerConn.close();
+    }
+
+    var found = alarmFiles.attachments.find((elem)=> elem.deviceId == k);
+    webRTC(`video${k}`, found.deviceId, found.attachmentValue);
   };
 
   return (
@@ -100,7 +108,7 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    id={`${item.deviceId}`}
+                    id={`video${item.deviceId}`}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>
