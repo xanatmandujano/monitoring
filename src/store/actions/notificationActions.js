@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 //Slices
 import { setMessage } from "../slices/messageSlice";
-import { setNewAlarm } from "../slices/notificationsSlice";
+import { setNewAlarm, setConnection } from "../slices/notificationsSlice";
 //Services
 import { getAlarmData } from "../../services/alarmsService";
 //Hub

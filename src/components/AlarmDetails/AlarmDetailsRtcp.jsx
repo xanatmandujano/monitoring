@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+//RTC
+import { webRTC, dataChannel, peerConn } from "../../scripts/webrtc";
 //React router dom
 import { useParams } from "react-router-dom";
 //Bootstrap
@@ -16,10 +18,11 @@ import Tabs from "react-bootstrap/Tabs";
 import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 
-const AlarmDetailsVideo = () => {
+const AlarmDetailsRtcp = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [elementId, setElementId] = useState("");
 
   const { idVideo } = useParams();
 
@@ -39,6 +42,8 @@ const AlarmDetailsVideo = () => {
       .then(() => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
+
+    //webRTC("videoElement");
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
@@ -48,6 +53,18 @@ const AlarmDetailsVideo = () => {
       minute: "2-digit",
     });
     return alarmTime;
+  };
+
+  const fetchRtcp = (k) => {
+    if (dataChannel !== null && dataChannel.readyState == "open") {
+      dataChannel.close();
+    }
+    if (peerConn != null && peerConn.iceConnectionState == "connected") {
+      peerConn.close();
+    }
+
+    var found = alarmFiles.attachments.find((elem) => elem.deviceId == k);
+    webRTC(`video${k}`, found.deviceId, found.attachmentValue);
   };
 
   return (
@@ -64,20 +81,20 @@ const AlarmDetailsVideo = () => {
       <Row>
         <Col sm={9} className="main-image">
           <Tabs
-            defaultActiveKey={
-              alarmFiles && alarmFiles.attachments[0].deviceId + 1
-            }
+            defaultActiveKey={alarmFiles && alarmFiles.attachments[0].deviceId}
             id="fill-tab-example"
             className="mb-3"
             data-bs-theme="dark"
             fill
+            onSelect={(k) => fetchRtcp(k)}
           >
             {alarmFiles &&
               alarmFiles.attachments.map((item) => (
-                <Tab
-                  eventKey={item.deviceId + 1}
+                <Tab.Container
+                  eventKey={item.deviceId}
                   title={item.deviceName}
-                  key={item.attachmentName}
+                  key={item.deviceId}
+                  rtcp={item.attachmentValue}
                 >
                   <video
                     autoPlay
@@ -85,11 +102,11 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    src={item.attachmentValue}
+                    id={`video${item.deviceId}`}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>
-                </Tab>
+                </Tab.Container>
               ))}
           </Tabs>
         </Col>
@@ -130,4 +147,4 @@ const AlarmDetailsVideo = () => {
   );
 };
 
-export default AlarmDetailsVideo;
+export default AlarmDetailsRtcp;

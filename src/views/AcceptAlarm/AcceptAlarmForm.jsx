@@ -9,6 +9,8 @@ import { validateSeprobanAlarm } from "../../store/actions/alarmsActions";
 import { Navigate, useNavigate } from "react-router-dom";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
+import TextField from "../../components/TextField/TextField";
+import SelectField from "../../components/SelectField/SelectField";
 import CheckInput from "../../components/CheckInput/CheckInput";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -67,6 +69,8 @@ const AcceptAlarmForm = ({ onHide }) => {
       validateSeprobanAlarm({
         alarmId: alarmFiles && alarmFiles.alarmId,
         comments: values.comments,
+        alarmUser: values.user,
+        alarmTime: values.time,
         devices: values.checkboxGroup,
       })
     )
@@ -85,6 +89,8 @@ const AcceptAlarmForm = ({ onHide }) => {
 
   const validationSchema = yup.object().shape({
     comments: yup.string().required("yup.comments"),
+    user: yup.string().required("yup.user"),
+    time: yup.string().required("yup.time"),
     //normalDevices: yup.array().min(1).required(),
     //doubleDevices: yup.array().min(1).required(),
     //quadDevices: yup.array().min(1).required(),
@@ -98,6 +104,8 @@ const AcceptAlarmForm = ({ onHide }) => {
       <Formik
         initialValues={{
           comments: "",
+          user: "",
+          time: "",
           normalDevices: [],
           doubleDevices: [],
           quadDevices: [],
@@ -119,7 +127,7 @@ const AcceptAlarmForm = ({ onHide }) => {
             {dewarpedNull && dewarpedNull.length >= 1
               ? dewarpedNull.map((item) => (
                   <CheckInput
-                    key={item.alarmAttachmentId}
+                    key={item.deviceId}
                     type="checkbox"
                     label={`${item.deviceName}`}
                     name="checkboxGroup"
@@ -130,30 +138,22 @@ const AcceptAlarmForm = ({ onHide }) => {
               : null}
             {dewarpedQuad && dewarpedQuad.length >= 1
               ? dewarpedQuad.map((item) => (
-                  <>
-                    <div className="dewarped-options" key={item.deviceId + 2}>
-                      {/* <CheckInput
-                      type="checkbox"
-                      label={`Video 2`}
-                      name="checkboxGroup"
-                      key={item.alarmAttachmentId}
-                      value={item.deviceId}
-                      disabled={disabled}
-                    /> */}
-                      <p>{item.deviceName}</p>
+                  <div key={item.deviceId}>
+                    <div className="dewarped-options" key={item.deviceId}>
+                      <p key={item.deviceId + 1}>{item.deviceName}</p>
 
                       <Button
                         variant="main"
                         onClick={handleShow}
                         size="sm"
-                        key={item.deviceId + 1}
+                        key={item.deviceId + 2}
                         disabled={disabled}
                       >
                         +
                       </Button>
                     </div>
                     {/* Quads */}
-                    <div style={{ display: show }}>
+                    <div style={{ display: show }} key={item.deviceId + 3}>
                       {dewarpedQuad && dewarpedQuad.length >= 1
                         ? [1, 2, 3, 4].map((quad) => (
                             <CheckInput
@@ -167,35 +167,27 @@ const AcceptAlarmForm = ({ onHide }) => {
                           ))
                         : null}
                     </div>
-                  </>
+                  </div>
                 ))
               : null}
 
             {dewarpedDouble && dewarpedDouble.length >= 1
               ? dewarpedDouble.map((item) => (
-                  <>
-                    <div className="dewarped-options" key={item.deviceId + 2}>
-                      {/* <CheckInput
-                      type="checkbox"
-                      label={`Video ${+1}`}
-                      name="checkboxGroup"
-                      key={item.alarmAttachmentId}
-                      value={item.deviceId}
-                      disabled={disabled}
-                    /> */}
-                      <p>{item.deviceName}</p>
+                  <div key={item.deviceId}>
+                    <div className="dewarped-options" key={item.deviceId}>
+                      <p key={item.deviceId + 1}>{item.deviceName}</p>
                       <Button
                         variant="main"
                         onClick={handleShow}
                         size="sm"
-                        key={item.deviceId + 1}
+                        key={item.deviceId}
                         disabled={disabled}
                       >
                         +
                       </Button>
                     </div>
                     {/* Double */}
-                    <div style={{ display: show }}>
+                    <div style={{ display: show }} key={item.deviceId + 3}>
                       {dewarpedDouble && dewarpedDouble.length >= 1
                         ? [1, 2].map((quad) => (
                             <CheckInput
@@ -209,9 +201,27 @@ const AcceptAlarmForm = ({ onHide }) => {
                           ))
                         : null}
                     </div>
-                  </>
+                  </div>
                 ))
               : null}
+
+            <TextField
+              label="Usuario"
+              name="user"
+              type="text"
+              value={props.values.user}
+              onChange={props.handleChange}
+              errors="Escriba un nombre de usuario"
+              placeholder="Usuario 1"
+            />
+            <TextField
+              label="Hora del envío"
+              name="time"
+              type="time"
+              value={props.values.time}
+              onChange={props.handleChange}
+              errors="Seleccione una hora"
+            />
 
             <TextFieldArea
               label="Comentarios"

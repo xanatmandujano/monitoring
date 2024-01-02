@@ -71,7 +71,7 @@ const AlarmsSidebar = () => {
     if (alarmTypeId === 1) {
       return `seproban/${alarmId}`;
     } else if (alarmTypeId === 2) {
-      return alarmId;
+      return `${alarmId}`;
     } else if (alarmTypeId === 3) {
       return `blackList/${alarmId}`;
     } else if (alarmTypeId === 4) {

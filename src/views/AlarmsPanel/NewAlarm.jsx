@@ -28,9 +28,7 @@ const NewAlarm = () => {
     if (newConnection) {
       newConnection
         .start()
-        .then(() => {
-          console.log("Conected!");
-        })
+        .then(() => {})
         .catch((e) => console.log(`Connection failed: ${e}`));
 
       newConnection.on("ReceiveMessage", (message) => {

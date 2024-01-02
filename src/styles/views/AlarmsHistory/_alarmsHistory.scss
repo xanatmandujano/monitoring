@@ -1,0 +1,11 @@
+.alarms-history {
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+
+    .arrow {
+      display: flex;
+    }
+  }
+}

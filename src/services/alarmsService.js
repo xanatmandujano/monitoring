@@ -27,7 +27,6 @@ export const getAlarmsHistory = async (
     },
   });
   if (response.data.isSuccess) {
-    //console.log(response);
     return response.data;
   } else console.log(response);
 };
@@ -99,7 +98,13 @@ export const getAlarmData = async (code) => {
   }
 };
 
-export const validateAlarm = async (alarmId, comments, devices) => {
+export const validateAlarm = async (
+  alarmId,
+  comments,
+  alarmUser,
+  alarmTime,
+  devices
+) => {
   const response = await axios({
     method: "POST",
     url: `${baseURL}/seproban/sendtoseproban`,
@@ -110,6 +115,8 @@ export const validateAlarm = async (alarmId, comments, devices) => {
       alarmId: alarmId,
       userId: userId,
       comments: comments,
+      alarmUser: alarmUser,
+      alarmTime: alarmTime,
       devices: devices,
     },
   });

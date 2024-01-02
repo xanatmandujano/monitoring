@@ -1,4 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
+import signalRMiddleware from "./middleware/signalRMiddleware";
 //Reducers
 import messageReducer from "./slices/messageSlice";
 import authReducer from "./slices/authSlice";
@@ -14,4 +16,14 @@ export const store = configureStore({
     notifications: notificationsReducer,
     attachments: attachmentsReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          "alarms/alarmStatus/fulfilled",
+          "alarms/validateCurrentAlarm/fulfilled",
+        ],
+        ignoredActionPaths: ["payload.headers"],
+      },
+    }),
 });

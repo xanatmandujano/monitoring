@@ -20,6 +20,7 @@ import { store } from "./store/store";
 import Private from "./routes/Private";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
+import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
 import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
 
 const router = createHashRouter([
@@ -33,6 +34,11 @@ const router = createHashRouter([
         errorElement: <ErrorPage />,
         children: [
           {
+            path: "test-element",
+            element: <TestElement />,
+            errorElement: <ErrorPage />,
+          },
+          {
             path: "alarms-panel",
             element: <AlarmsPanel />,
             errorElement: <ErrorPage />,
@@ -44,7 +50,7 @@ const router = createHashRouter([
               },
               {
                 path: "seproban/:idVideo",
-                element: <AlarmDetailsVideo />,
+                element: <AlarmDetailsRtcp />,
                 errorElement: <ErrorPage />,
               },
               {

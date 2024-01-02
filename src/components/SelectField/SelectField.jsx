@@ -15,6 +15,7 @@ const SelectField = ({ ...props }) => {
         size="md"
         placeholder={props.placeholder}
         data-bs-theme="dark"
+        type={props.type}
       ></Form.Select>
       {meta.error && meta.touched && (
         <Form.Control.Feedback type="invalid">

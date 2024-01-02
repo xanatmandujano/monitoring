@@ -62,6 +62,8 @@ export const alarmsHistory = createAsyncThunk(
         sortDirection,
         searchText
       );
+      thunkAPI.dispatch(setAlarmsPages(data.totalPages));
+
       return data.result;
     } catch (error) {
       console.log(error);
@@ -104,9 +106,15 @@ export const alarmData = createAsyncThunk(
 
 export const validateSeprobanAlarm = createAsyncThunk(
   "alarms/validateAlarm",
-  async ({ alarmId, comments, devices }, thunkAPI) => {
+  async ({ alarmId, comments, alarmUser, alarmTime, devices }, thunkAPI) => {
     try {
-      const data = await validateAlarm(alarmId, comments, devices);
+      const data = await validateAlarm(
+        alarmId,
+        comments,
+        alarmUser,
+        alarmTime,
+        devices
+      );
       //console.log(data);
       return data;
     } catch (error) {

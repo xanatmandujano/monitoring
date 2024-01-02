@@ -4,25 +4,26 @@ import { alarmNotificationHub } from "../actions/notificationActions";
 
 const initialState = {
   newAlarm: [],
+  connection: "",
 };
 
 export const notificationsSlice = createSlice({
   name: "notifications",
   initialState,
   reducers: {
+    setConnection(state, action) {
+      return {
+        connection: action.payload,
+      };
+    },
     setNewAlarm(state, action) {
       return {
         newAlarm: action.payload,
       };
     },
   },
-  // extraReducers(builder) {
-  //   builder.addCase(alarmNotificationHub.fulfilled, (state, action) => {
-  //     state.newAlarm = action.payload;
-  //   });
-  // },
 });
 
 export const { reducer } = notificationsSlice;
-export const { setNewAlarm } = notificationsSlice.actions;
+export const { setNewAlarm, setConnection } = notificationsSlice.actions;
 export default reducer;

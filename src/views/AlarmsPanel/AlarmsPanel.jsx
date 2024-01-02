@@ -17,9 +17,11 @@ const AlarmsPanel = () => {
   const { idVideo } = useParams();
   const dispatch = useDispatch();
   const { alarms, alarmsCount } = useSelector((state) => state.alarms);
+  const { newAlarm } = useSelector((state) => state.notifications);
 
   useEffect(() => {
     dispatch(clearMessage());
+    //console.log(newAlarm);
   }, [dispatch]);
 
   return (

@@ -10,11 +10,14 @@ import AlarmHistoryData from "../../components/AlarmDetails/AlarmHistoryData";
 import Container from "react-bootstrap/Container";
 import Loader from "../../components/Loader/Loader";
 import SearchBar from "./SearchBar";
+import Pagination from "react-bootstrap/Pagination";
 
 const AlarmsHistory = () => {
   const [loader, setLoader] = useState(false);
+  const [currPage, setCurrentPage] = useState(1);
+  const [nextPage, setNextPage] = useState();
 
-  const { allAlarms } = useSelector((state) => state.alarms);
+  const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
   const { idVideo } = useParams();
 
@@ -23,7 +26,7 @@ const AlarmsHistory = () => {
     dispatch(clearMessage());
     dispatch(
       alarmsHistory({
-        pageNumber: 1,
+        pageNumber: currPage,
         pageSize: 50,
         columnName: "creationDate",
         sortDirection: "desc",
@@ -34,7 +37,7 @@ const AlarmsHistory = () => {
       .then(() => {
         setLoader(false);
       });
-  }, [dispatch]);
+  }, [dispatch, currPage]);
 
   const search = (values) => {
     dispatch(
@@ -48,6 +51,22 @@ const AlarmsHistory = () => {
     ).unwrap();
   };
 
+  const handleNextPage = () => {
+    setCurrentPage(currPage + 1);
+  };
+
+  const handleFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(currPage - 1);
+  };
+
+  const handleLastPage = () => {
+    setCurrentPage(alarmsPages);
+  };
+
   return (
     <Container className="alarms-history">
       <SearchBar
@@ -59,7 +78,32 @@ const AlarmsHistory = () => {
       {loader ? (
         <Loader />
       ) : !idVideo ? (
-        <AlarmHistoryData alarms={allAlarms} />
+        <>
+          <AlarmHistoryData alarms={allAlarms} />
+          <Pagination data-bs-theme="dark">
+            <div className="arrow">
+              <Pagination.First
+                onClick={handleFirstPage}
+                disabled={currPage === 1}
+              />
+              <Pagination.Prev
+                onClick={handlePrevPage}
+                disabled={currPage === 1}
+              />
+            </div>
+            <p>{`${currPage}/${alarmsPages}`}</p>
+            <div className="arrow">
+              <Pagination.Next
+                onClick={handleNextPage}
+                disabled={currPage === alarmsPages}
+              />
+              <Pagination.Last
+                onClick={handleLastPage}
+                disabled={currPage === alarmsPages}
+              />
+            </div>
+          </Pagination>
+        </>
       ) : (
         <Outlet />
       )}
