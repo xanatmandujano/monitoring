@@ -22,7 +22,7 @@ export const login = async (email, password) => {
     sessionStorage.setItem("userLogged", response.data.isSuccess);
     sessionStorage.setItem("userName", response.data.fullName);
     sessionStorage.setItem("userId", response.data.userId);
-    console.log(response);
+    sessionStorage.setItem("expiration", response.data.token.expiration);
     return response;
   } else {
     console.log(response);
