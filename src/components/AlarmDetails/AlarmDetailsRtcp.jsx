@@ -93,7 +93,7 @@ const AlarmDetailsRtcp = () => {
                 <Tab.Container
                   eventKey={item.deviceId}
                   title={item.deviceName}
-                  key={item.deviceId}
+                  key={item.alarmAttachmentId}
                   rtcp={item.attachmentValue}
                 >
                   <video
@@ -102,6 +102,7 @@ const AlarmDetailsRtcp = () => {
                     height="100%"
                     width="100%"
                     controls
+                    key={item.deviceCode}
                     id={`video${item.deviceId}`}
                   >
                     Tu navegador no admite el elemento <code>video</code>

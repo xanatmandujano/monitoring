@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
-import { USER_LOGOUT } from "../store/actions/authAction";
+import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
 
-const expirationTime = 180_000_0;
+const expirationTime = 3600 * 1000;
 const promptBeforeIdle = 10_000;
 
 function Child() {
@@ -76,7 +76,7 @@ const Private = () => {
     const isPrompted = PresenceType.type === "active" && PresenceType.prompted;
     const isActive = PresenceType.type === "active" && PresenceType.prompted;
 
-    console.log({ isIdle, isPrompted, isActive });
+    console.log(isActive);
   };
 
   const onPrompt = () => {
@@ -98,6 +98,7 @@ const Private = () => {
   const onActive = () => {
     setState("Active");
     setOpen(false);
+    console.log(state);
   };
 
   const onAction = () => {

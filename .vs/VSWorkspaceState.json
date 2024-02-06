@@ -2,9 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\views",
     "\\src\\views\\AlarmsPanel",
     "\\src\\views\\AlarmsSidebar"
   ],
+  "SelectedNode": "\\src\\main.jsx",
   "PreviewInSolutionExplorer": false
 }

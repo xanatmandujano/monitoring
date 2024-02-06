@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { USER_LOGIN, USER_LOGOUT } from "../actions/authAction";
+import { USER_LOGIN, REFRESH_TOKEN, USER_LOGOUT } from "../actions/authAction";
 
 const userToken = sessionStorage.getItem("userToken")
   ? sessionStorage.getItem("userToken")
@@ -50,6 +50,18 @@ export const authSlice = createSlice({
         state.status = "rejected";
         state.loading = false;
         state.email = null;
+      })
+      .addCase(REFRESH_TOKEN.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(REFRESH_TOKEN.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(REFRESH_TOKEN.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
       })
       .addCase(USER_LOGOUT.fulfilled, (state, action) => {
         state.status = "succedded";

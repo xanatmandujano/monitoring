@@ -15,39 +15,117 @@ import { useLocation, useParams } from "react-router-dom";
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
 import NewAlarmCard from "./NewAlarmCard";
+import Button from "react-bootstrap/Button";
+import { BsXLg } from "react-icons/bs";
 
-const AlarmsSidebar = () => {
+const AlarmsSidebar = (props) => {
   const { alarms } = useSelector((state) => state.alarms);
-  const { newAlarm } = useSelector((state) => state.notifications);
+  //const { newAlarm, action } = useSelector((state) => state.notifications);
   const dispatch = useDispatch();
   const [show, setShow] = useState("none");
-  const [prevAlarm, setPrevAlarm] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [connection, setConnection] = useState("");
+  const [alarmCode, setAlarmCode] = useState();
+  const [vAlarm, setVAlarm] = useState();
   const { idVideo } = useParams();
-  const latestAlarm = useRef();
-  latestAlarm.current = prevAlarm;
+  const latestAlarm = useRef(null);
+  latestAlarm.current = notifications;
   const hubUrl = url.server.apiUrl;
 
   useEffect(() => {
     dispatch(clearMessage());
+    const newConnection = new HubConnectionBuilder()
+      .withUrl(`${hubUrl}/hubs/notifications`)
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+
+    if (newConnection) {
+      newConnection
+        .start()
+        .then(() => {
+          newConnection.on("ReceiveMessage", (message) => {
+            //console.log(message);
+            let newNotification = JSON.parse(message.message);
+            if (Object.hasOwn(newNotification, "Code")) {
+              let newAlarm = JSON.parse(message.message);
+              let newAlarmCode = newAlarm.Code;
+              setAlarmCode(newAlarmCode);
+            }
+            if (Object.hasOwn(newNotification, "action")) {
+              let viewNotification = JSON.parse(message.message);
+              let viewAction = viewNotification.action;
+              let notificationAlarmId = viewNotification.alarmId;
+              setVAlarm(notificationAlarmId);
+            }
+          });
+        })
+        .catch((e) => console.log(`Connection failed: ${e}`));
+    }
+
+    const alarmData = async () => {
+      try {
+        const data = await getAlarmData(alarmCode && alarmCode).then((res) => {
+          if (res.data.isSuccess) {
+            const updatedNotifications = [...latestAlarm.current];
+            updatedNotifications.unshift(res.data.result);
+            setNotifications(updatedNotifications);
+            notifications.reverse();
+            setShow(true);
+          }
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    alarmData();
+  }, [dispatch, alarmCode]);
+
+  useEffect(() => {
+    dispatch(clearMessage());
     dispatch(
-      alarmNotificationHub({
-        url: `${hubUrl}/hubs/notifications`,
+      todayAlarms({
+        pageNumber: 1,
+        pageSize: 0,
+        columnName: "creationDate",
+        sortDirection: "desc",
       })
-    )
-      .unwrap()
-      .then(() => {
-        //setShow("block");
-        //setPrevAlarm(newAlarm);
-        dispatch(
-          todayAlarms({
-            pageNumber: 1,
-            pageSize: 0,
-            columnName: "creationDate",
-            sortDirection: "desc",
-          })
-        ).unwrap();
-      });
-  }, [dispatch, newAlarm]);
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    const styleChange = () => {
+      if (vAlarm) {
+        let element = document.getElementById(vAlarm);
+        element.className = "alarm-disabled card";
+      }
+    };
+
+    styleChange();
+  }, [vAlarm]);
+
+  //Send message
+  const viewAlarm = async (alarmId) => {
+    const chatMessage = {
+      user: sessionStorage.getItem("userId"),
+      message: JSON.stringify({
+        action: "viewed",
+        alarmId: alarmId,
+      }),
+    };
+
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   //Search bar
   const [search, setSearch] = useState("");
@@ -82,24 +160,30 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <SearchField changeEvent={handleSearch} disabled={alarms > 0} />
+        <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
+      {/* <Button onClick={() => viewAlarm(27783)}>Send</Button> */}
       <Container className="alarms-side-bar">
-        {/* {newAlarm && (
-          <AlarmCard
-            key={newAlarm.alarmId}
-            alarmCode={newAlarm.alarmCode}
-            alarmIcon={newAlarm.alarmTypeIcon}
-            alarmDescription={newAlarm.alarmDescription}
-            locationInfo={newAlarm.locationInfo}
-            deviceCode={newAlarm.deviceCode}
-            deviceIPAddress={newAlarm.deviceIPAddress}
-            creationDate={newAlarm.creationDate}
-            alarmParams={alarmType(newAlarm.alarmTypeId, newAlarm.alarmId)}
-            display={{ display: show }}
-            classN="newAlarm"
-          />
-        )} */}
+        {notifications &&
+          notifications.map((item) => (
+            <AlarmCard
+              key={item.alarmId}
+              alarmCode={item.alarmCode}
+              alarmIcon={item.alarmTypeIcon}
+              alarmDescription={item.alarmDescription}
+              locationInfo={item.locationInfo}
+              deviceCode={item.deviceCode}
+              deviceIPAddress={item.deviceIPAddress}
+              creationDate={item.creationDate}
+              alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
+              display={{ display: show }}
+              classN={
+                item.alarmId == idVideo ? "newAlarm intermitent" : "newAlarm"
+              }
+              activeId={item.alarmId}
+              onClick={() => viewAlarm(item.alarmId)}
+            />
+          ))}
 
         {filteredAlarms &&
           filteredAlarms.map((item) => (
@@ -114,6 +198,8 @@ const AlarmsSidebar = () => {
               creationDate={item.creationDate}
               alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
               classN={item.alarmId == idVideo ? "intermitent" : ""}
+              activeId={item.alarmId}
+              onClick={() => viewAlarm(item.alarmId)}
             />
           ))}
       </Container>

@@ -1,7 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 //Slices
 import { setMessage } from "../slices/messageSlice";
-import { setNewAlarm, setConnection } from "../slices/notificationsSlice";
+import {
+  setNewAlarm,
+  setConnection,
+  setAction,
+} from "../slices/notificationsSlice";
 //Services
 import { getAlarmData } from "../../services/alarmsService";
 //Hub
@@ -20,26 +24,23 @@ export const alarmNotificationHub = createAsyncThunk(
         newConnection
           .start()
           .then(() => {
-            //console.log("Connected with store!");
+            console.log("Connected with store!");
             newConnection.on("ReceiveMessage", (message) => {
-              let newAlarm = JSON.parse(message.message);
-              let newAlarmCode = newAlarm.Code;
-              //console.log(newAlarm);
+              console.log(message);
+              let newNotification = JSON.parse(message.message);
+              //New alarm notification
+              if (Object.hasOwn(newNotification, "Code")) {
+                let newAlarm = JSON.parse(message.message);
+                let newAlarmCode = newAlarm.Code;
+                thunkAPI.dispatch(setNewAlarm(newAlarmCode));
+              }
 
-              const alarmData = async () => {
-                try {
-                  const data = await getAlarmData(newAlarmCode).then((res) => {
-                    if (res.data.isSuccess) {
-                      thunkAPI.dispatch(setNewAlarm(res.data.result));
-                      return res.data.result;
-                    }
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              };
-
-              alarmData();
+              if (Object.hasOwn(newNotification, "action")) {
+                let viewNotification = JSON.parse(message.message);
+                let viewAction = viewNotification.action;
+                let notificationAlarmId = viewNotification.alarmId;
+                thunkAPI.dispatch(setAction(viewAction));
+              }
             });
           })
           .catch((e) => console.log(`Connection failed: ${e}`));

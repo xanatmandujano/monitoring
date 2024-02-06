@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { useDispatch, useSelector } from "react-redux";
+import url from "/config.json";
 //React router dom
 import { Outlet, useParams } from "react-router-dom";
 //Bootstrap
@@ -11,17 +12,14 @@ import Col from "react-bootstrap/Col";
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
 import NewAlarm from "./NewAlarm";
-import AlarmsHistory from "../AlarmsHistory/AlarmsHistory";
 
 const AlarmsPanel = () => {
   const { idVideo } = useParams();
   const dispatch = useDispatch();
-  const { alarms, alarmsCount } = useSelector((state) => state.alarms);
-  const { newAlarm } = useSelector((state) => state.notifications);
+  const { alarmsCount } = useSelector((state) => state.alarms);
 
   useEffect(() => {
     dispatch(clearMessage());
-    //console.log(newAlarm);
   }, [dispatch]);
 
   return (

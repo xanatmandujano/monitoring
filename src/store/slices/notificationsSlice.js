@@ -3,8 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { alarmNotificationHub } from "../actions/notificationActions";
 
 const initialState = {
+  status: "",
   newAlarm: [],
-  connection: "",
+  action: "",
+  connection: null,
 };
 
 export const notificationsSlice = createSlice({
@@ -17,13 +19,19 @@ export const notificationsSlice = createSlice({
       };
     },
     setNewAlarm(state, action) {
+      const alarm = action.payload;
+      return { newAlarm: alarm };
+    },
+    setAction(state, action) {
+      const act = action.payload;
       return {
-        newAlarm: action.payload,
+        action: act,
       };
     },
   },
 });
 
 export const { reducer } = notificationsSlice;
-export const { setNewAlarm, setConnection } = notificationsSlice.actions;
+export const { setNewAlarm, setConnection, setAction } =
+  notificationsSlice.actions;
 export default reducer;

@@ -6,23 +6,36 @@
   margin: 1rem 0rem 1rem 0rem;
   //animation: myAnim 3s linear 0s infinite normal none;
 
-  .intermitent {
-    animation: myAnim 3s linear 0s infinite normal none;
-  }
+  .card-title {
+    font-size: medium;
 
-  @keyframes myAnim {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.2;
-    }
-
-    100% {
-      opacity: 1;
+    img {
+      margin-right: 0.5rem;
     }
   }
+
+  .card-text {
+    font-weight: 200;
+    font-size: small;
+  }
+
+  .btn-alarm {
+    a {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.alarm-disabled {
+  background-color: $disabled;
+  width: 100%;
+  color: $transparency-tertiary;
+  border-radius: 15px;
+  margin: 1rem 0rem 1rem 0rem;
 
   .card-title {
     font-size: medium;
