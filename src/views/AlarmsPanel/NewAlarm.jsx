@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 //Redux
 import { useDispatch } from "react-redux";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { useSelector } from "react-redux";
+
 //Hub
-import { HubConnectionBuilder } from "@microsoft/signalr";
 import { getAlarmData } from "../../services/alarmsService";
-import url from "/config.json";
+
+import { Connector } from "../../signalr/signalr-connection";
 //Components
 import AlarmNotification from "../../components/AlarmNotification/AlarmNotification";
-import AlarmCard from "../../components/AlarmCard/AlarmCard";
 
 const NewAlarm = () => {
   const [show, setShow] = useState(false);
@@ -17,25 +16,17 @@ const NewAlarm = () => {
   let [alarmCode, setAlarmCode] = useState("");
   const [notifications, setNotifications] = useState([]);
   const latestAlarm = useRef(null);
-  const hubUrl = url.server.apiUrl;
-  //const { connection } = useSelector((state) => state.notifications);
-
   latestAlarm.current = notifications;
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(clearMessage());
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(`${hubUrl}/hubs/notifications`)
-      .withAutomaticReconnect()
-      .build();
-
+    const newConnection = Connector();
     if (newConnection) {
       newConnection
         .start()
         .then(() => {
-          console.log("Connected from New alarm");
+          //console.log("Connected from New alarm");
         })
         .catch((e) => console.log(`Connection failed: ${e}`));
 

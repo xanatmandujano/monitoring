@@ -3,39 +3,35 @@ import { createSlice } from "@reduxjs/toolkit";
 //Actions
 import { USER_LOGIN, REFRESH_TOKEN, USER_LOGOUT } from "../actions/authAction";
 
-const userToken = sessionStorage.getItem("userToken")
-  ? sessionStorage.getItem("userToken")
-  : null;
-const email = sessionStorage.getItem("email")
-  ? sessionStorage.getItem("email")
-  : null;
-const userName = sessionStorage.getItem("userName")
-  ? sessionStorage.getItem("userName")
-  : null;
-const isLoggedIn = sessionStorage.getItem("userLogged")
-  ? sessionStorage.getItem("userLogged")
-  : false;
-const userId = sessionStorage.getItem("userId")
-  ? sessionStorage.getItem("userId")
-  : null;
-const expiration = sessionStorage.getItem("expiration")
-  ? sessionStorage.getItem("expiration")
-  : null;
-
 const initialState = {
   loading: false,
-  isLoggedIn: isLoggedIn,
   status: "idle",
-  email,
-  userName,
-  userToken,
-  userId,
-  expiration,
+  authInfo: {
+    isLoggedIn: false,
+    email: "",
+    userName: "",
+    userToken: "",
+    userId: "",
+    expiration: "",
+    refresh: "",
+  },
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
+  reducers: {
+    setAuthInfo(state, action) {
+      return {
+        authInfo: action.payload,
+      };
+    },
+    setRefreshToken(state, action) {
+      return {
+        authInfo: action.payload,
+      };
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(USER_LOGIN.pending, (state, action) => {
@@ -73,4 +69,5 @@ export const authSlice = createSlice({
 });
 
 export const { reducer } = authSlice;
+export const { setAuthInfo, setRefreshToken } = authSlice.actions;
 export default reducer;

@@ -1,10 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-
 //React router dom
 import { RouterProvider, createHashRouter } from "react-router-dom";
-//Helmet provider
-import { HelmetProvider } from "react-helmet-async";
 //Styles
 import "./styles/styles.scss";
 //Views
@@ -17,6 +14,8 @@ import AlarmsHistory from "./views/AlarmsHistory/AlarmsHistory.jsx";
 //Redux
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
 import Private from "./routes/Private";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
@@ -98,12 +97,14 @@ const router = createHashRouter([
   },
 ]);
 
+const persistor = persistStore(store);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <HelmetProvider>
+    <PersistGate persistor={persistor}>
       <Provider store={store}>
         <RouterProvider router={router} />
       </Provider>
-    </HelmetProvider>
+    </PersistGate>
   </React.StrictMode>
 );

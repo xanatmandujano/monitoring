@@ -14,6 +14,7 @@ import {
   validateAlarm,
   validateImageAlarm,
   setAlarmStatus,
+  releaseViewedAlarm,
 } from "../../services/alarmsService";
 
 export const todayAlarms = createAsyncThunk(
@@ -158,6 +159,26 @@ export const alarmStatus = createAsyncThunk(
     try {
       const data = await setAlarmStatus(alarmId, statusId, comments);
       //console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const releaseAlarm = createAsyncThunk(
+  "alarms/releaseAlarm",
+  async ({ alarmId }, thunkAPI) => {
+    try {
+      const data = await releaseViewedAlarm(alarmId);
       return data;
     } catch (error) {
       console.log(error);

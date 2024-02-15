@@ -2,8 +2,11 @@ import axios from "axios";
 import url from "/config.json";
 
 const baseURL = url.server.apiUrl;
-const token = sessionStorage.getItem("userToken");
-const userId = sessionStorage.getItem("userId");
+const localInfo = localStorage.getItem("persist:root");
+const parse = JSON.parse(localInfo);
+const authState = JSON.parse(parse && parse.authState);
+const token = authState && authState.authInfo.userToken;
+const userId = authState && authState.authInfo.userId;
 
 export const getAlarmsHistory = async (
   pageNumber,
@@ -163,6 +166,29 @@ export const setAlarmStatus = async (alarmId, statusId, comments) => {
       },
     });
     if (response.data.isSuccess) {
+      return response;
+    } else {
+      return console.log(response);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const releaseViewedAlarm = async (alarmId) => {
+  try {
+    const response = await axios({
+      method: "PATCH",
+      url: `${baseURL}/alarm/releaseviewedalarm`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        alarmId: alarmId,
+      },
+    });
+    if (response.data.isSuccess) {
+      console.log(response.data.isSuccess + "released alarm");
       return response;
     } else {
       return console.log(response);

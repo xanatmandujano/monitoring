@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
 //React-router-dom
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import Button from "react-bootstrap/Button";
@@ -15,9 +16,36 @@ import Loader from "../../components/Loader/Loader";
 const DiscardAlarmForm = ({ onHide }) => {
   const [loader, setLoader] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [connection, setConnection] = useState(null);
+  const [show, setShow] = useState(true);
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+  }, []);
+
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: sessionStorage.getItem("userId"),
+      message: JSON.stringify({
+        action: "discarded",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToAll", chatMessage).then(() => {
+          console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const discardAlarm = (values) => {
     setLoader(true);
@@ -33,8 +61,9 @@ const DiscardAlarmForm = ({ onHide }) => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
+        sendAlarmStatus();
         navigate("/alarms-panel");
-        window.location.reload();
+        //window.location.reload();
       })
       .catch(() => {
         setLoader(false);

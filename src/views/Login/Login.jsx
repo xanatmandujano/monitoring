@@ -20,7 +20,7 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 const Login = () => {
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.persist.authState);
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 

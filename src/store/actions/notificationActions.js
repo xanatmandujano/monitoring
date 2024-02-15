@@ -26,7 +26,7 @@ export const alarmNotificationHub = createAsyncThunk(
           .then(() => {
             console.log("Connected with store!");
             newConnection.on("ReceiveMessage", (message) => {
-              console.log(message);
+              //console.log(message);
               let newNotification = JSON.parse(message.message);
               //New alarm notification
               if (Object.hasOwn(newNotification, "Code")) {

@@ -7,6 +7,12 @@
     justify-content: space-between;
 
     margin-top: 0.5rem;
+
+    .action-btns {
+      button {
+        margin-right: 0.5rem;
+      }
+    }
   }
 
   .alarm-data {

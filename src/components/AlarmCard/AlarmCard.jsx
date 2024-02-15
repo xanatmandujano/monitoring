@@ -32,11 +32,15 @@ const AlarmCard = ({ ...props }) => {
           Hora: {dateTime(props.creationDate)}
         </Card.Text>
         <div className="btn-alarm">
-          <Link to={`${props.alarmParams}`}>
-            <Button variant="main" size="md" onClick={props.onClick}>
-              Ver
-            </Button>
-          </Link>
+          <Button
+            variant="main"
+            size="md"
+            className="card-btn"
+            onClick={props.onClick}
+            disabled={props.disabled}
+          >
+            Ver
+          </Button>
         </div>
       </Card.Body>
     </Card>

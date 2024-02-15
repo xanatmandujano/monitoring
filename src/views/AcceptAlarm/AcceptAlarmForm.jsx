@@ -6,11 +6,12 @@ import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { validateSeprobanAlarm } from "../../store/actions/alarmsActions";
 //React-router-dom
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import TextField from "../../components/TextField/TextField";
-import SelectField from "../../components/SelectField/SelectField";
+//import SelectField from "../../components/SelectField/SelectField";
 import CheckInput from "../../components/CheckInput/CheckInput";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -21,11 +22,36 @@ const AcceptAlarmForm = ({ onHide }) => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState("none");
   const [disabled, setDisabled] = useState(false);
+  const [connection, setConnection] = useState(null);
 
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
+
+  useEffect(() => {
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+  }, []);
+
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: sessionStorage.getItem("userId"),
+      message: JSON.stringify({
+        action: "accepted",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToAll", chatMessage).then(() => {
+          console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const findNull = () => {
     let filtered =
@@ -76,14 +102,15 @@ const AcceptAlarmForm = ({ onHide }) => {
     )
       .unwrap()
       .then(() => {
-        console.log("Succedded");
         setLoader(false);
         setDisabled(false);
+        sendAlarmStatus();
         navigate("/alarms-panel");
-        window.location.reload();
+        //window.location.reload();
       })
       .catch(() => {
         setLoader(false);
+        setDisabled(false);
       });
   };
 

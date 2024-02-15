@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 //Bootstrap
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -9,33 +9,71 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import ModalMessage from "../ModalMessage/ModalMessage";
 //Logo
 import logo from "/config.json";
-
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
-import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Connector } from "../../signalr/signalr-connection";
 
 const NavBar = () => {
   const navigate = useNavigate();
-
-  const { isLoggedIn, userName } = useSelector((state) => state.auth);
+  const { idVideo } = useParams();
+  const { isLoggedIn, userName, userId } = useSelector(
+    (state) => state.persist.authState.authInfo
+  );
   const dispatch = useDispatch();
-
   const [loader, setLoader] = useState(false);
   const [modalShow, setModalShow] = useState(false);
-  const userLogged = sessionStorage.getItem("userLogged");
+  const [connection, setConnection] = useState("");
+
+  useEffect(() => {
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+  }, []);
+
+  //Send message
+  const sendAlarmStatus = async () => {
+    const releaseAction = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: idVideo,
+      }),
+    };
+
+    try {
+      if (connection) {
+        await connection.send("SendToAll", releaseAction).then(() => {
+          console.log("Alarm release: logout");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   //Logout
   const logoutUser = () => {
     setLoader(true);
-    dispatch(USER_LOGOUT())
-      .unwrap()
-      .then(() => {
-        navigate("/");
-        window.location.reload();
-      });
+    //setModalShow(false);
+    if (idVideo) {
+      sendAlarmStatus(idVideo);
+      dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
+        .unwrap()
+        .then(() => {
+          navigate("/");
+          window.location.reload();
+        });
+    } else {
+      dispatch(USER_LOGOUT({ isLogged: false }))
+        .unwrap()
+        .then(() => {
+          navigate("/");
+          window.location.reload();
+        });
+    }
   };
 
   return (
@@ -45,7 +83,7 @@ const NavBar = () => {
           <Navbar.Brand href="#alarms-panel">
             <img src={logo.assets.logo} alt="logo-banbajio" width={100} />
           </Navbar.Brand>
-          {userLogged ? (
+          {isLoggedIn ? (
             <>
               <Nav.Link href="#alarms-panel" className="page-title">
                 Panel de alarmas
@@ -76,7 +114,7 @@ const NavBar = () => {
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              {userLogged ? (
+              {isLoggedIn ? (
                 <Nav
                   className="justify-content-end flex-grow-1 pe-3"
                   style={{ alignItems: "center" }}
@@ -97,7 +135,7 @@ const NavBar = () => {
 
         <ModalMessage
           show={modalShow}
-          btnaction={logoutUser}
+          onClick={() => logoutUser()}
           onHide={() => setModalShow(false)}
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"

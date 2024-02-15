@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import { Outlet, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
 import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
+import { Connector } from "../signalr/signalr-connection";
 
 const expirationTime = 3600 * 1000;
 const promptBeforeIdle = 10_000;
+//const promptBeforeIdle = 5;
 
 function Child() {
   const { getRemainingTime } = useIdleTimerContext();
@@ -26,9 +28,9 @@ function Child() {
   const timeTillPrompt = Math.max(remaining - promptBeforeIdle / 1000, 0);
   const seconds = timeTillPrompt > 1 ? "seconds" : "second";
 
-  //if (timeTillPrompt > 0) {
-  //console.log(`${timeTillPrompt} ${seconds}`);
-  //}
+  // if (timeTillPrompt > 0) {
+  //   console.log(`${timeTillPrompt} ${seconds}`);
+  // }
 
   return null;
 }
@@ -63,12 +65,41 @@ const Private = () => {
   const [state, setState] = useState("Active");
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [connection, setConnection] = useState("");
+  const { idVideo } = useParams();
 
+  useEffect(() => {
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+  }, []);
   //Redux
-  const { isLoggedIn } = useSelector((state) => state.auth);
-  //const isLogged = sessionStorage.getItem("userLogged");
+  const { isLoggedIn, userId, expiration } = useSelector(
+    (state) => state.persist.authState.authInfo
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  //Send message
+  const sendAlarmStatus = async () => {
+    const releaseAction = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: idVideo,
+      }),
+    };
+
+    try {
+      if (connection) {
+        await connection.send("SendToAll", releaseAction).then(() => {
+          console.log("Alarm release: idle");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   //Idle timer
   const onPresenceChange = (PresenceType) => {
@@ -87,12 +118,22 @@ const Private = () => {
   const onIdle = () => {
     setState("Idle");
     setOpen(false);
-    dispatch(USER_LOGOUT())
-      .unwrap()
-      .then(() => {
-        navigate("/");
-        window.location.reload();
-      });
+    if (idVideo) {
+      sendAlarmStatus(idVideo);
+      dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
+        .unwrap()
+        .then(() => {
+          navigate("/");
+          window.location.reload();
+        });
+    } else {
+      dispatch(USER_LOGOUT({ isLogged: false }))
+        .unwrap()
+        .then(() => {
+          navigate("/");
+          window.location.reload();
+        });
+    }
   };
 
   const onActive = () => {
@@ -106,7 +147,6 @@ const Private = () => {
   };
 
   //Expiration token
-  const expiration = sessionStorage.getItem("expiration");
   const dateTime = new Date(expiration);
   const currentDate = new Date();
 
@@ -124,14 +164,24 @@ const Private = () => {
     const tokenMilSec = convertTime(dateTime);
     const currMilSec = convertTime(currentDate);
     const res = tokenMilSec - currMilSec;
-    //console.log(res / 60000);
+    //const res = 20_000;
     setTimeout(() => {
-      dispatch(USER_LOGOUT())
-        .unwrap()
-        .then(() => {
-          navigate("/");
-          window.location.reload();
-        });
+      if (idVideo) {
+        sendAlarmStatus(idVideo);
+        dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
+          .unwrap()
+          .then(() => {
+            navigate("/");
+            window.location.reload();
+          });
+      } else {
+        dispatch(USER_LOGOUT({ isLogged: false }))
+          .unwrap()
+          .then(() => {
+            navigate("/");
+            window.location.reload();
+          });
+      }
     }, res);
   }, []);
 
@@ -148,7 +198,7 @@ const Private = () => {
     >
       <Child />
       <Prompt show={open} onHide={() => setOpen} />
-      <Outlet />
+      <Outlet connection={connection} />
     </IdleTimerProvider>
   ) : (
     <Navigate to="/" />

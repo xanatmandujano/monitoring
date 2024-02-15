@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus } from "../../store/actions/alarmsActions";
+import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { Connector } from "../../signalr/signalr-connection";
 //RTC
 import { webRTC, dataChannel, peerConn } from "../../scripts/webrtc";
 //React router dom
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import CloseButton from "react-bootstrap/CloseButton";
 //Components
 import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
@@ -22,10 +24,11 @@ const AlarmDetailsRtcp = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
-  const [elementId, setElementId] = useState("");
+  //const [elementId, setElementId] = useState("");
+  const [connection, setConnection] = useState(null);
 
   const { idVideo } = useParams();
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
 
@@ -43,6 +46,9 @@ const AlarmDetailsRtcp = () => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
 
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
     //webRTC("videoElement");
   }, [idVideo, dispatch]);
 
@@ -67,15 +73,54 @@ const AlarmDetailsRtcp = () => {
     webRTC(`video${k}`, found.deviceId, found.attachmentValue);
   };
 
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: sessionStorage.getItem("userId"),
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const closeAlarm = () => {
+    dispatch(
+      releaseAlarm({
+        alarmId: alarmFiles.alarmId,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        sendAlarmStatus();
+        navigate("/alarms-panel");
+      });
+  };
+
   return (
     <Container fluid className="alarm-details">
       <div className="btns-container">
-        <Button variant="main" size="sm" onClick={() => setShow(true)}>
-          Validar
-        </Button>
-        <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
-          Descartar
-        </Button>
+        <div className="action-btns">
+          <Button variant="main" size="sm" onClick={() => setShow(true)}>
+            Validar
+          </Button>
+          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
+            Descartar
+          </Button>
+        </div>
+        <CloseButton
+          variant="white"
+          aria-label="Hide"
+          onClick={() => closeAlarm()}
+        />
       </div>
 
       <Row>

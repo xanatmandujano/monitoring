@@ -8,6 +8,7 @@ import {
   validateSeprobanAlarm,
   validateCurrentAlarm,
   alarmStatus,
+  releaseAlarm,
 } from "../actions/alarmsActions";
 
 const initialState = {
@@ -122,6 +123,19 @@ export const alarmsSlice = createSlice({
         state.loading = false;
       })
       .addCase(alarmStatus.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Release alarm
+      .addCase(releaseAlarm.pending, (state, action) => {
+        state.status = "pending";
+        state.loading = true;
+      })
+      .addCase(releaseAlarm.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(releaseAlarm.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       });

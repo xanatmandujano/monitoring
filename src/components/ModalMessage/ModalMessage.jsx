@@ -22,7 +22,7 @@ const ModalMessage = ({ ...props }) => {
         <Button variant="outline-light" onClick={props.onHide} size="sm">
           Cancelar
         </Button>
-        <Button variant="main" onClick={props.btnaction} size="sm">
+        <Button variant="main" onClick={props.onClick} size="sm">
           {props.btntext}
         </Button>
       </Modal.Footer>
