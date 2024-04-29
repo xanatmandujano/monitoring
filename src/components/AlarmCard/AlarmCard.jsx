@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { Link } from "react-router-dom";
 
 const AlarmCard = ({ ...props }) => {
   const dateTime = (creationDate) => {
@@ -37,7 +36,7 @@ const AlarmCard = ({ ...props }) => {
             size="md"
             className="card-btn"
             onClick={props.onClick}
-            disabled={props.disabled}
+            //disabled={props.disabled}
           >
             Ver
           </Button>

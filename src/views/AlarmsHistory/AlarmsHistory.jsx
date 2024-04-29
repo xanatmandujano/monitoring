@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmsHistory } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
-import { Outlet, useParams, Link } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 //Components
 import AlarmHistoryData from "../../components/AlarmDetails/AlarmHistoryData";
 import Container from "react-bootstrap/Container";

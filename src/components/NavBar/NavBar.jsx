@@ -9,6 +9,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import ModalMessage from "../ModalMessage/ModalMessage";
 //Logo
 import logo from "/config.json";
+import oxxo from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
@@ -46,7 +47,7 @@ const NavBar = () => {
     try {
       if (connection) {
         await connection.send("SendToAll", releaseAction).then(() => {
-          console.log("Alarm release: logout");
+          //console.log("Alarm release: logout");
         });
       }
     } catch (error) {
@@ -81,7 +82,7 @@ const NavBar = () => {
       <Navbar key="lg" expand="lg" className="nav-bar-main">
         <Container fluid>
           <Navbar.Brand href="#alarms-panel">
-            <img src={logo.assets.logo} alt="logo-banbajio" width={100} />
+            <img src={logo.assets.logo} alt="logo" width={100} />
           </Navbar.Brand>
           {isLoggedIn ? (
             <>
@@ -135,7 +136,7 @@ const NavBar = () => {
 
         <ModalMessage
           show={modalShow}
-          onClick={() => logoutUser()}
+          btnAction={() => logoutUser()}
           onHide={() => setModalShow(false)}
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"

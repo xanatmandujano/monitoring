@@ -11,20 +11,12 @@ import Col from "react-bootstrap/Col";
 //Components
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
-import { getAlarmData } from "../../services/alarmsService";
 import NewAlarm from "./NewAlarm";
+//import NewAlarmTest from "./NewAlarmTest";
 
 const AlarmsPanel = () => {
   const { idVideo } = useParams();
-  const dispatch = useDispatch();
   const { alarmsCount } = useSelector((state) => state.alarms);
-  const [connection, setConnection] = useState("");
-
-  useEffect(() => {
-    dispatch(clearMessage());
-    const newConnection = Connector();
-    setConnection(newConnection);
-  }, [dispatch]);
 
   return (
     <>
@@ -35,7 +27,7 @@ const AlarmsPanel = () => {
         </div>
         <Row>
           <Col sm={2} style={{ paddingRight: "0" }}>
-            <AlarmsSidebar connection={connection} />
+            <AlarmsSidebar />
           </Col>
           <Col sm={10}>{idVideo ? <Outlet /> : <IdleAlarm />}</Col>
         </Row>

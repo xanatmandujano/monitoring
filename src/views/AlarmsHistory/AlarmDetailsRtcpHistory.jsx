@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
+//import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //RTC
 import { webRTC, dataChannel, peerConn } from "../../scripts/webrtc";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
+//import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import CloseButton from "react-bootstrap/CloseButton";
-//Components
-import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
-import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
-import Loader from "../Loader/Loader";
+import Loader from "../../components/Loader/Loader";
 
-const AlarmDetailsRtcp = () => {
+const AlarmDetailsRtcpHistory = () => {
   const [loader, setLoader] = useState(false);
-  const [btnLoader, setBtnLoader] = useState(false);
-  const [show, setShow] = useState(false);
-  const [showDiscard, setShowDiscard] = useState(false);
-  //const [elementId, setElementId] = useState("");
-  const [connection, setConnection] = useState(null);
-  const { userId } = useSelector((state) => state.persist.authState.authInfo);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -38,24 +29,16 @@ const AlarmDetailsRtcp = () => {
   useEffect(() => {
     dispatch(clearMessage());
     setLoader(true);
-    dispatch(
-      alarmStatus({
-        alarmId: idVideo,
-        statusId: 2,
-        comments: "",
-      })
-    )
+    dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
       .then(() => {
         setLoader(false);
-        dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
-
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-    //webRTC("videoElement");
   }, [idVideo, dispatch]);
+
+  const handleBtn = () => {
+    return navigate("/alarms-history");
+  };
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -78,68 +61,21 @@ const AlarmDetailsRtcp = () => {
     webRTC(`video${k}`, found.deviceId, found.attachmentValue);
   };
 
-  const sendAlarmStatus = async () => {
-    const chatMessage = {
-      user: userId,
-      message: JSON.stringify({
-        action: "release",
-        alarmId: alarmFiles.alarmId,
-      }),
-    };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          //console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const closeAlarm = () => {
-    setBtnLoader(true);
-    dispatch(
-      releaseAlarm({
-        alarmId: alarmFiles.alarmId,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        sendAlarmStatus();
-        navigate("/alarms-panel");
-        setBtnLoader(false);
-      });
-  };
-
   return (
     <Container fluid className="alarm-details">
       {loader ? (
         <Loader />
       ) : (
         <>
-          <div className="btns-container">
-            <div className="action-btns">
-              <Button variant="main" size="sm" onClick={() => setShow(true)}>
-                Validar
-              </Button>
-              <Button
-                variant="main"
-                size="sm"
-                onClick={() => setShowDiscard(true)}
-              >
-                Descartar
-              </Button>
-            </div>
-            {btnLoader ? (
-              <Loader />
-            ) : (
-              <CloseButton
-                variant="white"
-                aria-label="Hide"
-                onClick={() => closeAlarm()}
-              />
-            )}
+          <div
+            className="btns-container"
+            style={{ flexDirection: "row-reverse" }}
+          >
+            <CloseButton
+              variant="white"
+              aria-label="Hide"
+              onClick={() => handleBtn()}
+            />
           </div>
 
           <Row>
@@ -208,16 +144,10 @@ const AlarmDetailsRtcp = () => {
               </div>
             </Col>
           </Row>
-
-          <AcceptAlarm show={show} onHide={() => setShow(false)} />
-          <DiscardAlarm
-            show={showDiscard}
-            onHide={() => setShowDiscard(false)}
-          />
         </>
       )}
     </Container>
   );
 };
 
-export default AlarmDetailsRtcp;
+export default AlarmDetailsRtcpHistory;

@@ -36,7 +36,6 @@ const Login = () => {
     dispatch(USER_LOGIN({ email: values.email, password: values.password }))
       .unwrap()
       .then(() => {
-        navigate("alarms-panel");
         window.location.reload();
       })
       .catch(() => {

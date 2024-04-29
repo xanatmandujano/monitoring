@@ -9,7 +9,6 @@ import Root from "./routes/Root.jsx";
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx";
 import Login from "./views/Login/Login";
 import AlarmsPanel from "./views/AlarmsPanel/AlarmsPanel";
-import TestElement from "./views/TestElement/TestElement.jsx";
 import AlarmsHistory from "./views/AlarmsHistory/AlarmsHistory.jsx";
 //Redux
 import { Provider } from "react-redux";
@@ -17,9 +16,12 @@ import { store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import Private from "./routes/Private";
+import Public from "./routes/Public.jsx";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
 import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
+import AlarmDetailsRtcpHistory from "./views/AlarmsHistory/AlarmDetailsRtcpHistory.jsx";
+import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
 import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
 
 const router = createHashRouter([
@@ -27,16 +29,11 @@ const router = createHashRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { path: "/", element: <Login />, errorElement: <ErrorPage /> },
+      { path: "/", element: <Public />, errorElement: <ErrorPage /> },
       {
         element: <Private />,
         errorElement: <ErrorPage />,
         children: [
-          {
-            path: "test-element",
-            element: <TestElement />,
-            errorElement: <ErrorPage />,
-          },
           {
             path: "alarms-panel",
             element: <AlarmsPanel />,
@@ -76,7 +73,7 @@ const router = createHashRouter([
               },
               {
                 path: "seproban/:idVideo",
-                element: <AlarmDetailsVideo />,
+                element: <AlarmDetailsVideoHistory />,
                 errorElement: <ErrorPage />,
               },
               {
