@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus } from "../../store/actions/alarmsActions";
+import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { Connector } from "../../signalr/signalr-connection";
 //React router dom
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
@@ -13,19 +14,23 @@ import { Row, Col } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import CloseButton from "react-bootstrap/CloseButton";
 //Components
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
+import Loader from "../Loader/Loader";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
-  const [images, setImages] = useState([]);
-  const [urls, setUrls] = useState([]);
-  const [show, setShow] = useState(false);
+  //const [images, setImages] = useState([]);
+  //const [urls, setUrls] = useState([]);
+  const [btnLoader, setBtnLoader] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
-
+  const [show, setShow] = useState(false);
+  const [connection, setConnection] = useState(null);
+  const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
 
@@ -39,28 +44,45 @@ const AlarmDetails = () => {
       })
     ).unwrap();
     dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
   }, [idVideo, dispatch]);
 
-  // useEffect(() => {
-  //   const findImages = () => {
-  //     let filtered =
-  //       alarmFiles &&
-  //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 1);
-  //     setImages(filtered);
-  //     console.log(images);
-  //   };
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  //   const findURL = () => {
-  //     let filtered =
-  //       alarmFiles &&
-  //       alarmFiles.attachments.filter((el) => el.attachmentTypeId === 5);
-  //     setUrls(filtered);
-  //     console.log(filtered);
-  //   };
-
-  //   findImages();
-  //   findURL();
-  // }, [alarmFiles]);
+  const closeAlarm = () => {
+    setBtnLoader(true);
+    dispatch(
+      releaseAlarm({
+        alarmId: alarmFiles.alarmId,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        sendAlarmStatus();
+        navigate("/alarms-panel");
+        setBtnLoader(false);
+      });
+  };
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -69,15 +91,27 @@ const AlarmDetails = () => {
   };
 
   return (
-    <Container className="alarm-details" fluid>
+    <Container fluid className="alarm-details">
       <div className="btns-container">
-        <Button variant="main" size="sm" onClick={() => setShow(true)}>
-          Aceptar
-        </Button>
-        <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
-          Descartar
-        </Button>
+        <div className="action-btns">
+          <Button variant="main" size="sm" onClick={() => setShow(true)}>
+            Validar
+          </Button>
+          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
+            Descartar
+          </Button>
+        </div>
+        {btnLoader ? (
+          <Loader />
+        ) : (
+          <CloseButton
+            variant="white"
+            aria-label="Hide"
+            onClick={() => closeAlarm()}
+          />
+        )}
       </div>
+
       <Row>
         <Col sm={9} className="main-image">
           {alarmFiles ? (

@@ -8,11 +8,11 @@ import { Connector } from "../../signalr/signalr-connection";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 //React-router-dom
-import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
-import { alarmNotificationHub } from "../../store/actions/notificationActions";
+//import { alarmNotificationHub } from "../../store/actions/notificationActions";
 
 const AlarmsSidebar = () => {
   const { alarms } = useSelector((state) => state.alarms);
@@ -25,7 +25,6 @@ const AlarmsSidebar = () => {
   const [alarmCode, setAlarmCode] = useState();
   const [disabled, setDisabled] = useState(false);
   const { idVideo } = useParams();
-  const location = useLocation();
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
 
@@ -48,14 +47,14 @@ const AlarmsSidebar = () => {
             if (Object.hasOwn(newNotification, "action")) {
               let viewNotification = JSON.parse(message.message);
               let viewAction = viewNotification.action;
-              //console.log(viewAction);
+
               let notificationAlarmId = viewNotification.alarmId;
 
               if (viewAction === "discarded" || viewAction === "accepted") {
                 let element = document.getElementById(notificationAlarmId);
                 element.style.display = "none";
               } else if (viewAction === "viewed") {
-                console.log(message);
+                //console.log(message);
                 let element = document.getElementById(notificationAlarmId);
                 let cardBtn = element.lastChild.lastChild.lastChild;
                 element.className = "alarm-disabled card";
@@ -67,7 +66,6 @@ const AlarmsSidebar = () => {
                 let cardBtn = element.lastChild.lastChild.lastChild;
                 element.className = "alarm-card card";
                 cardBtn.removeAttribute("disabled");
-                //setDisabled(false);
               }
             }
           });
@@ -125,8 +123,9 @@ const AlarmsSidebar = () => {
     try {
       if (connection) {
         await connection.send("SendToOthers", viewAction).then(() => {
-          //console.log("View action");
-          dispatch(releaseAlarm({ alarmId: idVideo }));
+          let element = document.getElementById(alarmId);
+          let cardBtn = element.lastChild.lastChild.lastChild;
+          cardBtn.setAttribute("disabled", "");
           if (alarmTypeId === 1) {
             return navigate(`seproban/${alarmId}`);
           } else if (alarmTypeId === 2) {
@@ -137,20 +136,24 @@ const AlarmsSidebar = () => {
             return navigate(`whiteList/${alarmId}`);
           }
         });
-      } else if (connection && idVideo) {
-        await connection.send("SendToAll", releaseAction).then(() => {
+        if (idVideo) {
           dispatch(releaseAlarm({ alarmId: idVideo }));
-          console.log("Release sent from another alarm");
-          if (alarmTypeId === 1) {
-            return navigate(`seproban/${alarmId}`);
-          } else if (alarmTypeId === 2) {
-            return navigate(`${alarmId}`);
-          } else if (alarmTypeId === 3) {
-            return navigate(`blackList/${alarmId}`);
-          } else if (alarmTypeId === 4) {
-            return navigate(`whiteList/${alarmId}`);
-          }
-        });
+          await connection.send("SendToOthers", releaseAction).then(() => {
+            //console.log("Alarm release from card");
+            let element = document.getElementById(alarmId);
+            let cardBtn = element.lastChild.lastChild.lastChild;
+            cardBtn.setAttribute("disabled", "");
+            if (alarmTypeId === 1) {
+              return navigate(`seproban/${alarmId}`);
+            } else if (alarmTypeId === 2) {
+              return navigate(`${alarmId}`);
+            } else if (alarmTypeId === 3) {
+              return navigate(`blackList/${alarmId}`);
+            } else if (alarmTypeId === 4) {
+              return navigate(`whiteList/${alarmId}`);
+            }
+          });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -192,14 +195,9 @@ const AlarmsSidebar = () => {
               deviceCode={item.deviceCode}
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
-              //alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
               display={{ display: show }}
               classN={
-                item.alarmId == idVideo
-                  ? "newAlarm intermitent"
-                  : "" || item.inUse === true
-                  ? "alarm-disabled"
-                  : ""
+                item.alarmId == idVideo ? "newAlarm intermitent" : "intermitent"
               }
               activeId={item.alarmId}
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
@@ -218,7 +216,6 @@ const AlarmsSidebar = () => {
               deviceCode={item.deviceCode}
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
-              //alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
               classN={
                 item.alarmId == idVideo
                   ? "intermitent"
@@ -228,7 +225,7 @@ const AlarmsSidebar = () => {
               }
               activeId={item.alarmId}
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
-              disabled={item.inUse}
+              //disabled={item.inUse}
             />
           ))}
       </Container>

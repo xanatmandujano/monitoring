@@ -188,7 +188,7 @@ export const releaseViewedAlarm = async (alarmId) => {
       },
     });
     if (response.data.isSuccess) {
-      console.log(response.data.isSuccess + "released alarm");
+      //console.log(response);
       return response;
     } else {
       return console.log(response);

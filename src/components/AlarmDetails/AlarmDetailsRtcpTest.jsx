@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { sendMessage } from "../../store/actions/notificationActions";
 import { Connector } from "../../signalr/signalr-connection";
+//RTC
+import { webRTC, dataChannel, peerConn } from "../../scripts/webrtc";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -17,15 +20,15 @@ import CloseButton from "react-bootstrap/CloseButton";
 //Components
 import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
-import Loader from "../Loader/Loader";
 
-const AlarmDetailsVideo = () => {
+const AlarmDetailsRtcp = () => {
   const [loader, setLoader] = useState(false);
-  const [btnLoader, setBtnLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
+  //const [elementId, setElementId] = useState("");
   const [connection, setConnection] = useState(null);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
+
   const { idVideo } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,10 +47,6 @@ const AlarmDetailsVideo = () => {
       .then(() => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
-
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
   }, [idVideo, dispatch]);
 
   const dateTime = () => {
@@ -59,6 +58,18 @@ const AlarmDetailsVideo = () => {
     return alarmTime;
   };
 
+  const fetchRtcp = (k) => {
+    if (dataChannel !== null && dataChannel.readyState == "open") {
+      dataChannel.close();
+    }
+    if (peerConn != null && peerConn.iceConnectionState == "connected") {
+      peerConn.close();
+    }
+
+    var found = alarmFiles.attachments.find((elem) => elem.deviceId == k);
+    webRTC(`video${k}`, found.deviceId, found.attachmentValue);
+  };
+
   const sendAlarmStatus = async () => {
     const chatMessage = {
       user: userId,
@@ -67,19 +78,14 @@ const AlarmDetailsVideo = () => {
         alarmId: alarmFiles.alarmId,
       }),
     };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          //console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(sendMessage({ send: "SendToOthers", message: chatMessage }))
+      .unwrap()
+      .then(() => {
+        console.log("Message sent from test");
+      });
   };
 
   const closeAlarm = () => {
-    setBtnLoader(true);
     dispatch(
       releaseAlarm({
         alarmId: alarmFiles.alarmId,
@@ -89,7 +95,6 @@ const AlarmDetailsVideo = () => {
       .then(() => {
         sendAlarmStatus();
         navigate("/alarms-panel");
-        setBtnLoader(false);
       });
   };
 
@@ -104,34 +109,30 @@ const AlarmDetailsVideo = () => {
             Descartar
           </Button>
         </div>
-        {btnLoader ? (
-          <Loader />
-        ) : (
-          <CloseButton
-            variant="white"
-            aria-label="Hide"
-            onClick={() => closeAlarm()}
-          />
-        )}
+        <CloseButton
+          variant="white"
+          aria-label="Hide"
+          onClick={() => closeAlarm()}
+        />
       </div>
 
       <Row>
         <Col sm={9} className="main-image">
           <Tabs
-            defaultActiveKey={
-              alarmFiles && alarmFiles.attachments[0].deviceId + 1
-            }
+            defaultActiveKey={alarmFiles && alarmFiles.attachments[0].deviceId}
             id="fill-tab-example"
             className="mb-3"
             data-bs-theme="dark"
             fill
+            onSelect={(k) => fetchRtcp(k)}
           >
             {alarmFiles &&
               alarmFiles.attachments.map((item) => (
-                <Tab
-                  eventKey={item.deviceId + 1}
+                <Tab.Container
+                  eventKey={item.deviceId}
                   title={item.deviceName}
-                  key={item.attachmentName}
+                  key={item.alarmAttachmentId}
+                  rtcp={item.attachmentValue}
                 >
                   <video
                     autoPlay
@@ -139,11 +140,12 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    src={item.attachmentValue}
+                    key={item.deviceCode}
+                    id={`video${item.deviceId}`}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>
-                </Tab>
+                </Tab.Container>
               ))}
           </Tabs>
         </Col>
@@ -184,4 +186,4 @@ const AlarmDetailsVideo = () => {
   );
 };
 
-export default AlarmDetailsVideo;
+export default AlarmDetailsRtcp;

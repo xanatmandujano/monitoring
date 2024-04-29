@@ -1,12 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 //Actions
-import { alarmNotificationHub } from "../actions/notificationActions";
+import {
+  alarmNotificationHub,
+  sendMessage,
+} from "../actions/notificationActions";
 
 const initialState = {
   status: "",
-  newAlarm: [],
-  action: "",
+  newNotification: "",
+  newAction: "",
   connection: null,
+  messageSent: "",
 };
 
 export const notificationsSlice = createSlice({
@@ -18,20 +22,31 @@ export const notificationsSlice = createSlice({
         connection: action.payload,
       };
     },
-    setNewAlarm(state, action) {
-      const alarm = action.payload;
-      return { newAlarm: alarm };
+    setNewNotification(state, action) {
+      return { newNotification: action.payload };
     },
     setAction(state, action) {
-      const act = action.payload;
       return {
-        action: act,
+        newAction: action.payload,
       };
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(sendMessage.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.messageSent = action.payload;
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.status = "rejected";
+      });
   },
 });
 
 export const { reducer } = notificationsSlice;
-export const { setNewAlarm, setConnection, setAction } =
+export const { setNewNotification, setConnection, setAction } =
   notificationsSlice.actions;
 export default reducer;

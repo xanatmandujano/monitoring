@@ -89,7 +89,7 @@ export const alarmData = createAsyncThunk(
           thunkAPI.dispatch(setNewAlarm(res.data.result));
         }
       });
-      console.log(data);
+      console.log(code);
       return data;
     } catch (error) {
       console.log(error);
