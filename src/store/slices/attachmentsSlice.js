@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { alarmAttachments } from "../actions/attachmentsActions";
+import {
+  alarmAttachments,
+  getAlarmAttachment,
+} from "../actions/attachmentsActions";
 
 const initialState = {
   alarmFiles: "",
+  alarmAttachment: "",
 };
 
 export const attachmentsSlice = createSlice({
@@ -23,6 +27,19 @@ export const attachmentsSlice = createSlice({
         state.alarmFiles = action.payload;
       })
       .addCase(alarmAttachments.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      .addCase(getAlarmAttachment.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(getAlarmAttachment.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+        state.alarmAttachment = action.payload;
+      })
+      .addCase(getAlarmAttachment.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       });

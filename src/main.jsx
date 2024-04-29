@@ -49,7 +49,7 @@ const router = createHashRouter([
               },
               {
                 path: "seproban/:idVideo",
-                element: <AlarmDetailsRtcp />,
+                element: <AlarmDetailsVideo />,
                 errorElement: <ErrorPage />,
               },
               {

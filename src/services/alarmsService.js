@@ -1,7 +1,7 @@
 import axios from "axios";
 import url from "/config.json";
 
-const baseURL = url.server.apiUrl;
+const baseURL = url.server.apiDev;
 const localInfo = localStorage.getItem("persist:root");
 const parse = JSON.parse(localInfo);
 const authState = JSON.parse(parse && parse.authState);
@@ -79,6 +79,25 @@ export const getAlarmAttachments = async (alarmId) => {
     } else return console.log(response);
   } catch (error) {
     console.log(error.message);
+  }
+};
+
+export const getAttachment = async (attachmentId) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/alarm/getAttachment`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      alarmAttachmentId: attachmentId,
+    },
+  });
+  if (response.data.isSuccess) {
+    //console.log(response);
+    return response;
+  } else {
+    return console.log(response);
   }
 };
 

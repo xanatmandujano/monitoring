@@ -1,5 +1,6 @@
 {
     "server" : {
+        "apiDev" : "https://192.168.1.120:7091",
         "apiUrl" : "https://192.168.1.120:8091",
         "streamingUrl" : "https://192.168.1.120:8002"
     },

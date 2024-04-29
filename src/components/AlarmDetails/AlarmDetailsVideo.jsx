@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
-import { alarmAttachments } from "../../store/actions/attachmentsActions";
+import {
+  alarmAttachments,
+  getAlarmAttachment,
+} from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React router dom
 import { useParams } from "react-router-dom";
@@ -24,7 +27,9 @@ const AlarmDetailsVideo = () => {
   const { idVideo } = useParams();
 
   const dispatch = useDispatch();
-  const { alarmFiles } = useSelector((state) => state.attachments);
+  const { alarmFiles, alarmAttachment } = useSelector(
+    (state) => state.attachments
+  );
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -40,6 +45,10 @@ const AlarmDetailsVideo = () => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
   }, [idVideo, dispatch]);
+
+  const fetchAttachment = (attachmentId) => {
+    dispatch(getAlarmAttachment({ attachmentId: attachmentId })).unwrap();
+  };
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -71,13 +80,15 @@ const AlarmDetailsVideo = () => {
             className="mb-3"
             data-bs-theme="dark"
             fill
+            onSelect={(k) => fetchAttachment(k)}
           >
             {alarmFiles &&
               alarmFiles.attachments.map((item) => (
-                <Tab
-                  eventKey={item.deviceId + 1}
+                <Tab.Container
+                  eventKey={item.alarmAttachmentId}
                   title={item.deviceName}
                   key={item.attachmentName}
+                  //attachment={item.alarmAttachmentId}
                 >
                   <video
                     autoPlay
@@ -85,11 +96,11 @@ const AlarmDetailsVideo = () => {
                     height="100%"
                     width="100%"
                     controls
-                    src={item.attachmentValue}
+                    src={alarmAttachment && alarmAttachment.attachmentValue}
                   >
                     Tu navegador no admite el elemento <code>video</code>
                   </video>
-                </Tab>
+                </Tab.Container>
               ))}
           </Tabs>
         </Col>
