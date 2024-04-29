@@ -1,0 +1,52 @@
+.alarm-details {
+  padding: 1rem;
+  width: 100%;
+
+  .btns-container {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 0.5rem;
+
+    .action-btns {
+      button {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .alarm-data {
+    background-color: gray;
+    padding: 0.5rem;
+    margin-top: 2rem;
+    height: 95%;
+    border-radius: 15px;
+    color: $tertiary-color;
+  }
+
+  .main-image {
+    margin-top: 2rem;
+
+    img {
+      border-style: solid;
+      border-width: 2px;
+      border-color: grey;
+      border-radius: 15px;
+    }
+  }
+
+  .tab-image {
+    width: 100%;
+  }
+
+  .face-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    .face-image {
+      width: 75%;
+      border-radius: 15px;
+    }
+  }
+}

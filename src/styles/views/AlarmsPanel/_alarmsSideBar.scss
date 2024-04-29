@@ -1,0 +1,59 @@
+.alarms-side-bar {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 81dvh;
+  padding-right: 0.2rem;
+  padding-left: 0rem;
+
+  .intermitent {
+    // animation: scale-up-center 2s cubic-bezier(0.39, 0.575, 0.565, 1) infinite
+    //   alternate-reverse both;
+
+    // @keyframes scale-up-center {
+    //   0% {
+    //     transform: scale(0.95);
+    //   }
+    //   100% {
+    //     transform: scale(1);
+    //   }
+    // }
+    background-color: $active-color;
+  }
+
+  .newAlarm {
+    animation: slide-in-top 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+
+    @keyframes slide-in-top {
+      0% {
+        transform: translateY(-1000px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* ===== Scrollbar ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8a0b0b #736868;
+}
+
+/* Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 13px;
+}
+
+::-webkit-scrollbar-track {
+  background: $transparency-second;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $main;
+  border-radius: 10px;
+  border: 3px none #ffffff;
+}

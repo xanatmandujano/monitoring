@@ -1,0 +1,15 @@
+.accept-alarm-form {
+  .dewarped-options {
+    display: flex;
+    align-items: baseline;
+
+    button {
+      margin-left: 0.5rem;
+    }
+  }
+
+  .btns-container {
+    display: flex;
+    justify-content: space-between;
+  }
+}

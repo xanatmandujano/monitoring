@@ -1,58 +1,65 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { userLogin, userLogout } from "../actions/authAction";
-
-const userToken = sessionStorage.getItem("userToken")
-  ? sessionStorage.getItem("userToken")
-  : null;
-const email = sessionStorage.getItem("email")
-  ? sessionStorage.getItem("email")
-  : null;
-const userName = sessionStorage.getItem("userName")
-  ? sessionStorage.getItem("userName")
-  : null;
-const isLoggedIn = sessionStorage.getItem("userLogged")
-  ? sessionStorage.getItem("userLogged")
-  : false;
+import { USER_LOGIN, REFRESH_TOKEN, USER_LOGOUT } from "../actions/authAction";
 
 const initialState = {
   loading: false,
-  isLoggedIn: isLoggedIn,
-  isSuccess: "",
   status: "idle",
-  email,
-  userName,
-  userToken,
+  authInfo: {
+    isLoggedIn: false,
+    email: "",
+    userName: "",
+    userToken: "",
+    userId: "",
+    expiration: "",
+    refresh: "",
+  },
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setIsSuccess(state, action) {
-      return { isSuccess: action.payload };
+    setAuthInfo(state, action) {
+      return {
+        authInfo: action.payload,
+      };
     },
-    clearIsSuccess(state, action) {
-      return { isSuccess: "" };
+    setRefreshToken(state, action) {
+      return {
+        authInfo: action.payload,
+      };
     },
   },
   extraReducers(builder) {
     builder
-      .addCase(userLogin.pending, (state, action) => {
+      .addCase(USER_LOGIN.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(userLogin.fulfilled, (state, action) => {
+      .addCase(USER_LOGIN.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
       })
-      .addCase(userLogin.rejected, (state, action) => {
+      .addCase(USER_LOGIN.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
         state.email = null;
       })
-      .addCase(userLogout.fulfilled, (state, action) => {
+      .addCase(REFRESH_TOKEN.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(REFRESH_TOKEN.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(REFRESH_TOKEN.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      .addCase(USER_LOGOUT.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
         state.email = null;
@@ -62,5 +69,5 @@ export const authSlice = createSlice({
 });
 
 export const { reducer } = authSlice;
-export const { setIsSuccess, clearIsSuccess } = authSlice.actions;
+export const { setAuthInfo, setRefreshToken } = authSlice.actions;
 export default reducer;

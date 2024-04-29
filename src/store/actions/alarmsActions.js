@@ -1,16 +1,21 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
 //Slice
 import { setMessage } from "../slices/messageSlice";
-import { setAlarmNotification, setNewAlarm } from "../slices/alarmsSlice";
+import {
+  setAlarmsCount,
+  setNewAlarm,
+  setAlarmsPages,
+} from "../slices/alarmsSlice";
 //Services
 import {
+  getAlarmsHistory,
   getTodayAlarms,
-  getAlarmAttachments,
   getAlarmData,
+  validateAlarm,
+  validateImageAlarm,
+  setAlarmStatus,
+  releaseViewedAlarm,
 } from "../../services/alarmsService";
-//Signalr
-import { HubConnectionBuilder } from "@microsoft/signalr";
 
 export const todayAlarms = createAsyncThunk(
   "alarms/todayAlarms",
@@ -26,6 +31,65 @@ export const todayAlarms = createAsyncThunk(
         sortDirection,
         searchText
       );
+      thunkAPI.dispatch(setAlarmsCount(data.totalRecords));
+      //thunkAPI.dispatch(setAlarmsPages(data.totalPages));
+
+      return data.result;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const alarmsHistory = createAsyncThunk(
+  "alarms/alarmsHistory",
+  async (
+    { pageNumber, pageSize, columnName, sortDirection, searchText },
+    thunkAPI
+  ) => {
+    try {
+      const data = await getAlarmsHistory(
+        pageNumber,
+        pageSize,
+        columnName,
+        sortDirection,
+        searchText
+      );
+      thunkAPI.dispatch(setAlarmsPages(data.totalPages));
+
+      return data.result;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const alarmData = createAsyncThunk(
+  "alarms/alarmData",
+  async ({ code }, thunkAPI) => {
+    try {
+      const data = await getAlarmData(code).then((res) => {
+        if (res.data.isSuccess) {
+          thunkAPI.dispatch(setNewAlarm(res.data.result));
+        }
+      });
+      console.log(code);
       return data;
     } catch (error) {
       console.log(error);
@@ -41,11 +105,80 @@ export const todayAlarms = createAsyncThunk(
   }
 );
 
-export const alarmAttachments = createAsyncThunk(
-  "alarms/alarmsAttachments",
+export const validateSeprobanAlarm = createAsyncThunk(
+  "alarms/validateAlarm",
+  async ({ alarmId, comments, alarmUser, alarmTime, devices }, thunkAPI) => {
+    try {
+      const data = await validateAlarm(
+        alarmId,
+        comments,
+        alarmUser,
+        alarmTime,
+        devices
+      );
+      //console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const validateCurrentAlarm = createAsyncThunk(
+  "alarms/validateCurrentAlarm",
+  async ({ alarmId, comments }, thunkAPI) => {
+    try {
+      const data = await validateImageAlarm(alarmId, comments);
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const alarmStatus = createAsyncThunk(
+  "alarms/alarmStatus",
+  async ({ alarmId, statusId, comments }, thunkAPI) => {
+    try {
+      const data = await setAlarmStatus(alarmId, statusId, comments);
+      //console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const releaseAlarm = createAsyncThunk(
+  "alarms/releaseAlarm",
   async ({ alarmId }, thunkAPI) => {
     try {
-      const data = await getAlarmAttachments(alarmId);
+      const data = await releaseViewedAlarm(alarmId);
       return data;
     } catch (error) {
       console.log(error);
@@ -60,80 +193,3 @@ export const alarmAttachments = createAsyncThunk(
     }
   }
 );
-
-export const alarmNotificationHub = createAsyncThunk(
-  "alarm/alarmNotificationHub",
-  async ({ url }, thunkAPI) => {
-    try {
-      const newConnection = new HubConnectionBuilder()
-        .withUrl(url)
-        .withAutomaticReconnect()
-        .build();
-
-      if (newConnection) {
-        newConnection
-          .start()
-          .then(() => {
-            //console.log("Connected!");
-          })
-          .catch((e) => console.log(`Connection failed: ${e}`));
-
-        newConnection.on("ReceiveMessage", (message) => {
-          thunkAPI.dispatch(setAlarmNotification(JSON.parse(message.message)));
-          let newAlarm = JSON.parse(message.message);
-          let newAlarmCode = newAlarm.Code;
-
-          const alarmData = async () => {
-            try {
-              const data = await getAlarmData(newAlarmCode).then((res) => {
-                if (res.data.isSuccess) {
-                  thunkAPI.dispatch(setNewAlarm(res.data.result));
-                }
-                //console.log(res);
-              });
-            } catch (error) {
-              console.log(error);
-            }
-          };
-
-          alarmData();
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue();
-    }
-  }
-);
-
-// export const alarmData = createAsyncThunk(
-//   "alarms/alarmData",
-//   async ({ code }, thunkAPI) => {
-//     try {
-//       const data = await getAlarmData(code).then((res) => {
-//         if (res.data.isSuccess) {
-//           thunkAPI.dispatch(setNewAlarm(res.data.result));
-//         }
-//       });
-//       console.log(data);
-//       return data;
-//     } catch (error) {
-//       console.log(error);
-//       const message =
-//         (error.response &&
-//           error.response.data &&
-//           error.response.data.message) ||
-//         error.message ||
-//         error.toString();
-//       thunkAPI.dispatch(setMessage(message));
-//       return thunkAPI.rejectWithValue();
-//     }
-//   }
-// );

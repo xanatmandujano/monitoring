@@ -8,6 +8,10 @@
 //Views
 @import "./views/Login/login";
 @import "./views/AlarmsPanel/alarmsPanel";
+@import "./views/AlarmsPanel/alarmsSideBar";
+@import "./views/AlarmsPanel/newAlarm";
+@import "./views/AcceptAlarm/acceptAlarm";
+@import "./views/AlarmsHistory/alarmsHistory";
 
 //Components
 @import "./components/PasswordField/passwordField";
@@ -15,3 +19,8 @@
 @import "./components/AlarmCard/alarmCard";
 @import "./components/NavBar/navBar";
 @import "./components/ErrorMessage/errorMessage";
+@import "./components/AlarmDetails/alarmDetails";
+@import "./components/AlarmDetails/idleAlarm";
+@import "./components/SearchField/searchField";
+@import "./components/ModalMessage/modalMessage";
+@import "./components/AlarmHistoryData/alarmHistoryData";

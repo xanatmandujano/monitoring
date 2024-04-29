@@ -1,0 +1,187 @@
+import React, { useEffect, useState } from "react";
+//redux
+import { useDispatch, useSelector } from "react-redux";
+import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
+import { alarmAttachments } from "../../store/actions/attachmentsActions";
+import { clearMessage } from "../../store/slices/messageSlice";
+import { Connector } from "../../signalr/signalr-connection";
+//React router dom
+import { useParams, useNavigate } from "react-router-dom";
+//Bootstrap
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import { Row, Col } from "react-bootstrap";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import CloseButton from "react-bootstrap/CloseButton";
+//Components
+import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
+import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
+import Loader from "../Loader/Loader";
+
+const AlarmDetailsVideo = () => {
+  const [loader, setLoader] = useState(false);
+  const [btnLoader, setBtnLoader] = useState(false);
+  const [show, setShow] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
+  const [connection, setConnection] = useState(null);
+  const { userId } = useSelector((state) => state.persist.authState.authInfo);
+  const { idVideo } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { alarmFiles } = useSelector((state) => state.attachments);
+
+  useEffect(() => {
+    dispatch(clearMessage());
+    dispatch(
+      alarmStatus({
+        alarmId: idVideo,
+        statusId: 2,
+        comments: "",
+      })
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+      });
+
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+  }, [idVideo, dispatch]);
+
+  const dateTime = () => {
+    const alarmDateTime = new Date(alarmFiles.creationDate);
+    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return alarmTime;
+  };
+
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          //console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const closeAlarm = () => {
+    setBtnLoader(true);
+    dispatch(
+      releaseAlarm({
+        alarmId: alarmFiles.alarmId,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        sendAlarmStatus();
+        navigate("/alarms-panel");
+        setBtnLoader(false);
+      });
+  };
+
+  return (
+    <Container fluid className="alarm-details">
+      <div className="btns-container">
+        <div className="action-btns">
+          <Button variant="main" size="sm" onClick={() => setShow(true)}>
+            Validar
+          </Button>
+          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
+            Descartar
+          </Button>
+        </div>
+        {btnLoader ? (
+          <Loader />
+        ) : (
+          <CloseButton
+            variant="white"
+            aria-label="Hide"
+            onClick={() => closeAlarm()}
+          />
+        )}
+      </div>
+
+      <Row>
+        <Col sm={9} className="main-image">
+          <Tabs
+            defaultActiveKey={
+              alarmFiles && alarmFiles.attachments[0].deviceId + 1
+            }
+            id="fill-tab-example"
+            className="mb-3"
+            data-bs-theme="dark"
+            fill
+          >
+            {alarmFiles &&
+              alarmFiles.attachments.map((item) => (
+                <Tab
+                  eventKey={item.deviceId + 1}
+                  title={item.deviceName}
+                  key={item.attachmentName}
+                >
+                  <video
+                    autoPlay
+                    loop
+                    height="100%"
+                    width="100%"
+                    controls
+                    src={item.attachmentValue}
+                  >
+                    Tu navegador no admite el elemento <code>video</code>
+                  </video>
+                </Tab>
+              ))}
+          </Tabs>
+        </Col>
+        <Col sm={3}>
+          <div className="alarm-data">
+            {alarmFiles ? (
+              <>
+                <p>
+                  {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
+                </p>
+                <p>
+                  Dispositivo: <br />
+                  {`${alarmFiles.deviceCode}`}
+                </p>
+                <p>
+                  Dirección IP: <br />
+                  {`${alarmFiles.deviceIPAddress}`}
+                </p>
+                <p>
+                  Ubicación: <br />
+                  {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
+                </p>
+                <p>
+                  Hora de la alarma: <br />
+                  {dateTime()}
+                </p>
+              </>
+            ) : (
+              <p>No se encontró información</p>
+            )}
+          </div>
+        </Col>
+      </Row>
+
+      <AcceptAlarm show={show} onHide={() => setShow(false)} />
+      <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
+    </Container>
+  );
+};
+
+export default AlarmDetailsVideo;

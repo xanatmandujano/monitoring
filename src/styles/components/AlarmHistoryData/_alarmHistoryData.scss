@@ -1,0 +1,21 @@
+.alarms-history {
+  margin-top: 2rem;
+  .alarm-history-card {
+    margin-top: 1rem;
+    .card-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+
+      .card-text {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .alarm-details {
+    background-color: $secondary;
+    border-radius: 15px;
+  }
+}

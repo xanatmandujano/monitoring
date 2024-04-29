@@ -23,22 +23,24 @@ const PasswordField = ({ ...props }) => {
   return (
     <Form.Group className="password-field" data-bs-theme="dark">
       <Form.Label htmlFor={field.name}>{props.label}</Form.Label>
-      <Form.Control
-        {...field}
-        {...props}
-        aria-label="Recipient's username"
-        aria-describedby="basic-addon2"
-        isInvalid={meta.touched && !!meta.error}
-        type={showPass}
-      />
-      <Button size="sm" onClick={handleOnClick} className="btn-eye">
-        {showPass === "password" ? <FaRegEyeSlash /> : <FaRegEye />}
-      </Button>
-      {meta.error && meta.touched && (
-        <Form.Control.Feedback type="invalid">
-          {props.errors}
-        </Form.Control.Feedback>
-      )}
+      <InputGroup>
+        <Form.Control
+          {...field}
+          {...props}
+          aria-label="Recipient's username"
+          aria-describedby="basic-addon2"
+          isInvalid={meta.touched && !!meta.error}
+          type={showPass}
+        />
+        <Button size="sm" onClick={handleOnClick}>
+          {showPass === "password" ? <FaRegEyeSlash /> : <FaRegEye />}
+        </Button>
+        {meta.error && meta.touched && (
+          <Form.Control.Feedback type="invalid">
+            {props.errors}
+          </Form.Control.Feedback>
+        )}
+      </InputGroup>
     </Form.Group>
   );
 };

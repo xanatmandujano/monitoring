@@ -1,15 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 //Actions
-import { todayAlarms, alarmAttachments } from "../actions/alarmsActions";
+import {
+  alarmsHistory,
+  todayAlarms,
+  alarmData,
+  validateSeprobanAlarm,
+  validateCurrentAlarm,
+  alarmStatus,
+  releaseAlarm,
+} from "../actions/alarmsActions";
 
 const initialState = {
   loading: false,
   status: "idle",
-  alarmNotification: "",
+  alarmNotification: [],
   alarms: [],
+  allAlarms: [],
   alarmsCount: "",
-  alarmAttachments: "",
+  alarmsPages: "",
+  alarmFiles: "",
   alarmInfo: "",
 };
 
@@ -17,18 +27,38 @@ export const alarmsSlice = createSlice({
   name: "alarms",
   initialState,
   reducers: {
-    setAlarmNotification(state, action) {
-      return { alarmNotification: action.payload };
-    },
     setNewAlarm(state, action) {
       return { alarmInfo: action.payload };
     },
     setAlarmsCount(state, action) {
       return { alarmsCount: action.payload };
     },
+    setAlarmsPages(state, action) {
+      return { alarmsPages: action.payload };
+    },
+    clearAlarmFiles(state, action) {
+      return { alarmFiles: "" };
+    },
+    clearAllAlarms(state, action) {
+      return { allAlarms: "" };
+    },
   },
   extraReducers(builder) {
     builder
+      //Alarms history
+      .addCase(alarmsHistory.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(alarmsHistory.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+        state.allAlarms = action.payload;
+      })
+      .addCase(alarmsHistory.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
       //Get today alarms
       .addCase(todayAlarms.pending, (state, action) => {
         state.status = "loading";
@@ -43,38 +73,81 @@ export const alarmsSlice = createSlice({
         state.status = "rejected";
         state.loading = false;
       })
-      //Get alarm attachments
-      .addCase(alarmAttachments.pending, (state, action) => {
+      //Alarm data
+      .addCase(alarmData.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
       })
-      .addCase(alarmAttachments.fulfilled, (state, action) => {
+      .addCase(alarmData.fulfilled, (state, action) => {
         state.status = "succedded";
         state.loading = false;
-        state.alarmAttachments = action.payload;
+        state.alarmInfo = action.payload;
       })
-      .addCase(alarmAttachments.rejected, (state, action) => {
+      .addCase(alarmData.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Validate Seproban alarm
+      .addCase(validateSeprobanAlarm.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(validateSeprobanAlarm.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(validateSeprobanAlarm.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Validate image alarm
+      .addCase(validateCurrentAlarm.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(validateCurrentAlarm.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(validateCurrentAlarm.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Alarm status
+      .addCase(alarmStatus.pending, (state, action) => {
+        state.status = "loading";
+        state.loading = true;
+      })
+      .addCase(alarmStatus.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(alarmStatus.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Release alarm
+      .addCase(releaseAlarm.pending, (state, action) => {
+        state.status = "pending";
+        state.loading = true;
+      })
+      .addCase(releaseAlarm.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(releaseAlarm.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       });
-    //Get alarm data
-    // .addCase(alarmData.pending, (state, action) => {
-    //   state.status = "loading";
-    //   state.loading = true;
-    // })
-    // .addCase(alarmData.fulfilled, (state, action) => {
-    //   state.status = "succedded";
-    //   state.loading = false;
-    //   //state.alarmInfo = action.payload;
-    // })
-    // .addCase(alarmData.rejected, (state, action) => {
-    //   state.status = "rejected";
-    //   state.loading = false;
-    // });
   },
 });
 
 export const { reducer } = alarmsSlice;
-export const { setAlarmNotification, setNewAlarm, setAlarmsCount } =
-  alarmsSlice.actions;
+export const {
+  setNewAlarm,
+  setAlarmsCount,
+  setAlarmsPages,
+  clearAlarmFiles,
+  clearAllAlarms,
+} = alarmsSlice.actions;
 export default reducer;

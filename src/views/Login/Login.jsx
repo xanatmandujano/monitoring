@@ -4,7 +4,7 @@ import { Form, Formik } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../../store/actions/authAction";
+import { USER_LOGIN } from "../../store/actions/authAction";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
 import { Navigate, useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 const Login = () => {
   const navigate = useNavigate();
 
-  const { isLoggedIn, isSuccess } = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.persist.authState);
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
@@ -31,28 +31,20 @@ const Login = () => {
     dispatch(clearMessage());
   }, [dispatch]);
 
-  //Login
   const loginUser = (values) => {
     setLoader(true);
-
-    dispatch(userLogin({ email: values.email, password: values.password }))
+    dispatch(USER_LOGIN({ email: values.email, password: values.password }))
       .unwrap()
       .then(() => {
-        if (isSuccess) {
-          navigate("alarms-panel");
-          window.location.reload();
-        } else {
-          setLoader(false);
-          setModalShow(true);
-        }
+        window.location.reload();
       })
       .catch(() => {
         setLoader(false);
-        isSuccess ? setModalShow(true) : setModalShow(false);
+        !isLoggedIn ? setModalShow(true) : setModalShow(false);
       });
   };
 
-  if (isSuccess) {
+  if (isLoggedIn) {
     return <Navigate to="alarms-panel" />;
   }
 
@@ -95,9 +87,9 @@ const Login = () => {
               <Button
                 variant="main"
                 type="submit"
-                disabled={loader && <Loader />}
+                disabled={loader && <Loader size="sm" />}
               >
-                {loader ? <Loader /> : "Entrar"}
+                {loader ? <Loader size="sm" /> : "Entrar"}
               </Button>
             </div>
 
