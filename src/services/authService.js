@@ -2,7 +2,7 @@
 import axios from "axios";
 import url from "/config.json";
 
-const baseURL = url.server.apiDev;
+const baseURL = url.server.apiUrl;
 //const token = sessionStorage.getItem("userToken");
 //const refresh = sessionStorage.getItem("refresh");
 const localInfo = localStorage.getItem("persist:root");

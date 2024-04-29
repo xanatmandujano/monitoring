@@ -1,7 +1,7 @@
 import axios from "axios";
 import url from "/config.json";
 
-const baseURL = url.server.apiDev;
+const baseURL = url.server.apiUrl;
 const localInfo = localStorage.getItem("persist:root");
 const parse = JSON.parse(localInfo);
 const authState = JSON.parse(parse && parse.authState);

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
-import { alarmAttachments } from "../../store/actions/attachmentsActions";
-import { alarmStatus } from "../../store/actions/alarmsActions";
 import {
   alarmAttachments,
   getAlarmAttachment,
