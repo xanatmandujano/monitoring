@@ -6,6 +6,7 @@ import {
   alarmAttachments,
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
+import { clearAlarmAttachment } from "../../store/slices/attachmentsSlice";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
 //React router dom
@@ -21,6 +22,7 @@ import CloseButton from "react-bootstrap/CloseButton";
 import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import Loader from "../Loader/Loader";
+import VideoLoader from "../Loader/VideoLoader";
 
 const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
@@ -32,7 +34,7 @@ const AlarmDetailsVideo = () => {
   const { idVideo } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { alarmFiles, alarmAttachment } = useSelector(
+  const { alarmFiles, alarmAttachment, loading } = useSelector(
     (state) => state.attachments
   );
 
@@ -56,6 +58,7 @@ const AlarmDetailsVideo = () => {
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
+    //dispatch(clearAlarmAttachment());
     dispatch(getAlarmAttachment({ attachmentId: attachmentId })).unwrap();
   };
 
@@ -144,16 +147,20 @@ const AlarmDetailsVideo = () => {
                   key={item.attachmentName}
                   //attachment={item.alarmAttachmentId}
                 >
-                  <video
-                    autoPlay
-                    loop
-                    height="100%"
-                    width="100%"
-                    controls
-                    src={alarmAttachment && alarmAttachment.attachmentValue}
-                  >
-                    Tu navegador no admite el elemento <code>video</code>
-                  </video>
+                  {loading ? (
+                    <VideoLoader />
+                  ) : (
+                    <video
+                      autoPlay
+                      loop
+                      height="100%"
+                      width="100%"
+                      controls
+                      src={alarmAttachment && alarmAttachment.attachmentValue}
+                    >
+                      Tu navegador no admite el elemento <code>video</code>
+                    </video>
+                  )}
                 </Tab.Container>
               ))}
           </Tabs>
