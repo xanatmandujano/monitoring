@@ -14,6 +14,11 @@ const initialState = {
 export const attachmentsSlice = createSlice({
   name: "attachments",
   initialState,
+  reducers: {
+    clearAlarmAttachment(state, action) {
+      return { alarmAttachment: "" };
+    },
+  },
   extraReducers(builder) {
     builder
       //Get alarm attachments
@@ -47,4 +52,5 @@ export const attachmentsSlice = createSlice({
 });
 
 export const { reducer } = attachmentsSlice;
+export const { clearAlarmAttachment } = attachmentsSlice.actions;
 export default reducer;

@@ -6,6 +6,7 @@ import {
   alarmAttachments,
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
+import { clearAlarmAttachment } from "../../store/slices/attachmentsSlice";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
 //React router dom
@@ -56,6 +57,9 @@ const AlarmDetailsVideo = () => {
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
+    if (alarmAttachment) {
+      dispatch(clearAlarmAttachment());
+    }
     dispatch(getAlarmAttachment({ attachmentId: attachmentId })).unwrap();
   };
 
@@ -141,7 +145,7 @@ const AlarmDetailsVideo = () => {
                 <Tab.Container
                   eventKey={item.alarmAttachmentId}
                   title={item.deviceName}
-                  key={item.attachmentName}
+                  key={item.alarmAttachmentId}
                   //attachment={item.alarmAttachmentId}
                 >
                   <video
