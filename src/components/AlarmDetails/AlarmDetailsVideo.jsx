@@ -57,9 +57,6 @@ const AlarmDetailsVideo = () => {
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
-    if (alarmAttachment) {
-      dispatch(clearAlarmAttachment());
-    }
     dispatch(getAlarmAttachment({ attachmentId: attachmentId })).unwrap();
   };
 
