@@ -9,11 +9,18 @@ import {
 const initialState = {
   alarmFiles: "",
   alarmAttachment: "",
+  status: "",
+  loading: "",
 };
 
 export const attachmentsSlice = createSlice({
   name: "attachments",
   initialState,
+  reducers: {
+    clearAlarmAttachment(state, action) {
+      return { alarmAttachment: action.payload };
+    },
+  },
   extraReducers(builder) {
     builder
       //Get alarm attachments
@@ -33,6 +40,7 @@ export const attachmentsSlice = createSlice({
       .addCase(getAlarmAttachment.pending, (state, action) => {
         state.status = "loading";
         state.loading = true;
+        state.alarmAttachment = "";
       })
       .addCase(getAlarmAttachment.fulfilled, (state, action) => {
         state.status = "succedded";
@@ -47,4 +55,5 @@ export const attachmentsSlice = createSlice({
 });
 
 export const { reducer } = attachmentsSlice;
+export const { clearAlarmAttachment } = attachmentsSlice.actions;
 export default reducer;
