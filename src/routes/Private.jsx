@@ -182,7 +182,7 @@ const Private = () => {
             window.location.reload();
           });
       }
-    }, res);
+    }, 86_400_000);
   }, []);
 
   return isLoggedIn ? (

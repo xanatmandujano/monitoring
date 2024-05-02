@@ -1,7 +1,7 @@
 import React from "react";
 
 const VideoLoader = () => {
-  return <div>Loading media...</div>;
+  return <div style={{ color: "white" }}>Loading media...</div>;
 };
 
 export default VideoLoader;

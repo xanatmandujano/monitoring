@@ -12,10 +12,11 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
+import { BsXLg } from "react-icons/bs";
 //import { alarmNotificationHub } from "../../store/actions/notificationActions";
 
 const AlarmsSidebar = () => {
-  const { alarms } = useSelector((state) => state.alarms);
+  const { alarms, alarmsCount } = useSelector((state) => state.alarms);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const AlarmsSidebar = () => {
   const [connection, setConnection] = useState("");
   const [alarmCode, setAlarmCode] = useState();
   const [disabled, setDisabled] = useState(false);
+  //let [counter, setCounter] = useState(alarmsCount && alarmsCount);
   const { idVideo } = useParams();
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
@@ -80,7 +82,11 @@ const AlarmsSidebar = () => {
             const updatedNotifications = [...latestAlarm.current];
             updatedNotifications.unshift(res.data.result);
             setNotifications(updatedNotifications);
+            // let count = counter++;
+            // setCounter(count);
+
             notifications.reverse();
+
             setShow(true);
           }
         });
@@ -138,7 +144,7 @@ const AlarmsSidebar = () => {
         });
         if (idVideo) {
           dispatch(releaseAlarm({ alarmId: idVideo }));
-          await connection.send("SendToOthers", releaseAction).then(() => {
+          await connection.send("SendToAll", releaseAction).then(() => {
             //console.log("Alarm release from card");
             let element = document.getElementById(alarmId);
             let cardBtn = element.lastChild.lastChild.lastChild;
@@ -181,6 +187,7 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
+        <p>{`Total de alarmas: ${alarmsCount ? alarmsCount : 0}`}</p>
         <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
       <Container className="alarms-side-bar">
