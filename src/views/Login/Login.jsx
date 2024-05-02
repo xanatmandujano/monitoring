@@ -35,7 +35,8 @@ const Login = () => {
     setLoader(true);
     dispatch(USER_LOGIN({ email: values.email, password: values.password }))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        //console.log(res);
         window.location.reload();
       })
       .catch(() => {

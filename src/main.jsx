@@ -7,7 +7,6 @@ import "./styles/styles.scss";
 //Views
 import Root from "./routes/Root.jsx";
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx";
-import Login from "./views/Login/Login";
 import AlarmsPanel from "./views/AlarmsPanel/AlarmsPanel";
 import AlarmsHistory from "./views/AlarmsHistory/AlarmsHistory.jsx";
 //Redux
@@ -22,7 +21,6 @@ import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
 import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
 import AlarmDetailsRtcpHistory from "./views/AlarmsHistory/AlarmDetailsRtcpHistory.jsx";
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
-import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
 
 const router = createHashRouter([
   {
@@ -49,16 +47,6 @@ const router = createHashRouter([
                 element: <AlarmDetailsVideo />,
                 errorElement: <ErrorPage />,
               },
-              {
-                path: "whiteList/:idVideo",
-                element: <FaceRecognitionAlarm />,
-                errorElement: <ErrorPage />,
-              },
-              {
-                path: "blackList/:idVideo",
-                element: <FaceRecognitionAlarm />,
-                errorElement: <ErrorPage />,
-              },
             ],
           },
           {
@@ -74,16 +62,6 @@ const router = createHashRouter([
               {
                 path: "seproban/:idVideo",
                 element: <AlarmDetailsVideoHistory />,
-                errorElement: <ErrorPage />,
-              },
-              {
-                path: "whiteList/:idVideo",
-                element: <FaceRecognitionAlarm />,
-                errorElement: <ErrorPage />,
-              },
-              {
-                path: "blackList/:idVideo",
-                element: <FaceRecognitionAlarm />,
                 errorElement: <ErrorPage />,
               },
             ],
