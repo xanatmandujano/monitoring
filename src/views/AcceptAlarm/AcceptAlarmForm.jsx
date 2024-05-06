@@ -23,6 +23,7 @@ const AcceptAlarmForm = ({ onHide }) => {
   const [show, setShow] = useState("none");
   const [disabled, setDisabled] = useState(false);
   const [connection, setConnection] = useState(null);
+  const [checked, setChecked] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -86,6 +87,10 @@ const AcceptAlarmForm = ({ onHide }) => {
     }
   };
 
+  const handleSelectAll = () => {
+    setChecked(true);
+  };
+
   //Accept alarm
   const sendAlarm = (values) => {
     setLoader(true);
@@ -137,6 +142,7 @@ const AcceptAlarmForm = ({ onHide }) => {
           doubleDevices: [],
           quadDevices: [],
           checkboxGroup: [],
+          all: [],
           singleQuad: null,
           quads: [],
           double: [],
@@ -160,6 +166,7 @@ const AcceptAlarmForm = ({ onHide }) => {
                     name="checkboxGroup"
                     value={item.deviceId}
                     disabled={disabled}
+                    checked={checked}
                   />
                 ))
               : null}
@@ -190,6 +197,7 @@ const AcceptAlarmForm = ({ onHide }) => {
                               key={quad + 1}
                               value={`${item.deviceId}-${quad}`}
                               disabled={disabled}
+                              checked={checked}
                             />
                           ))
                         : null}
@@ -224,6 +232,7 @@ const AcceptAlarmForm = ({ onHide }) => {
                               key={quad + 1}
                               value={`${item.deviceId}-${quad}`}
                               disabled={disabled}
+                              checked={checked}
                             />
                           ))
                         : null}
@@ -232,6 +241,13 @@ const AcceptAlarmForm = ({ onHide }) => {
                 ))
               : null}
 
+            {/*Select all*/}
+            <CheckInput
+              type="checkbox"
+              label={`Seleccionar todo`}
+              name="all"
+              onChange={() => handleSelectAll()}
+            />
             <TextField
               label="Usuario"
               name="user"
