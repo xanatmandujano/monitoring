@@ -37,6 +37,29 @@ const AlarmDetailsVideo = () => {
   const { alarmFiles, alarmAttachment, loading } = useSelector(
     (state) => state.attachments
   );
+  const videoRef = useRef(null);
+
+  function setPlaySpeed(id) {
+    const map = getMap();
+    const node = map.get(id);
+    if (node) {
+      node.playbackRate = 0.25;
+    }
+  }
+
+  function getMap() {
+    if (!videoRef.current) {
+      videoRef.current = new Map();
+    }
+
+    return videoRef.current;
+  }
+
+  // const setPlaySpeed = () => {
+  //   if (videoRef) {
+  //     videoRef.current.playbackRate = 0.25;
+  //   }
+  // };
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -156,7 +179,24 @@ const AlarmDetailsVideo = () => {
                       height="100%"
                       width="100%"
                       controls
+                      //ref={videoRef}
+                      ref={(node) => {
+                        const map = getMap();
+                        if (node) {
+                          map.set(item.alarmAttachmentId, node);
+                        } else {
+                          map.delete(item.alarmAttachmentId);
+                        }
+                      }}
+                      onLoadStart={() =>
+                        setPlaySpeed(
+                          alarmAttachment && alarmAttachment.alarmAttachmentId
+                        )
+                      }
                       src={alarmAttachment && alarmAttachment.attachmentValue}
+                      id={`video-${
+                        alarmAttachment && alarmAttachment.alarmAttachmentId
+                      }`}
                     >
                       Tu navegador no admite el elemento <code>video</code>
                     </video>
