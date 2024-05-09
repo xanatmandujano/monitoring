@@ -13,6 +13,7 @@ import oxxo from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
+import { releaseAlarm } from "../../store/actions/alarmsActions";
 //React-router-dom
 import { useNavigate, useParams } from "react-router-dom";
 import { Connector } from "../../signalr/signalr-connection";
@@ -47,11 +48,23 @@ const NavBar = () => {
     try {
       if (connection) {
         await connection.send("SendToAll", releaseAction).then(() => {
-          //console.log("Alarm release: logout");
+          console.log("Alarm release: from change window");
         });
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleChangeWindow = (link) => {
+    if (idVideo) {
+      dispatch(releaseAlarm({ alarmId: idVideo }));
+      sendAlarmStatus(idVideo);
+      navigate(link);
+      //window.location.reload();
+    } else {
+      navigate(link);
+      //window.location.reload();
     }
   };
 
@@ -86,16 +99,21 @@ const NavBar = () => {
           </Navbar.Brand>
           {isLoggedIn ? (
             <>
-              <Nav.Link href="#alarms-panel" className="page-title">
+              <Button
+                onClick={() => handleChangeWindow("alarms-panel")}
+                className="page-title"
+                variant="secondary"
+              >
                 Panel de alarmas
-              </Nav.Link>
-              <Nav.Link
-                href="#alarms-history"
+              </Button>
+              <Button
+                onClick={() => handleChangeWindow("alarms-history")}
                 style={{ color: "white", marginLeft: "1rem" }}
                 className="page-title"
+                variant="secondary"
               >
                 Historial de alarmas
-              </Nav.Link>
+              </Button>
             </>
           ) : (
             <Nav.Link href="#" className="page-title">

@@ -37,6 +37,8 @@ const AlarmDetailsVideo = () => {
   const { alarmFiles, alarmAttachment, loading } = useSelector(
     (state) => state.attachments
   );
+
+  /*Video play speed*/
   const videoRef = useRef(null);
 
   function setPlaySpeed(id) {
@@ -54,12 +56,6 @@ const AlarmDetailsVideo = () => {
 
     return videoRef.current;
   }
-
-  // const setPlaySpeed = () => {
-  //   if (videoRef) {
-  //     videoRef.current.playbackRate = 0.25;
-  //   }
-  // };
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -179,7 +175,6 @@ const AlarmDetailsVideo = () => {
                       height="100%"
                       width="100%"
                       controls
-                      //ref={videoRef}
                       ref={(node) => {
                         const map = getMap();
                         if (node) {

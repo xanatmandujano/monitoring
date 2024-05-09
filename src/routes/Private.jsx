@@ -5,6 +5,7 @@ import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
 import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
 import { Connector } from "../signalr/signalr-connection";
+import NewAlarm from "../views/AlarmsPanel/NewAlarm";
 
 const expirationTime = 3600 * 1000;
 const promptBeforeIdle = 10_000;
@@ -197,6 +198,7 @@ const Private = () => {
       onAction={onAction}
     >
       <Child />
+      <NewAlarm />
       <Prompt show={open} onHide={() => setOpen} />
       <Outlet connection={connection} />
     </IdleTimerProvider>

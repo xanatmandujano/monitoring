@@ -69,11 +69,13 @@ const AlarmsHistory = () => {
 
   return (
     <Container className="alarms-history">
-      <SearchBar
-        submit={async (values) => {
-          search(values);
-        }}
-      />
+      {!idVideo ? (
+        <SearchBar
+          submit={async (values) => {
+            search(values);
+          }}
+        />
+      ) : null}
 
       {loader ? (
         <Loader />

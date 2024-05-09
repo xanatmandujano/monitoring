@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { all } from "axios";
 import url from "/config.json";
 
 const baseURL = url.server.apiUrl;
@@ -125,7 +125,8 @@ export const validateAlarm = async (
   comments,
   alarmUser,
   alarmTime,
-  devices
+  devices,
+  allDevices
 ) => {
   const response = await axios({
     method: "POST",
@@ -140,6 +141,7 @@ export const validateAlarm = async (
       alarmUser: alarmUser,
       alarmTime: alarmTime,
       devices: devices,
+      allDevices: allDevices,
     },
   });
   if (response.data.isSuccess) {

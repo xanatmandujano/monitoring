@@ -107,14 +107,18 @@ export const alarmData = createAsyncThunk(
 
 export const validateSeprobanAlarm = createAsyncThunk(
   "alarms/validateAlarm",
-  async ({ alarmId, comments, alarmUser, alarmTime, devices }, thunkAPI) => {
+  async (
+    { alarmId, comments, alarmUser, alarmTime, devices, allDevices },
+    thunkAPI
+  ) => {
     try {
       const data = await validateAlarm(
         alarmId,
         comments,
         alarmUser,
         alarmTime,
-        devices
+        devices,
+        allDevices
       );
       //console.log(data);
       return data;

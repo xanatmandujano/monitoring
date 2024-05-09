@@ -25,7 +25,7 @@ const AlarmsSidebar = () => {
   const [connection, setConnection] = useState("");
   const [alarmCode, setAlarmCode] = useState();
   const [disabled, setDisabled] = useState(false);
-  //let [counter, setCounter] = useState(alarmsCount && alarmsCount);
+  let [counter, setCounter] = useState(null);
   const { idVideo } = useParams();
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
@@ -82,8 +82,6 @@ const AlarmsSidebar = () => {
             const updatedNotifications = [...latestAlarm.current];
             updatedNotifications.unshift(res.data.result);
             setNotifications(updatedNotifications);
-            // let count = counter++;
-            // setCounter(count);
 
             notifications.reverse();
 
@@ -94,6 +92,9 @@ const AlarmsSidebar = () => {
         console.log(error.message);
       }
     };
+
+    console.log("Notifications lenght", notifications.length);
+    setCounter(notifications.length);
 
     alarmData();
   }, [dispatch, alarmCode]);
@@ -187,7 +188,9 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <p>{`Total de alarmas: ${alarmsCount ? alarmsCount : 0}`}</p>
+        <p>{`Total de alarmas: ${
+          counter === 0 ? counter + alarmsCount + 1 : alarmCode + counter
+        }`}</p>
         <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
       <Container className="alarms-side-bar">

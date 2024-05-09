@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
@@ -38,6 +38,24 @@ const AlarmDetailsVideoHistory = () => {
   const handleBtn = () => {
     return navigate("/alarms-history");
   };
+
+  const videoRef = useRef(null);
+
+  function setPlaySpeed(id) {
+    const map = getMap();
+    const node = map.get(id);
+    if (node) {
+      node.playbackRate = 0.25;
+    }
+  }
+
+  function getMap() {
+    if (!videoRef.current) {
+      videoRef.current = new Map();
+    }
+
+    return videoRef.current;
+  }
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -90,6 +108,16 @@ const AlarmDetailsVideoHistory = () => {
                         width="100%"
                         controls
                         src={item.attachmentValue}
+                        ref={(node) => {
+                          const map = getMap();
+                          if (node) {
+                            map.set(item.alarmAttachmentId, node);
+                          } else {
+                            map.delete(item.alarmAttachmentId);
+                          }
+                        }}
+                        onLoadStart={() => setPlaySpeed(item.alarmAttachmentId)}
+                        id={`video-${item.alarmAttachmentId}`}
                       >
                         Tu navegador no admite el elemento <code>video</code>
                       </video>
