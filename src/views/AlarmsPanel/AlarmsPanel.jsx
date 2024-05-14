@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { clearMessage } from "../../store/slices/messageSlice";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 //React router dom
 import { Outlet, useParams } from "react-router-dom";
-import { Connector } from "../../signalr/signalr-connection";
+
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -11,8 +10,6 @@ import Col from "react-bootstrap/Col";
 //Components
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
-import NewAlarm from "./NewAlarm";
-//import NewAlarmTest from "./NewAlarmTest";
 
 const AlarmsPanel = () => {
   const { idVideo } = useParams();
@@ -20,7 +17,6 @@ const AlarmsPanel = () => {
 
   return (
     <>
-      <NewAlarm />
       <Container fluid className="alarms-panel">
         {/* <div className="search-bar">
           <p>{`Total de alarmas: ${alarmsCount ? alarmsCount : 0}`}</p>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 //Formik & yup
-import { Form, Formik } from "formik";
+import { Form, Formik, useField } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,7 @@ import CheckInput from "../../components/CheckInput/CheckInput";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Loader from "../../components/Loader/Loader";
+import FormikObserver from "../../components/FormikObserver/FormikObserver";
 
 const AcceptAlarmForm = ({ onHide }) => {
   //State
@@ -24,6 +25,7 @@ const AcceptAlarmForm = ({ onHide }) => {
   const [disabled, setDisabled] = useState(false);
   const [connection, setConnection] = useState(null);
   const [checked, setChecked] = useState(null);
+  const [all, setAll] = useState();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,10 +89,6 @@ const AcceptAlarmForm = ({ onHide }) => {
     }
   };
 
-  const handleSelectAll = () => {
-    setChecked(true);
-  };
-
   //Accept alarm
   const sendAlarm = (values) => {
     setLoader(true);
@@ -102,7 +100,8 @@ const AcceptAlarmForm = ({ onHide }) => {
         comments: values.comments,
         alarmUser: values.user,
         alarmTime: values.time,
-        devices: values.checkboxGroup,
+        devices: values.checkboxGroup ? values.checkboxGroup : [],
+        allDevices: values.toggle ? values.toggle : null,
       })
     )
       .unwrap()
@@ -123,12 +122,7 @@ const AcceptAlarmForm = ({ onHide }) => {
     comments: yup.string().required("yup.comments"),
     user: yup.string().required("yup.user"),
     time: yup.string().required("yup.time"),
-    //normalDevices: yup.array().min(1).required(),
-    //doubleDevices: yup.array().min(1).required(),
-    //quadDevices: yup.array().min(1).required(),
-    //quads: yup.array().min(1).required(),
-    //double: yup.array().min(1).required(),
-    checkboxGroup: yup.array().min(1).required(),
+    //checkboxGroup: yup.array().min(1).required(),
   });
 
   return (
@@ -138,14 +132,8 @@ const AcceptAlarmForm = ({ onHide }) => {
           comments: "",
           user: "",
           time: "",
-          normalDevices: [],
-          doubleDevices: [],
-          quadDevices: [],
           checkboxGroup: [],
-          all: [],
-          singleQuad: null,
-          quads: [],
-          double: [],
+          toggle: false,
         }}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
@@ -155,7 +143,25 @@ const AcceptAlarmForm = ({ onHide }) => {
       >
         {(props) => (
           <Form>
+            <FormikObserver
+              onChange={(values, initialValues) => {
+                if (values.values.toggle) {
+                  setChecked(true);
+                } else if (!values.values.toggle) {
+                  setChecked(null);
+                }
+              }}
+            />
+
             <p>Selección de videos</p>
+            {/*Select all*/}
+            <CheckInput
+              type="switch"
+              label={`Seleccionar todo`}
+              name="toggle"
+              onClick={() => props.setFieldValue("checkboxGroup", [], true)}
+            />
+
             {/* Devices */}
             {dewarpedNull && dewarpedNull.length >= 1
               ? dewarpedNull.map((item) => (
@@ -241,13 +247,6 @@ const AcceptAlarmForm = ({ onHide }) => {
                 ))
               : null}
 
-            {/*Select all*/}
-            <CheckInput
-              type="checkbox"
-              label={`Seleccionar todo`}
-              name="all"
-              onChange={() => handleSelectAll()}
-            />
             <TextField
               label="Usuario"
               name="user"

@@ -25,7 +25,7 @@ const AlarmsSidebar = () => {
   const [connection, setConnection] = useState("");
   const [alarmCode, setAlarmCode] = useState();
   const [disabled, setDisabled] = useState(false);
-  //let [counter, setCounter] = useState(alarmsCount && alarmsCount);
+  let [counter, setCounter] = useState(null);
   const { idVideo } = useParams();
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
@@ -82,8 +82,6 @@ const AlarmsSidebar = () => {
             const updatedNotifications = [...latestAlarm.current];
             updatedNotifications.unshift(res.data.result);
             setNotifications(updatedNotifications);
-            // let count = counter++;
-            // setCounter(count);
 
             notifications.reverse();
 
@@ -95,8 +93,26 @@ const AlarmsSidebar = () => {
       }
     };
 
+    //console.log("Notifications lenght", notifications.length);
+    setCounter(notifications.length + 1);
+
     alarmData();
   }, [dispatch, alarmCode]);
+
+  const handleCount = () => {
+    if (counter === 1 && alarmsCount >= 1) {
+      let count = counter + alarmsCount - 1;
+      return count;
+    } else if (counter === 1 && alarmsCount === 0) {
+      let count = counter - 1;
+      return count + alarmsCount;
+    } else if (counter > 1) {
+      let count = counter + alarmsCount;
+      return count;
+    } else {
+      return 0;
+    }
+  };
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -187,7 +203,7 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <p>{`Total de alarmas: ${alarmsCount ? alarmsCount : 0}`}</p>
+        <p>{`Total de alarmas: ${handleCount()}`}</p>
         <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
       <Container className="alarms-side-bar">
