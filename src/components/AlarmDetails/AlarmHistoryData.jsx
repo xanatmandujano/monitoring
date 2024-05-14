@@ -1,6 +1,5 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import { Table } from "react-bootstrap";
 //React-router-dom
@@ -39,6 +38,7 @@ const AlarmHistoryData = ({ ...props }) => {
             <th>Descripción</th>
             <th>Clave de sucursal</th>
             <th>Fecha de creación</th>
+            <th>IP del panel</th>
             <th>Estatus</th>
             <th></th>
           </tr>
@@ -50,6 +50,7 @@ const AlarmHistoryData = ({ ...props }) => {
                 <td>{item.alarmDescription}</td>
                 <td>{item.branchCode}</td>
                 <td>{dateTime(item.creationDate)}</td>
+                <td>{item.deviceIPAddress}</td>
                 <td>{item.status}</td>
                 <td>
                   <Link to={alarmType(item.alarmTypeId, item.alarmId)}>

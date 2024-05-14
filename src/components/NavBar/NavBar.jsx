@@ -67,7 +67,6 @@ const NavBar = () => {
       //window.location.reload();
     }
   };
-
   //Logout
   const logoutUser = () => {
     setLoader(true);

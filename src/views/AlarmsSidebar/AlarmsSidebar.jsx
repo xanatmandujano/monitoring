@@ -93,11 +93,26 @@ const AlarmsSidebar = () => {
       }
     };
 
-    console.log("Notifications lenght", notifications.length);
-    setCounter(notifications.length);
+    //console.log("Notifications lenght", notifications.length);
+    setCounter(notifications.length + 1);
 
     alarmData();
   }, [dispatch, alarmCode]);
+
+  const handleCount = () => {
+    if (counter === 1 && alarmsCount >= 1) {
+      let count = counter + alarmsCount - 1;
+      return count;
+    } else if (counter === 1 && alarmsCount === 0) {
+      let count = counter - 1;
+      return count + alarmsCount;
+    } else if (counter > 1) {
+      let count = counter + alarmsCount;
+      return count;
+    } else {
+      return 0;
+    }
+  };
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -188,9 +203,7 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <p>{`Total de alarmas: ${
-          counter === 0 ? counter + alarmsCount + 1 : alarmCode + counter
-        }`}</p>
+        <p>{`Total de alarmas: ${handleCount()}`}</p>
         <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
       <Container className="alarms-side-bar">

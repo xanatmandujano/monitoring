@@ -11,11 +11,12 @@ import Container from "react-bootstrap/Container";
 import Loader from "../../components/Loader/Loader";
 import SearchBar from "./SearchBar";
 import Pagination from "react-bootstrap/Pagination";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 
 const AlarmsHistory = () => {
   const [loader, setLoader] = useState(false);
   const [currPage, setCurrentPage] = useState(1);
-  const [nextPage, setNextPage] = useState();
+  const [show, setShow] = useState(false);
 
   const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
@@ -36,10 +37,15 @@ const AlarmsHistory = () => {
       .unwrap()
       .then(() => {
         setLoader(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setShow(true);
       });
   }, [dispatch, currPage]);
 
   const search = (values) => {
+    setLoader(true);
     dispatch(
       alarmsHistory({
         pageNumber: 1,
@@ -48,7 +54,16 @@ const AlarmsHistory = () => {
         sortDirection: "asc",
         searchText: values.search,
       })
-    ).unwrap();
+    )
+      .unwrap()
+      .then(() => {
+        setLoader(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoader(false);
+        setShow(true);
+      });
   };
 
   const handleNextPage = () => {
@@ -71,8 +86,10 @@ const AlarmsHistory = () => {
     <Container className="alarms-history">
       {!idVideo ? (
         <SearchBar
+          //disabled={allAlarms && allAlarms.length === 0}
           submit={async (values) => {
             search(values);
+            setCurrentPage(1);
           }}
         />
       ) : null}
@@ -93,7 +110,9 @@ const AlarmsHistory = () => {
                 disabled={currPage === 1}
               />
             </div>
-            <p>{`${currPage}/${alarmsPages}`}</p>
+            <p>{`${
+              allAlarms && allAlarms.length === 0 ? 0 : currPage
+            }/${alarmsPages}`}</p>
             <div className="arrow">
               <Pagination.Next
                 onClick={handleNextPage}
@@ -105,6 +124,13 @@ const AlarmsHistory = () => {
               />
             </div>
           </Pagination>
+
+          <ErrorMessage
+            headermessage="Ocurrió un error"
+            message="El criterio de búsqueda no es válido"
+            show={show}
+            onHide={() => setShow(false)}
+          />
         </>
       ) : (
         <Outlet />

@@ -154,6 +154,14 @@ const AcceptAlarmForm = ({ onHide }) => {
             />
 
             <p>Selección de videos</p>
+            {/*Select all*/}
+            <CheckInput
+              type="switch"
+              label={`Seleccionar todo`}
+              name="toggle"
+              onClick={() => props.setFieldValue("checkboxGroup", [], true)}
+            />
+
             {/* Devices */}
             {dewarpedNull && dewarpedNull.length >= 1
               ? dewarpedNull.map((item) => (
@@ -239,13 +247,6 @@ const AcceptAlarmForm = ({ onHide }) => {
                 ))
               : null}
 
-            {/*Select all*/}
-            <CheckInput
-              type="switch"
-              label={`Seleccionar todo ${props.values.toggle}`}
-              name="toggle"
-              onClick={() => props.setFieldValue("checkboxGroup", [], true)}
-            />
             <TextField
               label="Usuario"
               name="user"
