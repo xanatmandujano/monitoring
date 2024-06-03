@@ -1,4 +1,4 @@
-import axios, { all } from "axios";
+import axios from "axios";
 import url from "/config.json";
 
 const baseURL = url.server.apiUrl;

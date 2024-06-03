@@ -7,9 +7,13 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ModalMessage from "../ModalMessage/ModalMessage";
+import DocumentModal from "../ModalMessage/DocumentModal";
+import { MdOutlineLiveHelp } from "react-icons/md";
+import PdfViewer from "../PdfViewer/PdfViewer";
 //Logo
-import logo from "/config.json";
+import banbajio from "/config.json";
 import oxxo from "/config.json";
+
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
@@ -27,7 +31,10 @@ const NavBar = () => {
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [manualShow, setManualShow] = useState(false);
   const [connection, setConnection] = useState("");
+
+  const mode = import.meta.env.MODE;
 
   useEffect(() => {
     const newConnection = Connector();
@@ -94,7 +101,11 @@ const NavBar = () => {
       <Navbar key="lg" expand="lg" className="nav-bar-main">
         <Container fluid>
           <Navbar.Brand href="#alarms-panel">
-            <img src={logo.assets.logo} alt="logo" width={100} />
+            <img
+              src={mode === "ox" ? oxxo.assets.oxxo : banbajio.assets.banbajio}
+              alt="logo"
+              width={100}
+            />
           </Navbar.Brand>
           {isLoggedIn ? (
             <>
@@ -145,6 +156,15 @@ const NavBar = () => {
                   >
                     Cerrar sesión
                   </Button>
+                  <Nav.Item className="help">
+                    <Button
+                      variant="main"
+                      size="md"
+                      onClick={() => setManualShow(true)}
+                    >
+                      <MdOutlineLiveHelp />
+                    </Button>
+                  </Nav.Item>
                 </Nav>
               ) : null}
             </Offcanvas.Body>
@@ -158,6 +178,13 @@ const NavBar = () => {
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"
           btntext="Aceptar"
+        />
+
+        <DocumentModal
+          show={manualShow}
+          onHide={() => setManualShow(false)}
+          headermessage="Manual"
+          message={<PdfViewer />}
         />
       </Navbar>
     </>
