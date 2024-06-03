@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:bb": "vite --mode bb",
+    "dev:ox": "vite --mode ox",
+    "build:bb": "vite build --mode bb",
+    "build:ox": "vite build --mode ox"
   },
   "dependencies": {
     "@microsoft/signalr": "^7.0.12",
