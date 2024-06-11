@@ -12,7 +12,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
-import { BsXLg } from "react-icons/bs";
+import alarmPng from "/assets/images/alarm.png";
 //import { alarmNotificationHub } from "../../store/actions/notificationActions";
 
 const AlarmsSidebar = () => {
@@ -29,8 +29,44 @@ const AlarmsSidebar = () => {
   const { idVideo } = useParams();
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
+  let location = window.location.href;
 
   useEffect(() => {
+    //Notification push
+    Notification.requestPermission().then((res) => {});
+
+    function notifiyMe(title, body, icon) {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications");
+      } else if (Notification.permission === "granted") {
+        let notification = new Notification(title, {
+          body: body,
+          icon: icon,
+        });
+        notification.onclick = (e) => {
+          e.preventDefault();
+          window.open(`${location}`, "_blank");
+        };
+      } else if (Notification.permission === "denied") {
+        Notification.requestPermission().then(
+          (res) =>
+            function (permission) {
+              console.log(res);
+              if (permission === "granted") {
+                let notification = new Notification(title, {
+                  body: body,
+                  icon: icon,
+                });
+                notification.onclick = (e) => {
+                  e.preventDefault();
+                  window.open(`${location}`, "_blank");
+                };
+              }
+            }
+        );
+      }
+    }
+
     dispatch(clearMessage());
     const newConnection = Connector();
     setConnection(newConnection);
@@ -86,6 +122,12 @@ const AlarmsSidebar = () => {
             notifications.reverse();
 
             setShow(true);
+            notifiyMe(
+              res.data.result.alarmDescription,
+              alarmCode,
+              alarmPng,
+              res.data.result.alarmId
+            );
           }
         });
       } catch (error) {
@@ -220,7 +262,9 @@ const AlarmsSidebar = () => {
               creationDate={item.creationDate}
               display={{ display: show }}
               classN={
-                item.alarmId == idVideo ? "newAlarm intermitent" : "intermitent"
+                item.alarmId === idVideo
+                  ? "newAlarm intermitent"
+                  : "intermitent"
               }
               activeId={item.alarmId}
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
@@ -240,7 +284,7 @@ const AlarmsSidebar = () => {
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
               classN={
-                item.alarmId == idVideo
+                item.alarmId === idVideo
                   ? "intermitent"
                   : "" || item.inUse === true
                   ? "alarm-disabled"

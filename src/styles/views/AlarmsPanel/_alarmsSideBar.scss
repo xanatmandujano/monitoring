@@ -6,18 +6,10 @@
   padding-left: 0rem;
 
   .intermitent {
-    // animation: scale-up-center 2s cubic-bezier(0.39, 0.575, 0.565, 1) infinite
-    //   alternate-reverse both;
-
-    // @keyframes scale-up-center {
-    //   0% {
-    //     transform: scale(0.95);
-    //   }
-    //   100% {
-    //     transform: scale(1);
-    //   }
-    // }
     background-color: $active-color;
+    // border-style: solid;
+    // border-color: #8a0b0b;
+    // border-width: 5px;
   }
 
   .newAlarm {
