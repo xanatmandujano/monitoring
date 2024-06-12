@@ -1,13 +1,13 @@
 {
-    "server" : {
-        "apiUrl" : "https://192.168.0.201:8091",
-	    "StreamingUrl" : "https://192.168.0.201:8091"
-    },
+  "server": {
+    "apiUrl": "https://192.168.1.120:7091",
+    "StreamingUrl": "https://192.168.1.120:7091"
+  },
 
-    "assets" : {
-        "banbajio" : "/assets/images/Banbajio.png",
-        "oxxo" : "/assets/images/oxxo-gas.png",
-        "manualBB" : "/assets/documents/manual-bb.pdf",
-        "manualOx" : "/assets/documents/manual-ox.pdf"
-    }
+  "assets": {
+    "banbajio": "/assets/images/Banbajio.png",
+    "oxxo": "/assets/images/oxxo-gas.png",
+    "manualBB": "/assets/documents/manual-bb.pdf",
+    "manualOx": "/assets/documents/manual-ox.pdf"
+  }
 }

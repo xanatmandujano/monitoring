@@ -25,7 +25,7 @@ const AcceptAlarmForm = ({ onHide }) => {
   const [disabled, setDisabled] = useState(false);
   const [connection, setConnection] = useState(null);
   const [checked, setChecked] = useState(null);
-  const [all, setAll] = useState();
+  //const [all, setAll] = useState();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -81,11 +81,13 @@ const AcceptAlarmForm = ({ onHide }) => {
   const dewarpedQuad = findQuad();
   const dewarpedDouble = findDouble();
 
-  const handleShow = () => {
-    if (show === "none") {
-      setShow("block");
-    } else if (show === "block") {
-      setShow("none");
+  const handleShow = (id) => {
+    let quads = document.getElementById(id);
+    if (quads && quads.style.display === "none") {
+      console.log(quads.style.display);
+      quads.style.display = "block";
+    } else if (quads && quads.style.display === "block") {
+      quads.style.display = "none";
     }
   };
 
@@ -173,27 +175,32 @@ const AcceptAlarmForm = ({ onHide }) => {
                     value={item.deviceId}
                     disabled={disabled}
                     checked={checked}
+                    id={item.deviceId}
                   />
                 ))
               : null}
             {dewarpedQuad && dewarpedQuad.length >= 1
               ? dewarpedQuad.map((item) => (
                   <div key={item.deviceId}>
-                    <div className="dewarped-options" key={item.deviceId}>
+                    <div className="dewarped-options">
                       <p key={item.deviceId + 1}>{item.deviceName}</p>
 
                       <Button
                         variant="main"
-                        onClick={handleShow}
+                        onClick={() => handleShow(item.deviceId)}
                         size="sm"
-                        key={item.deviceId + 2}
+                        //key={item.deviceId + 2}
                         disabled={disabled}
                       >
                         +
                       </Button>
                     </div>
                     {/* Quads */}
-                    <div style={{ display: show }} key={item.deviceId + 3}>
+                    <div
+                      style={{ display: "none" }}
+                      key={item.deviceId + 3}
+                      id={item.deviceId}
+                    >
                       {dewarpedQuad && dewarpedQuad.length >= 1
                         ? [1, 2, 3, 4].map((quad) => (
                             <CheckInput
@@ -204,6 +211,7 @@ const AcceptAlarmForm = ({ onHide }) => {
                               value={`${item.deviceId}-${quad}`}
                               disabled={disabled}
                               checked={checked}
+                              id={item.deviceId}
                             />
                           ))
                         : null}
@@ -219,16 +227,20 @@ const AcceptAlarmForm = ({ onHide }) => {
                       <p key={item.deviceId + 1}>{item.deviceName}</p>
                       <Button
                         variant="main"
-                        onClick={handleShow}
+                        onClick={() => handleShow(item.deviceId)}
                         size="sm"
-                        key={item.deviceId}
+                        //key={item.deviceId}
                         disabled={disabled}
                       >
                         +
                       </Button>
                     </div>
                     {/* Double */}
-                    <div style={{ display: show }} key={item.deviceId + 3}>
+                    <div
+                      style={{ display: "none" }}
+                      key={item.deviceId + 3}
+                      id={item.deviceId}
+                    >
                       {dewarpedDouble && dewarpedDouble.length >= 1
                         ? [1, 2].map((quad) => (
                             <CheckInput
@@ -239,6 +251,7 @@ const AcceptAlarmForm = ({ onHide }) => {
                               value={`${item.deviceId}-${quad}`}
                               disabled={disabled}
                               checked={checked}
+                              //id={item.deviceId}
                             />
                           ))
                         : null}

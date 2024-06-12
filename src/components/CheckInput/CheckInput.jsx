@@ -13,7 +13,7 @@ const CheckInput = ({ ...props }) => {
         {...props}
         htmlFor={field.name}
         type={props.type}
-        id={`default-${props.type}`}
+        id={`default-${props.type}-${props.value}`}
         label={props.label}
         style={{ color: "#fff" }}
         isInvalid={meta.touched && !!meta.error}
