@@ -13,10 +13,13 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
 import alarmPng from "/assets/images/alarm.png";
+import FullLoader from "../../components/Loader/FullLoader";
+import PlaceholderCard from "./PlaceholderCard";
+import Loader from "../../components/Loader/Loader";
 //import { alarmNotificationHub } from "../../store/actions/notificationActions";
 
 const AlarmsSidebar = () => {
-  const { alarms, alarmsCount } = useSelector((state) => state.alarms);
+  const { alarms, alarmsCount, loading } = useSelector((state) => state.alarms);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -271,7 +274,6 @@ const AlarmsSidebar = () => {
               //disabled={item.inUse}
             />
           ))}
-
         {filteredAlarms &&
           filteredAlarms.map((item) => (
             <AlarmCard

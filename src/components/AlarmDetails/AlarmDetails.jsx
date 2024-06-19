@@ -19,6 +19,7 @@ import CloseButton from "react-bootstrap/CloseButton";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
 import Loader from "../Loader/Loader";
+import FullLoader from "../Loader/FullLoader";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
@@ -35,6 +36,7 @@ const AlarmDetails = () => {
   const { alarmFiles } = useSelector((state) => state.attachments);
 
   useEffect(() => {
+    setLoader(true);
     dispatch(clearMessage());
     dispatch(
       alarmStatus({
@@ -43,7 +45,9 @@ const AlarmDetails = () => {
         comments: "",
       })
     ).unwrap();
-    dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+    dispatch(alarmAttachments({ alarmId: idVideo }))
+      .unwrap()
+      .then(() => setLoader(false));
 
     const newConnection = Connector();
     setConnection(newConnection);

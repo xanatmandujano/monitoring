@@ -1,7 +1,7 @@
 {
   "server": {
-    "apiUrl": "https://192.168.1.120:7091",
-    "StreamingUrl": "https://192.168.1.120:7091"
+    "apiUrl": "https://172.19.29.20:8091",
+    "StreamingUrl": "https://172.19.29.20:8091"
   },
 
   "assets": {
