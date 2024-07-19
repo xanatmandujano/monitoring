@@ -1,37 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 //Formik & yup
-import { Form, Formik, useField } from "formik";
+import { Form, Formik } from "formik";
 import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { validateSeprobanAlarm } from "../../store/actions/alarmsActions";
+import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
 import { useNavigate } from "react-router-dom";
 import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import TextField from "../../components/TextField/TextField";
-//import SelectField from "../../components/SelectField/SelectField";
 import CheckInput from "../../components/CheckInput/CheckInput";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Loader from "../../components/Loader/Loader";
 import FormikObserver from "../../components/FormikObserver/FormikObserver";
+import CanceledAlarm from "../../components/AlarmNotification/CanceledAlarm";
 
-const AcceptAlarmForm = ({ onHide }) => {
+const AcceptAlarmForm = () => {
   //State
   const [loader, setLoader] = useState(false);
-  const [show, setShow] = useState("none");
+  const [show, setShow] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [cancelBtn, setCancelBtn] = useState(true);
+  const [sendBtn, setSendBtn] = useState(false);
   const [connection, setConnection] = useState(null);
   const [checked, setChecked] = useState(null);
-  //const [all, setAll] = useState();
+  //const [time, setTime] = useState(handleTime());
+  const abortControllerRef = useRef(new AbortController());
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
+  const { userName, userId } = useSelector(
+    (state) => state.persist.authState.authInfo
+  );
 
   useEffect(() => {
+    dispatch(clearMessage(""));
     const newConnection = Connector();
     setConnection(newConnection);
     newConnection.start();
@@ -84,7 +92,7 @@ const AcceptAlarmForm = ({ onHide }) => {
   const handleShow = (id) => {
     let quads = document.getElementById(id);
     if (quads && quads.style.display === "none") {
-      console.log(quads.style.display);
+      //console.log(quads.style.display);
       quads.style.display = "block";
     } else if (quads && quads.style.display === "block") {
       quads.style.display = "none";
@@ -95,29 +103,54 @@ const AcceptAlarmForm = ({ onHide }) => {
   const sendAlarm = (values) => {
     setLoader(true);
     setDisabled(true);
+    setSendBtn(true);
+    setCancelBtn(false);
+    const element = document.getElementById("accept-alarm-header");
+    element.lastChild.style.display = "none";
 
-    dispatch(
-      validateSeprobanAlarm({
-        alarmId: alarmFiles && alarmFiles.alarmId,
-        comments: values.comments,
-        alarmUser: values.user,
-        alarmTime: values.time,
-        devices: values.checkboxGroup ? values.checkboxGroup : [],
-        allDevices: values.toggle ? values.toggle : null,
-      })
-    )
+    const body = {
+      alarmId: alarmFiles && alarmFiles.alarmId,
+      comments: values.comments,
+      alarmUser: values.user,
+      alarmTime: values.time,
+      devices: values.checkboxGroup ? values.checkboxGroup : [],
+      allDevices: values.toggle ? values.toggle : null,
+      signal: abortControllerRef.current.signal,
+    };
+
+    dispatch(validateSeprobanAlarm(body))
       .unwrap()
       .then(() => {
         setLoader(false);
         setDisabled(false);
         sendAlarmStatus();
         navigate("/alarms-panel");
-        //window.location.reload();
       })
       .catch(() => {
         setLoader(false);
-        setDisabled(false);
+
+        if (abortControllerRef.current.signal.aborted) {
+          setShow(true);
+          setDisabled(true);
+          setCancelBtn(true);
+          element.lastChild.style.display = "block";
+        }
       });
+  };
+
+  //Cancel send alarm
+  const handleCancel = () => {
+    abortControllerRef.current.abort();
+  };
+
+  const handleTime = () => {
+    const date = new Date();
+    const horus = date.getHours();
+    const min = date.getMinutes();
+    const sec = date.getSeconds();
+    const hms = `${horus}:${min}`;
+
+    return hms;
   };
 
   const validationSchema = yup.object().shape({
@@ -129,11 +162,12 @@ const AcceptAlarmForm = ({ onHide }) => {
 
   return (
     <Container className="accept-alarm-form">
+      <CanceledAlarm hideToast={() => setShow(false)} toastShow={show} />
       <Formik
         initialValues={{
           comments: "",
-          user: "",
-          time: "",
+          user: `${userName}`,
+          time: `${handleTime()}`,
           checkboxGroup: [],
           toggle: false,
         }}
@@ -161,7 +195,10 @@ const AcceptAlarmForm = ({ onHide }) => {
               type="switch"
               label={`Seleccionar todo`}
               name="toggle"
-              onClick={() => props.setFieldValue("checkboxGroup", [], true)}
+              onClick={() => {
+                props.setFieldValue("checkboxGroup", [], true);
+              }}
+              value={props.values.toggle}
             />
 
             {/* Devices */}
@@ -293,17 +330,13 @@ const AcceptAlarmForm = ({ onHide }) => {
             <div className="btns-container">
               <Button
                 variant="outline-light"
-                onClick={onHide}
-                disabled={disabled}
+                onClick={handleCancel}
+                disabled={cancelBtn}
               >
                 Cancelar
               </Button>
 
-              <Button
-                variant="main"
-                type="submit"
-                disabled={loader && <Loader />}
-              >
+              <Button variant="main" type="submit" disabled={sendBtn}>
                 {loader ? <Loader /> : "Aceptar"}
               </Button>
             </div>

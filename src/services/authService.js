@@ -21,6 +21,7 @@ export const login = async (email, password) => {
     },
     headers: {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
   });
   if (response.data.isSuccess) {
@@ -41,6 +42,7 @@ export const refreshToken = async () => {
     },
     headers: {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
   });
   if (response.data.isSuccess) {

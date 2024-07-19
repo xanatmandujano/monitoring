@@ -13,14 +13,15 @@ const AcceptAlarm = ({ ...props }) => {
       className="modal-message"
       data-bs-theme="dark"
       backdrop="static"
+      id="accept-alarm"
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton id={"accept-alarm-header"}>
         <Modal.Title id="contained-modal-title-vcenter">
           Validar alarma
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AcceptAlarmForm onHide={props.onHide} />
+        <AcceptAlarmForm />
       </Modal.Body>
     </Modal>
   );

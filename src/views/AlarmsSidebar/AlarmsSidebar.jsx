@@ -36,7 +36,9 @@ const AlarmsSidebar = () => {
 
   useEffect(() => {
     //Notification push
-    Notification.requestPermission().then((res) => {});
+    Notification.requestPermission().then((res) => {
+      console.log(res);
+    });
 
     function notifiyMe(title, body, icon) {
       if (!("Notification" in window)) {

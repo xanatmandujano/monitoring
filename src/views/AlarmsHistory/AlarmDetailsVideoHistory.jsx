@@ -82,80 +82,87 @@ const AlarmDetailsVideoHistory = () => {
               onClick={() => handleBtn()}
             />
           </div>
-
-          <Row>
-            <Col sm={9} className="main-image">
-              <Tabs
-                defaultActiveKey={
-                  alarmFiles && alarmFiles.attachments[0].deviceId + 1
-                }
-                id="fill-tab-example"
-                className="mb-3"
-                data-bs-theme="dark"
-                fill
-              >
-                {alarmFiles &&
-                  alarmFiles.attachments.map((item) => (
-                    <Tab
-                      eventKey={item.deviceId + 1}
-                      title={item.deviceName}
-                      key={item.attachmentName}
-                    >
-                      <video
-                        autoPlay
-                        loop
-                        height="100%"
-                        width="100%"
-                        controls
-                        src={item.attachmentValue}
-                        ref={(node) => {
-                          const map = getMap();
-                          if (node) {
-                            map.set(item.alarmAttachmentId, node);
-                          } else {
-                            map.delete(item.alarmAttachmentId);
-                          }
-                        }}
-                        onLoadStart={() => setPlaySpeed(item.alarmAttachmentId)}
-                        id={`video-${item.alarmAttachmentId}`}
+          {alarmFiles && alarmFiles.attachments.length <= 0 ? (
+            <p style={{ color: "white", marginTop: "1rem" }}>
+              No se encontraron archivos
+            </p>
+          ) : (
+            <Row>
+              <Col sm={9} className="main-image">
+                <Tabs
+                  defaultActiveKey={
+                    alarmFiles && alarmFiles.attachments[0].deviceId + 1
+                  }
+                  id="fill-tab-example"
+                  className="mb-3"
+                  data-bs-theme="dark"
+                  fill
+                >
+                  {alarmFiles &&
+                    alarmFiles.attachments.map((item) => (
+                      <Tab
+                        eventKey={item.deviceId + 1}
+                        title={item.deviceName}
+                        key={item.attachmentName}
                       >
-                        Tu navegador no admite el elemento <code>video</code>
-                      </video>
-                    </Tab>
-                  ))}
-              </Tabs>
-            </Col>
-            <Col sm={3}>
-              <div className="alarm-data">
-                {alarmFiles ? (
-                  <>
-                    <p>
-                      {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}
-                      <br />
-                    </p>
-                    <p>
-                      Dispositivo: <br />
-                      {`${alarmFiles.deviceCode}`}
-                    </p>
-                    <p>
-                      Dirección IP: <br />
-                      {`${alarmFiles.deviceIPAddress}`}
-                    </p>
-                    <p>
-                      Ubicación: <br />
-                      {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
-                    </p>
-                    <p>
-                      Hora de la alarma: <br />
-                      {dateTime()}
-                    </p>
-                  </>
-                ) : (
-                  <p>No se encontró información</p>
-                )}
-              </div>
-            </Col>
-          </Row>
+                        <video
+                          autoPlay
+                          loop
+                          height="100%"
+                          width="100%"
+                          controls
+                          src={item.attachmentValue}
+                          ref={(node) => {
+                            const map = getMap();
+                            if (node) {
+                              map.set(item.alarmAttachmentId, node);
+                            } else {
+                              map.delete(item.alarmAttachmentId);
+                            }
+                          }}
+                          onLoadStart={() =>
+                            setPlaySpeed(item.alarmAttachmentId)
+                          }
+                          id={`video-${item.alarmAttachmentId}`}
+                        >
+                          Tu navegador no admite el elemento <code>video</code>
+                        </video>
+                      </Tab>
+                    ))}
+                </Tabs>
+              </Col>
+              <Col sm={3}>
+                <div className="alarm-data">
+                  {alarmFiles ? (
+                    <>
+                      <p>
+                        {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}
+                        <br />
+                      </p>
+                      <p>
+                        Dispositivo: <br />
+                        {`${alarmFiles.deviceCode}`}
+                      </p>
+                      <p>
+                        Dirección IP: <br />
+                        {`${alarmFiles.deviceIPAddress}`}
+                      </p>
+                      <p>
+                        Ubicación: <br />
+                        {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
+                      </p>
+                      <p>
+                        Hora de la alarma: <br />
+                        {dateTime()}
+                      </p>
+                    </>
+                  ) : (
+                    <p>No se encontró información</p>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          )}
         </>
       )}
     </Container>
