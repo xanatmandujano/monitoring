@@ -1,6 +1,6 @@
 import React from "react";
 
-const VideoLoader = () => {
+const FullLoader = () => {
   return (
     <div className="full-loader">
       <span className="loader"></span>;
@@ -8,4 +8,4 @@ const VideoLoader = () => {
   );
 };
 
-export default VideoLoader;
+export default FullLoader;

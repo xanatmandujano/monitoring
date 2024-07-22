@@ -44,8 +44,10 @@ export const store = configureStore({
         ignoredActionPaths: [
           "payload.headers",
           "payload.config",
+          "payload",
           "register",
           "rehydrate",
+          "meta.arg.signal",
         ],
       },
       thunk,

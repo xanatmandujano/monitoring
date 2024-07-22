@@ -23,6 +23,7 @@ import AcceptAlarm from "../../views/AcceptAlarm/AcceptAlarm";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import Loader from "../Loader/Loader";
 import VideoLoader from "../Loader/VideoLoader";
+import FullLoader from "../Loader/FullLoader";
 
 const AlarmDetailsVideo = () => {
   const [loader, setLoader] = useState(false);
@@ -30,6 +31,7 @@ const AlarmDetailsVideo = () => {
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [connection, setConnection] = useState(null);
+
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -58,6 +60,7 @@ const AlarmDetailsVideo = () => {
   }
 
   useEffect(() => {
+    setLoader(true);
     dispatch(clearMessage());
     dispatch(
       alarmStatus({
@@ -68,7 +71,11 @@ const AlarmDetailsVideo = () => {
     )
       .unwrap()
       .then(() => {
-        dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+        dispatch(alarmAttachments({ alarmId: idVideo }))
+          .unwrap()
+          .then(() => {
+            setLoader(false);
+          });
       });
 
     const newConnection = Connector();
@@ -125,115 +132,165 @@ const AlarmDetailsVideo = () => {
   };
 
   return (
-    <Container fluid className="alarm-details">
-      <div className="btns-container">
-        <div className="action-btns">
-          <Button variant="main" size="sm" onClick={() => setShow(true)}>
-            Validar
-          </Button>
-          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
-            Descartar
-          </Button>
-        </div>
-        {btnLoader ? (
-          <Loader />
-        ) : (
-          <CloseButton
-            variant="white"
-            aria-label="Hide"
-            onClick={() => closeAlarm()}
-          />
-        )}
-      </div>
-
-      <Row>
-        <Col sm={9} className="main-image">
-          <Tabs
-            defaultActiveKey={
-              alarmFiles && alarmFiles.attachments[0].deviceId + 1
-            }
-            id="fill-tab-example"
-            className="mb-3"
-            data-bs-theme="dark"
-            fill
-            onSelect={(k) => fetchAttachment(k)}
-          >
-            {alarmFiles &&
-              alarmFiles.attachments.map((item) => (
-                <Tab.Container
-                  eventKey={item.alarmAttachmentId}
-                  title={item.deviceName}
-                  key={item.attachmentName}
-                  //attachment={item.alarmAttachmentId}
-                >
-                  {loading ? (
-                    <VideoLoader />
-                  ) : (
-                    <video
-                      autoPlay
-                      loop
-                      height="100%"
-                      width="100%"
-                      controls
-                      ref={(node) => {
-                        const map = getMap();
-                        if (node) {
-                          map.set(item.alarmAttachmentId, node);
-                        } else {
-                          map.delete(item.alarmAttachmentId);
-                        }
-                      }}
-                      onLoadStart={() =>
-                        setPlaySpeed(
-                          alarmAttachment && alarmAttachment.alarmAttachmentId
-                        )
-                      }
-                      src={alarmAttachment && alarmAttachment.attachmentValue}
-                      id={`video-${
-                        alarmAttachment && alarmAttachment.alarmAttachmentId
-                      }`}
-                    >
-                      Tu navegador no admite el elemento <code>video</code>
-                    </video>
-                  )}
-                </Tab.Container>
-              ))}
-          </Tabs>
-        </Col>
-        <Col sm={3}>
-          <div className="alarm-data">
-            {alarmFiles ? (
-              <>
-                <p>
-                  {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
-                </p>
-                <p>
-                  Dispositivo: <br />
-                  {`${alarmFiles.deviceCode}`}
-                </p>
-                <p>
-                  Dirección IP: <br />
-                  {`${alarmFiles.deviceIPAddress}`}
-                </p>
-                <p>
-                  Ubicación: <br />
-                  {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
-                </p>
-                <p>
-                  Hora de la alarma: <br />
-                  {dateTime()}
-                </p>
-              </>
-            ) : (
-              <p>No se encontró información</p>
-            )}
+    <>
+      <Container fluid className="alarm-details">
+        <div className="btns-container">
+          <div className="action-btns">
+            <Button
+              variant="main"
+              size="sm"
+              onClick={() => setShow(true)}
+              disabled={loader}
+              style={{
+                display:
+                  alarmFiles && alarmFiles.attachments.length <= 0
+                    ? "none"
+                    : "inline-block",
+              }}
+            >
+              Validar
+            </Button>
+            <Button
+              variant="main"
+              size="sm"
+              onClick={() => setShowDiscard(true)}
+              disabled={loader}
+              style={{
+                display:
+                  alarmFiles && alarmFiles.attachments.length <= 0
+                    ? "none"
+                    : "inline-block",
+              }}
+            >
+              Descartar
+            </Button>
           </div>
-        </Col>
-      </Row>
+          {btnLoader ? (
+            <Loader />
+          ) : (
+            <CloseButton
+              variant="white"
+              aria-label="Hide"
+              onClick={() => closeAlarm()}
+            />
+          )}
+        </div>
 
-      <AcceptAlarm show={show} onHide={() => setShow(false)} />
-      <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
-    </Container>
+        {loader ? (
+          <FullLoader />
+        ) : (
+          <>
+            {alarmFiles && alarmFiles.attachments.length <= 0 ? (
+              <p style={{ color: "white", marginTop: "1rem" }}>
+                No se encontraron archivos
+              </p>
+            ) : (
+              <Row>
+                <Col sm={9} className="main-image">
+                  <Tabs
+                    defaultActiveKey={
+                      alarmFiles && alarmFiles.attachments[0].deviceId + 1
+                    }
+                    id="fill-tab-example"
+                    className="mb-3"
+                    data-bs-theme="dark"
+                    fill
+                    onSelect={(k) => fetchAttachment(k)}
+                  >
+                    {alarmFiles &&
+                      alarmFiles.attachments.map((item) => (
+                        <Tab.Container
+                          eventKey={item.alarmAttachmentId}
+                          title={item.deviceName}
+                          key={item.attachmentName}
+                          //attachment={item.alarmAttachmentId}
+                        >
+                          {loading ? (
+                            <VideoLoader />
+                          ) : (
+                            <video
+                              autoPlay
+                              loop
+                              height="100%"
+                              width="100%"
+                              controls
+                              ref={(node) => {
+                                const map = getMap();
+                                if (node) {
+                                  map.set(item.alarmAttachmentId, node);
+                                } else {
+                                  map.delete(item.alarmAttachmentId);
+                                }
+                              }}
+                              onLoadStart={() =>
+                                setPlaySpeed(
+                                  alarmAttachment &&
+                                    alarmAttachment.alarmAttachmentId
+                                )
+                              }
+                              src={
+                                alarmAttachment &&
+                                alarmAttachment.attachmentValue
+                              }
+                              id={`video-${
+                                alarmAttachment &&
+                                alarmAttachment.alarmAttachmentId
+                              }`}
+                            >
+                              Tu navegador no admite el elemento{" "}
+                              <code>video</code>
+                            </video>
+                          )}
+                        </Tab.Container>
+                      ))}
+                  </Tabs>
+                </Col>
+                <Col sm={3}>
+                  <div className="alarm-data">
+                    {alarmFiles ? (
+                      <>
+                        <p>
+                          {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}
+                          <br />
+                        </p>
+                        <p>
+                          Dispositivo: <br />
+                          {`${alarmFiles.deviceCode}`}
+                        </p>
+                        <p>
+                          Dirección IP: <br />
+                          {`${alarmFiles.deviceIPAddress}`}
+                        </p>
+                        <p>
+                          Ubicación: <br />
+                          {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
+                        </p>
+                        <p>
+                          Hora de la alarma: <br />
+                          {dateTime()}
+                        </p>
+                      </>
+                    ) : (
+                      <p>No se encontró información</p>
+                    )}
+                  </div>
+                </Col>
+              </Row>
+            )}
+
+            <AcceptAlarm
+              show={show}
+              onHide={() => setShow(false)}
+              id="accept-alarm"
+            />
+            <DiscardAlarm
+              show={showDiscard}
+              onHide={() => setShowDiscard(false)}
+            />
+          </>
+        )}
+      </Container>
+    </>
   );
 };
 

@@ -20,6 +20,7 @@ export const getAlarmsHistory = async (
     url: `${baseURL}/alarm/getalarms`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     params: {
       pageNumber: pageNumber,
@@ -46,6 +47,7 @@ export const getTodayAlarms = async (
     url: `${baseURL}/alarm/gettodayalarms`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     params: {
       pageNumber: pageNumber,
@@ -68,6 +70,7 @@ export const getAlarmAttachments = async (alarmId) => {
       url: `${baseURL}/alarm/getalarmattachments`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Control-Allow-Origin": `${baseURL}`,
       },
       params: {
         alarmId: alarmId,
@@ -88,6 +91,7 @@ export const getAttachment = async (attachmentId) => {
     url: `${baseURL}/alarm/getAttachment`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     params: {
       alarmAttachmentId: attachmentId,
@@ -107,6 +111,7 @@ export const getAlarmData = async (code) => {
     url: `${baseURL}/alarm/getalarmdata`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     params: {
       code: code,
@@ -126,13 +131,15 @@ export const validateAlarm = async (
   alarmUser,
   alarmTime,
   devices,
-  allDevices
+  allDevices,
+  signal
 ) => {
   const response = await axios({
     method: "POST",
     url: `${baseURL}/seproban/sendtoseproban`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     data: {
       alarmId: alarmId,
@@ -143,6 +150,7 @@ export const validateAlarm = async (
       devices: devices,
       allDevices: allDevices,
     },
+    signal: signal,
   });
   if (response.data.isSuccess) {
     return response;
@@ -157,6 +165,7 @@ export const validateImageAlarm = async (alarmId, comments) => {
     url: `${baseURL}/alarm/validatealarm`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Access-Control-Allow-Origin": `${baseURL}`,
     },
     params: {
       alarmId: alarmId,
@@ -178,6 +187,7 @@ export const setAlarmStatus = async (alarmId, statusId, comments) => {
       url: `${baseURL}/alarm/setalarmstatus`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Control-Allow-Origin": `${baseURL}`,
       },
       params: {
         alarmId: alarmId,
@@ -203,6 +213,7 @@ export const releaseViewedAlarm = async (alarmId) => {
       url: `${baseURL}/alarm/releaseviewedalarm`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Control-Allow-Origin": `${baseURL}`,
       },
       params: {
         alarmId: alarmId,

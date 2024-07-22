@@ -16,6 +16,8 @@ import {
   setAlarmStatus,
   releaseViewedAlarm,
 } from "../../services/alarmsService";
+//Axios
+import axios from "axios";
 
 export const todayAlarms = createAsyncThunk(
   "alarms/todayAlarms",
@@ -108,7 +110,7 @@ export const alarmData = createAsyncThunk(
 export const validateSeprobanAlarm = createAsyncThunk(
   "alarms/validateAlarm",
   async (
-    { alarmId, comments, alarmUser, alarmTime, devices, allDevices },
+    { alarmId, comments, alarmUser, alarmTime, devices, allDevices, signal },
     thunkAPI
   ) => {
     try {
@@ -118,11 +120,14 @@ export const validateSeprobanAlarm = createAsyncThunk(
         alarmUser,
         alarmTime,
         devices,
-        allDevices
+        allDevices,
+        signal
       );
-      //console.log(data);
       return data;
     } catch (error) {
+      if (axios.isCancel(error)) {
+        thunkAPI.dispatch(setMessage(error.message));
+      }
       console.log(error);
       const message =
         (error.response &&

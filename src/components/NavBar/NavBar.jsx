@@ -100,7 +100,7 @@ const NavBar = () => {
     <>
       <Navbar key="lg" expand="lg" className="nav-bar-main">
         <Container fluid>
-          <Navbar.Brand href="#alarms-panel">
+          <Navbar.Brand>
             <img
               src={mode === "ox" ? oxxo.assets.oxxo : banbajio.assets.banbajio}
               alt="logo"
