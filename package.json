@@ -14,7 +14,9 @@
     "build:ox": "vite build --mode ox"
   },
   "dependencies": {
+    "@ag-media/react-pdf-table": "^1.0.1",
     "@microsoft/signalr": "^7.0.12",
+    "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^1.9.6",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",

@@ -21,6 +21,7 @@ import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
 import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
 import AlarmDetailsRtcpHistory from "./views/AlarmsHistory/AlarmDetailsRtcpHistory.jsx";
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
+import PreviewTest from "./views/AlarmsHistory/PreviewTest.jsx";
 
 const router = createHashRouter([
   {

@@ -12,6 +12,7 @@ import Loader from "../../components/Loader/Loader";
 import SearchBar from "./SearchBar";
 import Pagination from "react-bootstrap/Pagination";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import PreviewTest from "./PreviewTest";
 
 const AlarmsHistory = () => {
   const [loader, setLoader] = useState(false);
@@ -135,6 +136,7 @@ const AlarmsHistory = () => {
       ) : (
         <Outlet />
       )}
+      <PreviewTest />
     </Container>
   );
 };
