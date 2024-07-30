@@ -10,11 +10,20 @@ import Button from "react-bootstrap/Button";
 import SelectField from "../../components/SelectField/SelectField";
 import { BsSearch } from "react-icons/bs";
 import { BsEraser } from "react-icons/bs";
+import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 const SearchBar = ({ submit }) => {
   const [placeholder, setPlaceholder] = useState("");
   const [type, setType] = useState("text");
   const [statusFilter, setStatusFilter] = useState(false);
+
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      Borrar búsqueda
+    </Tooltip>
+  );
+
   return (
     <>
       <Formik initialValues={{ search: "", filter: "" }} onSubmit={submit}>
@@ -46,6 +55,7 @@ const SearchBar = ({ submit }) => {
                 <option>Vista</option>
                 <option>Validada</option>
                 <option>Descartada</option>
+                <option value="Envio cancelado">Cancelada</option>
               </SelectField>
             ) : (
               <TextFieldControl
@@ -65,20 +75,28 @@ const SearchBar = ({ submit }) => {
             >
               <option value="">--Selecciona--</option>
               <option value="creationDate">Fecha</option>
-              <option value="branchCode">Clave de sucursal</option>
-              <option value="deviceIPAddress">IP del panel</option>
+              <option value="alarmCode">Código de alarma</option>
+              <option value="branchCodeName">Sucursal</option>
+              <option value="deviceName">Sensor</option>
               <option value="status">Estatus</option>
             </SelectField>
 
             <Button variant="main" type="submit">
               <BsSearch />
             </Button>
-            <Button
-              variant="transparency-second"
-              onClick={() => window.location.reload()}
+
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 250, hide: 400 }}
+              overlay={renderTooltip}
             >
-              <BsEraser />
-            </Button>
+              <Button
+                variant="transparency-second"
+                onClick={() => window.location.reload()}
+              >
+                <BsEraser />
+              </Button>
+            </OverlayTrigger>
           </Form>
         )}
       </Formik>

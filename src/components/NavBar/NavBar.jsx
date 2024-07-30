@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 //Bootstrap
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
@@ -13,7 +12,7 @@ import PdfViewer from "../PdfViewer/PdfViewer";
 //Logo
 import banbajio from "/config.json";
 import oxxo from "/config.json";
-
+import afirme from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
@@ -55,7 +54,7 @@ const NavBar = () => {
     try {
       if (connection) {
         await connection.send("SendToAll", releaseAction).then(() => {
-          console.log("Alarm release: from change window");
+          //console.log("Alarm release: from change window");
         });
       }
     } catch (error) {
@@ -102,7 +101,13 @@ const NavBar = () => {
         <Container fluid>
           <Navbar.Brand>
             <img
-              src={mode === "ox" ? oxxo.assets.oxxo : banbajio.assets.banbajio}
+              src={
+                mode === "ox"
+                  ? oxxo.assets.oxxo
+                  : mode === "bb"
+                  ? banbajio.assets.banbajio
+                  : afirme.assets.afirme
+              }
               alt="logo"
               width={100}
             />
@@ -156,15 +161,18 @@ const NavBar = () => {
                   >
                     Cerrar sesión
                   </Button>
-                  <Nav.Item className="help">
-                    <Button
-                      variant="main"
-                      size="md"
-                      onClick={() => setManualShow(true)}
-                    >
-                      <MdOutlineLiveHelp />
-                    </Button>
-                  </Nav.Item>
+
+                  {mode === "af" ? null : (
+                    <Nav.Item className="help">
+                      <Button
+                        variant="main"
+                        size="md"
+                        onClick={() => setManualShow(true)}
+                      >
+                        <MdOutlineLiveHelp />
+                      </Button>
+                    </Nav.Item>
+                  )}
                 </Nav>
               ) : null}
             </Offcanvas.Body>
@@ -180,12 +188,14 @@ const NavBar = () => {
           btntext="Aceptar"
         />
 
-        <DocumentModal
-          show={manualShow}
-          onHide={() => setManualShow(false)}
-          headermessage="Manual"
-          message={<PdfViewer />}
-        />
+        {mode === "af" ? null : (
+          <DocumentModal
+            show={manualShow}
+            onHide={() => setManualShow(false)}
+            headermessage="Manual"
+            message={<PdfViewer />}
+          />
+        )}
       </Navbar>
     </>
   );

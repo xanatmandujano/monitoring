@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 //Slice
-import { setAuthInfo, setRefreshToken } from "../slices/authSlice";
+import { setAuthInfo } from "../slices/authSlice";
 import { setMessage } from "../slices/messageSlice";
 //Services
 import { login, refreshToken } from "../../services/authService";
@@ -16,12 +16,13 @@ export const USER_LOGIN = createAsyncThunk(
           isLoggedIn: response.isSuccess,
           email: email,
           userName: response.fullName,
-          userToken: response.token.accessToken,
           userId: response.userId,
+          userToken: response.token.accessToken,
           expiration: response.token.expiration,
           refresh: response.token.refreshToken,
         })
       );
+      console.log(response);
       return response;
     } catch (error) {
       console.log(error);
@@ -39,16 +40,17 @@ export const USER_LOGIN = createAsyncThunk(
 
 export const REFRESH_TOKEN = createAsyncThunk(
   "auth/token",
-  async (thunkAPI) => {
+  async (arg, thunkAPI) => {
     try {
       const response = await refreshToken();
       thunkAPI.dispatch(
-        setRefreshToken({
+        setAuthInfo({
           userToken: response.accessToken,
           expiration: response.expiration,
           refresh: response.refreshToken,
         })
       );
+      console.log(response);
       return response;
     } catch (error) {
       console.log(error);
@@ -72,11 +74,11 @@ export const USER_LOGOUT = createAsyncThunk(
         const response = releaseViewedAlarm(alarmId);
         thunkAPI.dispatch(
           setAuthInfo({
-            isLoggedIn: isLogged,
-            email: "",
+            //isLoggedIn: "",
+            //email: "",
             userName: "",
-            userToken: "",
             userId: "",
+            userToken: "",
             expiration: "",
             refresh: "",
           })
@@ -86,11 +88,11 @@ export const USER_LOGOUT = createAsyncThunk(
       } else {
         thunkAPI.dispatch(
           setAuthInfo({
-            isLoggedIn: isLogged,
-            email: "",
+            //isLoggedIn: "",
+            //email: "",
             userName: "",
-            userToken: "",
             userId: "",
+            userToken: "",
             expiration: "",
             refresh: "",
           })

@@ -9,6 +9,7 @@ import {
   validateCurrentAlarm,
   alarmStatus,
   releaseAlarm,
+  alarmsReport,
 } from "../actions/alarmsActions";
 
 const initialState = {
@@ -136,6 +137,18 @@ export const alarmsSlice = createSlice({
         state.loading = false;
       })
       .addCase(releaseAlarm.rejected, (state, action) => {
+        state.status = "rejected";
+        state.loading = false;
+      })
+      //Alarms report
+      .addCase(alarmsReport.pending, (state, action) => {
+        (state.status = "pending"), (state.loading = true);
+      })
+      .addCase(alarmsReport.fulfilled, (state, action) => {
+        state.status = "succedded";
+        state.loading = false;
+      })
+      .addCase(alarmsReport.rejected, (state, action) => {
         state.status = "rejected";
         state.loading = false;
       });

@@ -8,14 +8,20 @@ import { Link } from "react-router-dom";
 const AlarmHistoryData = ({ ...props }) => {
   const dateTime = (creationDate) => {
     const alarmDateTime = new Date(creationDate);
-    const alarmTime = alarmDateTime.toLocaleDateString("es-US", {
-      weekday: "long",
+    const alarmDate = alarmDateTime.toLocaleDateString("en-GB", {
+      //weekday: "long",
       year: "numeric",
-      month: "long",
+      month: "numeric",
       day: "numeric",
     });
+    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const concat = `${alarmDate}, ${alarmTime}`;
 
-    return alarmTime;
+    return concat;
   };
 
   const alarmType = (alarmTypeId, alarmId) => {
@@ -35,10 +41,10 @@ const AlarmHistoryData = ({ ...props }) => {
       <Table variant="dark" striped hover bordered>
         <thead>
           <tr>
-            <th>Descripción</th>
-            <th>Clave de sucursal</th>
-            <th>Fecha de creación</th>
-            <th>IP del panel</th>
+            <th>Código de alarma</th>
+            <th>Sucursal</th>
+            <th>Fecha</th>
+            <th>Sensor</th>
             <th>Estatus</th>
             <th></th>
           </tr>
@@ -47,10 +53,10 @@ const AlarmHistoryData = ({ ...props }) => {
           {props.alarms &&
             props.alarms.map((item) => (
               <tr key={item.alarmId}>
-                <td>{item.alarmDescription}</td>
-                <td>{item.branchCode}</td>
+                <td>{item.alarmCode}</td>
+                <td>{item.branchCodeName}</td>
                 <td>{dateTime(item.creationDate)}</td>
-                <td>{item.deviceIPAddress}</td>
+                <td>{item.deviceName}</td>
                 <td>{item.status}</td>
                 <td>
                   <Link to={alarmType(item.alarmTypeId, item.alarmId)}>

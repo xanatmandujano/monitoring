@@ -1,75 +1,89 @@
-import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import { Table, TR, TH, TD } from "@ag-media/react-pdf-table";
+import banbajio from "/config.json";
 
 const styles = StyleSheet.create({
   page: { flexDirection: "column", padding: 25 },
-
-  table: {
-    fontSize: 10,
-    width: 550,
+  view: {
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignContent: "stretch",
-    flexWrap: "nowrap",
-    alignItems: "stretch",
+    //flexDirection: "row",
+    //alignContent: "space-around",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignContent: "stretch",
-    flexWrap: "nowrap",
-    alignItems: "stretch",
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 35,
-  },
-  cell: {
-    //borderColor: "#cc0000",
-    borderStyle: "none",
-    borderWidth: 2,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: "auto",
-    alignSelf: "stretch",
+  title: {
     textAlign: "center",
+    fontSize: "15px",
+    marginBottom: 20,
   },
-  header: {
-    backgroundColor: "#eee",
+  image: {
+    width: 100,
+    height: 50,
   },
-  headerText: {
-    fontSize: 11,
-    fontWeight: 1200,
-    color: "#1a245c",
-    margin: 8,
+  tdHeader: {
+    fontSize: "10px",
+    padding: "2.5px",
+    backgroundColor: "#758694",
+    color: "white",
   },
-  tableText: {
-    margin: 10,
-    fontSize: 10,
-    color: "black",
-    textAlign: "center",
+  td: {
+    fontSize: "10px",
+    padding: "2.5px",
   },
 });
 
-const ReportPdf = () => {
+const ReportPdf = ({ report }) => {
+  const handleDate = (date) => {
+    const alarmDateTime = new Date(date);
+    const alarmDate = alarmDateTime.toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    });
+    const alarmTime = alarmDateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const concat = `${alarmDate}, ${alarmTime}`;
+
+    return concat;
+  };
   return (
     <Document title="Reporte de alarmas">
       <Page size={"A4"} style={styles.page} wrap orientation="landscape">
-        <Text>Reporte de alarmas</Text>
+        <View style={styles.view}>
+          <Image style={styles.image} src={banbajio.assets.banbajio} />
+          <Text style={styles.title}>Reporte de alarmas</Text>
+        </View>
         <Table>
           <TH>
-            <TD>Header 1</TD>
-            <TD>Header 2</TD>
-            <TD>Header 1</TD>
-            <TD>Header 2</TD>
+            <TD style={styles.tdHeader}>Código de alarma</TD>
+            <TD style={styles.tdHeader}>Sucursal</TD>
+            <TD style={styles.tdHeader}>Fecha</TD>
+            <TD style={styles.tdHeader}>Sensor</TD>
+            <TD style={styles.tdHeader}>Estatus</TD>
+            <TD style={styles.tdHeader}>Usuario</TD>
           </TH>
-          <TR>
-            <TD>Data 1</TD>
-            <TD>Data 2</TD>
-            <TD>Data 1</TD>
-            <TD>Data 2</TD>
-          </TR>
+
+          {report &&
+            report.map((item) => (
+              <TR key={item.alarmId}>
+                <TD style={styles.td}>{item.alarmCode}</TD>
+                <TD style={styles.td}>{item.branchCodeName}</TD>
+                <TD style={styles.td}>{handleDate(item.creationDate)}</TD>
+                <TD style={styles.td}>{item.deviceName}</TD>
+                <TD style={styles.td}>{item.status}</TD>
+                <TD style={styles.td}>{item.userName}</TD>
+              </TR>
+            ))}
         </Table>
       </Page>
     </Document>
