@@ -34,7 +34,7 @@ const AcceptAlarmForm = () => {
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
   const { userName, userId } = useSelector(
-    (state) => state.persist.userInfo.authInfo
+    (state) => state.persist.authState.authInfo
   );
 
   useEffect(() => {

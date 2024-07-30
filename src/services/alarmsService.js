@@ -6,7 +6,7 @@ const localInfo = localStorage.getItem("persist:root");
 const parse = JSON.parse(localInfo);
 const authState = JSON.parse(parse && parse.authState);
 const token = authState && authState.authInfo.userToken;
-const userId = 1;
+const userId = authState && authState.authInfo.userId;
 
 export const getAlarmsHistory = async (
   pageNumber,
