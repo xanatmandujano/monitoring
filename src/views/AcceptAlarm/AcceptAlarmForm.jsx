@@ -28,14 +28,13 @@ const AcceptAlarmForm = () => {
   const [sendBtn, setSendBtn] = useState(false);
   const [connection, setConnection] = useState(null);
   const [checked, setChecked] = useState(null);
-  //const [time, setTime] = useState(handleTime());
   const abortControllerRef = useRef(new AbortController());
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
   const { userName, userId } = useSelector(
-    (state) => state.persist.authState.authInfo
+    (state) => state.persist.userInfo.authInfo
   );
 
   useEffect(() => {
@@ -99,6 +98,17 @@ const AcceptAlarmForm = () => {
     }
   };
 
+  const handleTime = () => {
+    const date = new Date();
+    const locale = date.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return locale;
+  };
+
   //Accept alarm
   const sendAlarm = (values) => {
     setLoader(true);
@@ -143,20 +153,10 @@ const AcceptAlarmForm = () => {
     abortControllerRef.current.abort();
   };
 
-  const handleTime = () => {
-    const date = new Date();
-    const horus = date.getHours();
-    const min = date.getMinutes();
-    const sec = date.getSeconds();
-    const hms = `${horus}:${min}`;
-
-    return hms;
-  };
-
   const validationSchema = yup.object().shape({
     comments: yup.string().required("yup.comments"),
-    user: yup.string().required("yup.user"),
-    time: yup.string().required("yup.time"),
+    //user: yup.string().required("yup.user"),
+    //time: yup.string().required("yup.time"),
     //checkboxGroup: yup.array().min(1).required(),
   });
 
@@ -226,7 +226,6 @@ const AcceptAlarmForm = () => {
                         variant="main"
                         onClick={() => handleShow(item.deviceId)}
                         size="sm"
-                        //key={item.deviceId + 2}
                         disabled={disabled}
                       >
                         +
@@ -238,7 +237,7 @@ const AcceptAlarmForm = () => {
                       key={item.deviceId + 3}
                       id={item.deviceId}
                     >
-                      {dewarpedQuad && dewarpedQuad.length >= 1
+                      {/* {dewarpedQuad && dewarpedQuad.length >= 1
                         ? [1, 2, 3, 4].map((quad) => (
                             <CheckInput
                               type="checkbox"
@@ -251,7 +250,19 @@ const AcceptAlarmForm = () => {
                               id={item.deviceId}
                             />
                           ))
-                        : null}
+                        : null} */}
+                      {item.quadrants.map((q, index) => (
+                        <CheckInput
+                          type="checkbox"
+                          label={q}
+                          name="checkboxGroup"
+                          key={q + 1}
+                          value={`${item.deviceId}-${index + 1}`}
+                          disabled={disabled}
+                          checked={checked}
+                          id={item.deviceId}
+                        />
+                      ))}
                     </div>
                   </div>
                 ))
@@ -266,7 +277,6 @@ const AcceptAlarmForm = () => {
                         variant="main"
                         onClick={() => handleShow(item.deviceId)}
                         size="sm"
-                        //key={item.deviceId}
                         disabled={disabled}
                       >
                         +
@@ -278,7 +288,7 @@ const AcceptAlarmForm = () => {
                       key={item.deviceId + 3}
                       id={item.deviceId}
                     >
-                      {dewarpedDouble && dewarpedDouble.length >= 1
+                      {/* {dewarpedDouble && dewarpedDouble.length >= 1
                         ? [1, 2].map((quad) => (
                             <CheckInput
                               type="checkbox"
@@ -291,13 +301,26 @@ const AcceptAlarmForm = () => {
                               //id={item.deviceId}
                             />
                           ))
-                        : null}
+                            
+                        : null} */}
+                      {item.quadrants.map((q, index) => (
+                        <CheckInput
+                          type="checkbox"
+                          label={q}
+                          name="checkboxGroup"
+                          key={q + 1}
+                          value={`${item.deviceId}-${index + 1}`}
+                          disabled={disabled}
+                          checked={checked}
+                          id={item.deviceId}
+                        />
+                      ))}
                     </div>
                   </div>
                 ))
               : null}
 
-            <TextField
+            {/* <TextField
               label="Usuario"
               name="user"
               type="text"
@@ -313,7 +336,7 @@ const AcceptAlarmForm = () => {
               value={props.values.time}
               onChange={props.handleChange}
               errors="Seleccione una hora"
-            />
+            /> */}
 
             <TextFieldArea
               label="Comentarios"

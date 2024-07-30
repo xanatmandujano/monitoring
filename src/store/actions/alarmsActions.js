@@ -11,6 +11,7 @@ import {
   getAlarmsHistory,
   getTodayAlarms,
   getAlarmData,
+  getAlarmsReport,
   validateAlarm,
   validateImageAlarm,
   setAlarmStatus,
@@ -68,6 +69,36 @@ export const alarmsHistory = createAsyncThunk(
       thunkAPI.dispatch(setAlarmsPages(data.totalPages));
 
       return data.result;
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const alarmsReport = createAsyncThunk(
+  "alarms/alarmsReport",
+  async (
+    { pageNumber, pageSize, columnName, sortDirection, searchText },
+    thunkAPI
+  ) => {
+    try {
+      const data = getAlarmsReport(
+        pageNumber,
+        pageSize,
+        columnName,
+        sortDirection,
+        searchText
+      );
+
+      return data.response;
     } catch (error) {
       console.log(error);
       const message =

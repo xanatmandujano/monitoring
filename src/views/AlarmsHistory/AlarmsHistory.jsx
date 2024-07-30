@@ -12,11 +12,14 @@ import Loader from "../../components/Loader/Loader";
 import SearchBar from "./SearchBar";
 import Pagination from "react-bootstrap/Pagination";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import ReportModal from "./ReportModal";
+import Button from "react-bootstrap/Button";
 
 const AlarmsHistory = () => {
   const [loader, setLoader] = useState(false);
   const [currPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
@@ -85,13 +88,18 @@ const AlarmsHistory = () => {
   return (
     <Container className="alarms-history">
       {!idVideo ? (
-        <SearchBar
-          //disabled={allAlarms && allAlarms.length === 0}
-          submit={async (values) => {
-            search(values);
-            setCurrentPage(1);
-          }}
-        />
+        <div className="history-options">
+          <SearchBar
+            //disabled={allAlarms && allAlarms.length === 0}
+            submit={async (values) => {
+              search(values);
+              setCurrentPage(1);
+            }}
+          />
+          <Button onClick={() => setModalShow(true)} variant="main">
+            Reporte
+          </Button>
+        </div>
       ) : null}
 
       {loader ? (
@@ -135,6 +143,7 @@ const AlarmsHistory = () => {
       ) : (
         <Outlet />
       )}
+      <ReportModal show={modalShow} onHide={() => setModalShow(false)} />
     </Container>
   );
 };

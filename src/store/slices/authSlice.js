@@ -10,8 +10,8 @@ const initialState = {
     isLoggedIn: false,
     email: "",
     userName: "",
-    userToken: "",
     userId: "",
+    userToken: "",
     expiration: "",
     refresh: "",
   },
@@ -22,11 +22,6 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setAuthInfo(state, action) {
-      return {
-        authInfo: action.payload,
-      };
-    },
-    setRefreshToken(state, action) {
       return {
         authInfo: action.payload,
       };
@@ -69,5 +64,5 @@ export const authSlice = createSlice({
 });
 
 export const { reducer } = authSlice;
-export const { setAuthInfo, setRefreshToken } = authSlice.actions;
+export const { setAuthInfo } = authSlice.actions;
 export default reducer;

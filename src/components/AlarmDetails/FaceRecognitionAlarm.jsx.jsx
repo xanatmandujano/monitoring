@@ -1,30 +1,39 @@
 import React, { useState, useEffect } from "react";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus } from "../../store/actions/alarmsActions";
+import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { Connector } from "../../signalr/signalr-connection";
 //React-router-dom
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
+import CloseButton from "react-bootstrap/CloseButton";
+import Loader from "../Loader/Loader";
 //Components
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
+import { setLocale } from "yup";
 
 const FaceRecognitionAlarm = () => {
+  const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [btnLoader, setBtnLoader] = useState(false);
+  const [connection, setConnection] = useState(null);
+
+  const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
 
   useEffect(() => {
+    setLoader(true);
     dispatch(clearMessage());
     dispatch(
       alarmStatus({
@@ -35,10 +44,51 @@ const FaceRecognitionAlarm = () => {
     )
       .unwrap()
       .then(() => {
-        dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
+        dispatch(alarmAttachments({ alarmId: idVideo }))
+          .unwrap()
+          .then(() => {
+            setLoader(false);
+          });
       });
-    //console.log(id);
+
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
   }, [idVideo, dispatch]);
+
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          //console.log("Message sent")
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const closeAlarm = () => {
+    setBtnLoader(true);
+    dispatch(
+      releaseAlarm({
+        alarmId: alarmFiles.alarmId,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        sendAlarmStatus();
+        navigate("/alarms-panel");
+        setBtnLoader(false);
+      });
+  };
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -49,12 +99,23 @@ const FaceRecognitionAlarm = () => {
   return (
     <Container className="alarm-details" fluid>
       <div className="btns-container">
-        <Button variant="main" size="sm" onClick={() => setShow(true)}>
-          Aceptar
-        </Button>
-        <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
-          Descartar
-        </Button>
+        <div className="action-btns">
+          <Button variant="main" size="sm" onClick={() => setShow(true)}>
+            Aceptar
+          </Button>
+          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
+            Descartar
+          </Button>
+        </div>
+        {btnLoader ? (
+          <Loader />
+        ) : (
+          <CloseButton
+            variant="white"
+            aria-label="Hide"
+            onClick={() => closeAlarm()}
+          />
+        )}
       </div>
       <Row>
         <Col sm={9} className="main-image">

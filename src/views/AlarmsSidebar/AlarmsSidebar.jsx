@@ -37,7 +37,7 @@ const AlarmsSidebar = () => {
   useEffect(() => {
     //Notification push
     Notification.requestPermission().then((res) => {
-      console.log(res);
+      //console.log(res);
     });
 
     function notifiyMe(title, body, icon) {
@@ -56,7 +56,7 @@ const AlarmsSidebar = () => {
         Notification.requestPermission().then(
           (res) =>
             function (permission) {
-              console.log(res);
+              //console.log(res);
               if (permission === "granted") {
                 let notification = new Notification(title, {
                   body: body,
@@ -250,7 +250,7 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <p>{`Total de alarmas: ${handleCount()}`}</p>
+        {/* <p>{`Total de alarmas: ${handleCount()}`}</p> */}
         <SearchField changeEvent={handleSearch} disabled={!alarms} />
       </div>
       <Container className="alarms-side-bar">

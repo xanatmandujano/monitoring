@@ -15,11 +15,14 @@ import { store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import Private from "./routes/Private";
+import PrivateTest from "./routes/PrivateTest.jsx";
 import Public from "./routes/Public.jsx";
 import AlarmDetails from "./components/AlarmDetails/AlarmDetails";
 import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
-import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
-import AlarmDetailsRtcpHistory from "./views/AlarmsHistory/AlarmDetailsRtcpHistory.jsx";
+//import AlarmDetailsRtcp from "./components/AlarmDetails/AlarmDetailsRtcp.jsx";
+//import AlarmDetailsRtcpHistory from "./views/AlarmsHistory/AlarmDetailsRtcpHistory.jsx";
+import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
+import AlarmDetailsFRHistory from "./views/AlarmsHistory/AlarmDetailsFRHistory.jsx";
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
 
 const router = createHashRouter([
@@ -29,7 +32,7 @@ const router = createHashRouter([
     children: [
       { path: "/", element: <Public />, errorElement: <ErrorPage /> },
       {
-        element: <Private />,
+        element: <PrivateTest />,
         errorElement: <ErrorPage />,
         children: [
           {
@@ -47,6 +50,16 @@ const router = createHashRouter([
                 element: <AlarmDetailsVideo />,
                 errorElement: <ErrorPage />,
               },
+              {
+                path: "whiteList/:idVideo",
+                element: <FaceRecognitionAlarm />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "blackList/:idVideo",
+                element: <FaceRecognitionAlarm />,
+                errorElement: <ErrorPage />,
+              },
             ],
           },
           {
@@ -62,6 +75,16 @@ const router = createHashRouter([
               {
                 path: "seproban/:idVideo",
                 element: <AlarmDetailsVideoHistory />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "whiteList/:idVideo",
+                element: <AlarmDetailsFRHistory />,
+                errorElement: <ErrorPage />,
+              },
+              {
+                path: "blackList/:idVideo",
+                element: <AlarmDetailsFRHistory />,
                 errorElement: <ErrorPage />,
               },
             ],

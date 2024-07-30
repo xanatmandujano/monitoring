@@ -6,7 +6,7 @@ const localInfo = localStorage.getItem("persist:root");
 const parse = JSON.parse(localInfo);
 const authState = JSON.parse(parse && parse.authState);
 const token = authState && authState.authInfo.userToken;
-const userId = authState && authState.authInfo.userId;
+const userId = 1;
 
 export const getAlarmsHistory = async (
   pageNumber,
@@ -120,6 +120,38 @@ export const getAlarmData = async (code) => {
   if (response.data.isSuccess) {
     //console.log(response);
     return response;
+  } else {
+    return console.log(response);
+  }
+};
+
+export const getAlarmsReport = async (
+  startTime,
+  endTime,
+  pageNumber,
+  pageSize,
+  columnName,
+  sortDirection,
+  searchText
+) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/alarm/getAlarmsReport`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      startTime: startTime,
+      endTime: endTime,
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+      columnName: columnName,
+      sortDirection: sortDirection,
+      searchText: searchText,
+    },
+  });
+  if (response.data.isSuccess) {
+    return response.data;
   } else {
     return console.log(response);
   }
