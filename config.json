@@ -1,13 +1,14 @@
 {
   "server": {
-    "apiUrl": "https://192.168.1.251:7091",
-    "streamingUrl": " https://192.168.1.251:7091"
+    "apiUrl": "https://192.168.1.251:8060",
+    "streamingUrl": " https://192.168.1.251:8060"
   },
 
   "assets": {
     "banbajio": "/assets/images/Banbajio.png",
     "oxxo": "/assets/images/oxxo-gas.png",
     "afirme": "/assets/images/AfirmeLogo.png",
+    "asur": "/assets/images/asur_logo.png",
     "manualBB": "/assets/documents/manual-bb.pdf",
     "manualOx": "/assets/documents/manual-ox.pdf"
   }

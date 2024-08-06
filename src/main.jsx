@@ -24,6 +24,7 @@ import AlarmDetailsVideo from "./components/AlarmDetails/AlarmDetailsVideo";
 import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm.jsx.jsx";
 import AlarmDetailsFRHistory from "./views/AlarmsHistory/AlarmDetailsFRHistory.jsx";
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
+import AlarmsDetailsHistory from "./views/AlarmsHistory/AlarmsDetailsHistory.jsx";
 
 const router = createHashRouter([
   {
@@ -69,7 +70,7 @@ const router = createHashRouter([
             children: [
               {
                 path: ":idVideo",
-                element: <AlarmDetails />,
+                element: <AlarmsDetailsHistory />,
                 errorElement: <ErrorPage />,
               },
               {

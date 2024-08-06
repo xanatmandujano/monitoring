@@ -13,6 +13,7 @@ import PdfViewer from "../PdfViewer/PdfViewer";
 import banbajio from "/config.json";
 import oxxo from "/config.json";
 import afirme from "/config.json";
+import asur from "/config.json";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
@@ -106,7 +107,9 @@ const NavBar = () => {
                   ? oxxo.assets.oxxo
                   : mode === "bb"
                   ? banbajio.assets.banbajio
-                  : afirme.assets.afirme
+                  : mode === "af"
+                  ? afirme.assets.afirme
+                  : asur.assets.asur
               }
               alt="logo"
               width={100}
@@ -162,7 +165,7 @@ const NavBar = () => {
                     Cerrar sesión
                   </Button>
 
-                  {mode === "af" ? null : (
+                  {mode === "af" || mode === "as" ? null : (
                     <Nav.Item className="help">
                       <Button
                         variant="main"

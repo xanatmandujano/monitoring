@@ -59,7 +59,6 @@ const ReportModal = ({ ...props }) => {
               <TextField
                 label="Desde"
                 name="start"
-                max={"2024/07/29"}
                 type="date"
                 value={p.values.start}
                 onChange={p.handleChange}
@@ -68,7 +67,6 @@ const ReportModal = ({ ...props }) => {
               <TextField
                 label="Hasta"
                 name="end"
-                max={"2024/07/29"}
                 type="date"
                 value={p.values.end}
                 onChange={p.handleChange}

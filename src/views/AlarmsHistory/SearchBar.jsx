@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 //Formik
 import { Form, Formik } from "formik";
-import * as yup from "yup";
 import FormikObserver from "../../components/FormikObserver/FormikObserver";
 //Components
 import TextFieldControl from "../../components/TextField/TextFieldControl";
@@ -76,7 +75,7 @@ const SearchBar = ({ submit }) => {
               <option value="">--Selecciona--</option>
               <option value="creationDate">Fecha</option>
               <option value="alarmCode">Código de alarma</option>
-              <option value="branchCodeName">Sucursal</option>
+              <option value="branchName">Sucursal</option>
               <option value="deviceName">Sensor</option>
               <option value="status">Estatus</option>
             </SelectField>

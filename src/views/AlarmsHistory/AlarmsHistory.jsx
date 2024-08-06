@@ -20,6 +20,10 @@ const AlarmsHistory = () => {
   const [currPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [value, setValue] = useState({
+    columnName: "creationDate",
+    searchText: "",
+  });
 
   const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
@@ -32,9 +36,9 @@ const AlarmsHistory = () => {
       alarmsHistory({
         pageNumber: currPage,
         pageSize: 50,
-        columnName: "creationDate",
+        columnName: value.columnName,
         sortDirection: "desc",
-        searchText: "",
+        searchText: value.searchText,
       })
     )
       .unwrap()
@@ -48,6 +52,10 @@ const AlarmsHistory = () => {
   }, [dispatch, currPage]);
 
   const search = (values) => {
+    setValue({
+      columnName: values.filter,
+      searchText: values.search,
+    });
     setLoader(true);
     dispatch(
       alarmsHistory({
