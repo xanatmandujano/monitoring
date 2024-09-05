@@ -6,7 +6,6 @@ import {
   alarmAttachments,
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
-import { clearAlarmAttachment } from "../../store/slices/attachmentsSlice";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
 //React router dom
@@ -81,6 +80,23 @@ const AlarmDetailsVideo = () => {
     const newConnection = Connector();
     setConnection(newConnection);
     newConnection.start();
+
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      console.log(e);
+      dispatch(
+        releaseAlarm({
+          alarmId: alarmFiles.alarmId,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+
+      window.open(window.location.origin, "_blank");
+    });
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {

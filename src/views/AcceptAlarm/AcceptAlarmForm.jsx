@@ -127,6 +127,7 @@ const AcceptAlarmForm = () => {
       allDevices: values.toggle ? values.toggle : null,
       signal: abortControllerRef.current.signal,
     };
+    console.log(body);
 
     dispatch(validateSeprobanAlarm(body))
       .unwrap()
