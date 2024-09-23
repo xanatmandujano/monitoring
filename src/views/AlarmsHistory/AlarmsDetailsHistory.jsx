@@ -63,7 +63,7 @@ const AlarmsDetailsHistory = () => {
             <Col sm={9} className="main-image">
               {alarmFiles ? (
                 <Image
-                  src={`${alarmFiles.attachments[1].attachmentValue}`}
+                  src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
                   alt="image"
                   width="100%"
                 />
@@ -103,7 +103,7 @@ const AlarmsDetailsHistory = () => {
                     >
                       <Tab eventKey="placa" title="Placa">
                         <img
-                          src={`${alarmFiles.attachments[0].attachmentValue}`}
+                          src={`data:image/png;base64, ${alarmFiles.attachments[0].attachmentValue}`}
                           alt="Placa"
                           className="tab-image"
                         />

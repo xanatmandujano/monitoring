@@ -58,6 +58,25 @@ const AlarmDetailsVideo = () => {
     return videoRef.current;
   }
 
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          //console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
@@ -83,19 +102,22 @@ const AlarmDetailsVideo = () => {
 
     //Release alarm when tab is closed
     window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      console.log(e);
-      dispatch(
-        releaseAlarm({
-          alarmId: alarmFiles.alarmId,
-        })
-      )
-        .unwrap()
-        .then(() => {
-          sendAlarmStatus();
-        });
+      if (e) {
+        sendAlarmStatus();
+        e.preventDefault();
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
 
-      window.open(window.location.origin, "_blank");
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
     });
   }, [idVideo, dispatch]);
 
@@ -111,25 +133,6 @@ const AlarmDetailsVideo = () => {
       minute: "2-digit",
     });
     return alarmTime;
-  };
-
-  const sendAlarmStatus = async () => {
-    const chatMessage = {
-      user: userId,
-      message: JSON.stringify({
-        action: "release",
-        alarmId: alarmFiles.alarmId,
-      }),
-    };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          //console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const closeAlarm = () => {
