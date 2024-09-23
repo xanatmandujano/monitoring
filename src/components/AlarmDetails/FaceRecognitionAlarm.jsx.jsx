@@ -17,7 +17,6 @@ import Loader from "../Loader/Loader";
 //Components
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
-import { setLocale } from "yup";
 
 const FaceRecognitionAlarm = () => {
   const [loader, setLoader] = useState(false);

@@ -6,7 +6,6 @@ import {
   alarmAttachments,
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
-import { clearAlarmAttachment } from "../../store/slices/attachmentsSlice";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
 //React router dom
@@ -59,6 +58,25 @@ const AlarmDetailsVideo = () => {
     return videoRef.current;
   }
 
+  const sendAlarmStatus = async () => {
+    const chatMessage = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: alarmFiles.alarmId,
+      }),
+    };
+    try {
+      if (connection) {
+        await connection.send("SendToOthers", chatMessage).then(() => {
+          //console.log("Message sent");
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
@@ -81,6 +99,26 @@ const AlarmDetailsVideo = () => {
     const newConnection = Connector();
     setConnection(newConnection);
     newConnection.start();
+
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      if (e) {
+        sendAlarmStatus();
+        e.preventDefault();
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
+
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
+    });
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
@@ -95,25 +133,6 @@ const AlarmDetailsVideo = () => {
       minute: "2-digit",
     });
     return alarmTime;
-  };
-
-  const sendAlarmStatus = async () => {
-    const chatMessage = {
-      user: userId,
-      message: JSON.stringify({
-        action: "release",
-        alarmId: alarmFiles.alarmId,
-      }),
-    };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          //console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const closeAlarm = () => {

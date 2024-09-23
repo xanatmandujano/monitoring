@@ -11,9 +11,11 @@
     "dev:bb": "vite --mode bb",
     "dev:ox": "vite --mode ox",
     "dev:af": "vite --mode af",
+    "dev:as": "vite --mode as",
     "build:bb": "vite build --mode bb",
     "build:ox": "vite build --mode ox",
-    "build: af": "vite build --mode af"
+    "build:af": "vite build --mode af",
+    "build:as": "vite build --mode as"
   },
   "dependencies": {
     "@ag-media/react-pdf-table": "^1.0.1",

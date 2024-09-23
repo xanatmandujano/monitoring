@@ -80,7 +80,7 @@ const AlarmsSidebar = () => {
         .start()
         .then(() => {
           newConnection.on("ReceiveMessage", (message) => {
-            //console.log(message);
+            console.log(message);
             let newNotification = JSON.parse(message.message);
             if (Object.hasOwn(newNotification, "Code")) {
               let newAlarm = JSON.parse(message.message);

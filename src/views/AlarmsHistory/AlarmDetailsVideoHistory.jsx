@@ -13,8 +13,6 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import CloseButton from "react-bootstrap/CloseButton";
 //Components
-//import AcceptAlarm from "../AcceptAlarm/AcceptAlarm";
-//import DiscardAlarm from "../DiscardAlarm/DiscardAlarm";
 import Loader from "../../components/Loader/Loader";
 
 const AlarmDetailsVideoHistory = () => {

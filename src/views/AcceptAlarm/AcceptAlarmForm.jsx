@@ -44,11 +44,11 @@ const AcceptAlarmForm = () => {
     newConnection.start();
   }, []);
 
-  const sendAlarmStatus = async () => {
+  const sendAlarmStatus = async (action) => {
     const chatMessage = {
       user: sessionStorage.getItem("userId"),
       message: JSON.stringify({
-        action: "accepted",
+        action: action,
         alarmId: alarmFiles.alarmId,
       }),
     };
@@ -133,7 +133,7 @@ const AcceptAlarmForm = () => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
-        sendAlarmStatus();
+        sendAlarmStatus("accepted");
         navigate("/alarms-panel");
       })
       .catch(() => {
@@ -143,7 +143,9 @@ const AcceptAlarmForm = () => {
           setShow(true);
           setDisabled(true);
           setCancelBtn(true);
+          sendAlarmStatus("discarded");
           element.lastChild.style.display = "block";
+          navigate("/alarms-panel");
         }
       });
   };
