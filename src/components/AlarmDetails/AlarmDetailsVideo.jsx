@@ -174,12 +174,6 @@ const AlarmDetailsVideo = () => {
               size="sm"
               onClick={() => setShowDiscard(true)}
               disabled={loader}
-              style={{
-                display:
-                  alarmFiles && alarmFiles.attachments.length <= 0
-                    ? "none"
-                    : "inline-block",
-              }}
             >
               Descartar
             </Button>

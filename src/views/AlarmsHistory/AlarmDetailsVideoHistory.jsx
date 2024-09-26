@@ -14,9 +14,11 @@ import Tabs from "react-bootstrap/Tabs";
 import CloseButton from "react-bootstrap/CloseButton";
 //Components
 import Loader from "../../components/Loader/Loader";
+import ReactivateAlarm from "./ReactivateAlarm";
 
 const AlarmDetailsVideoHistory = () => {
   const [loader, setLoader] = useState(false);
+  const [show, setShow] = useState(false);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -79,6 +81,16 @@ const AlarmDetailsVideoHistory = () => {
               aria-label="Hide"
               onClick={() => handleBtn()}
             />
+            {alarmFiles && alarmFiles.status === "Envío cancelado" ? (
+              <Button variant="main" onClick={() => setShow(true)}>
+                Reactivar
+              </Button>
+            ) : null}
+            {alarmFiles && alarmFiles.status === "Descartada" ? (
+              <Button variant="main" onClick={() => setShow(true)}>
+                Reactivar
+              </Button>
+            ) : null}
           </div>
           {alarmFiles && alarmFiles.attachments.length <= 0 ? (
             <p style={{ color: "white", marginTop: "1rem" }}>
@@ -161,6 +173,8 @@ const AlarmDetailsVideoHistory = () => {
               </Col>
             </Row>
           )}
+
+          <ReactivateAlarm show={show} onHide={() => setShow(false)} />
         </>
       )}
     </Container>

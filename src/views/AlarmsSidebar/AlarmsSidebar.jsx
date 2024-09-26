@@ -80,7 +80,7 @@ const AlarmsSidebar = () => {
         .start()
         .then(() => {
           newConnection.on("ReceiveMessage", (message) => {
-            console.log(message);
+            //console.log(message);
             let newNotification = JSON.parse(message.message);
             if (Object.hasOwn(newNotification, "Code")) {
               let newAlarm = JSON.parse(message.message);
@@ -107,6 +107,12 @@ const AlarmsSidebar = () => {
                 //console.log(message);
                 let element = document.getElementById(notificationAlarmId);
                 let cardBtn = element.lastChild.lastChild.lastChild;
+                element.className = "alarm-card card";
+                cardBtn.removeAttribute("disabled");
+              } else if (viewAction === "reactivated") {
+                let element = document.getElementById(notificationAlarmId);
+                let cardBtn = element.lastChild.lastChild.lastChild;
+                element.style.display = "block";
                 element.className = "alarm-card card";
                 cardBtn.removeAttribute("disabled");
               }
