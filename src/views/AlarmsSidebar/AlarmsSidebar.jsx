@@ -257,7 +257,7 @@ const AlarmsSidebar = () => {
     <>
       <div className="search-bar">
         {/* <p>{`Total de alarmas: ${handleCount()}`}</p> */}
-        <SearchField changeEvent={handleSearch} disabled={!alarms} />
+        <SearchField changeEvent={handleSearch} />
       </div>
       <Container className="alarms-side-bar">
         {notifications &&
