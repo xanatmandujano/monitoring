@@ -130,7 +130,7 @@ const NavBar = () => {
                 className="page-title"
                 variant="secondary"
               >
-                Historial de alarmas
+                Historial
               </Button>
             </>
           ) : (
@@ -189,6 +189,7 @@ const NavBar = () => {
           headermessage="Cerrar sesión"
           message="¿Quieres cerrar tu sesión?"
           btntext="Aceptar"
+          display="block"
         />
 
         {mode === "af" ? null : (

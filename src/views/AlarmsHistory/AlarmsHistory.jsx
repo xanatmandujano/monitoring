@@ -23,6 +23,7 @@ const AlarmsHistory = () => {
   const [value, setValue] = useState({
     columnName: "creationDate",
     searchText: "",
+    isEvent: null,
   });
 
   const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
@@ -39,6 +40,7 @@ const AlarmsHistory = () => {
         columnName: value.columnName,
         sortDirection: "desc",
         searchText: value.searchText,
+        isEvent: value.isEvent,
       })
     )
       .unwrap()
@@ -55,6 +57,7 @@ const AlarmsHistory = () => {
     setValue({
       columnName: values.filter,
       searchText: values.search,
+      isEvent: values.isEvent,
     });
     setLoader(true);
     dispatch(
@@ -64,6 +67,7 @@ const AlarmsHistory = () => {
         columnName: values.filter,
         sortDirection: "asc",
         searchText: values.search,
+        isEvent: values.isEvent,
       })
     )
       .unwrap()

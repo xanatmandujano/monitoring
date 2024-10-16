@@ -10,6 +10,7 @@ import authReducer from "./slices/authSlice";
 import alarmsReducer from "./slices/alarmsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
 import attachmentsReducer from "./slices/attachmentsSlice";
+import useCasesReducer from "./slices/useCasesSlice";
 
 const persistConfig = {
   key: "root",
@@ -31,6 +32,7 @@ export const store = configureStore({
     alarms: alarmsReducer,
     notifications: notificationsReducer,
     attachments: attachmentsReducer,
+    useCases: useCasesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -19,7 +19,6 @@ import CloseButton from "react-bootstrap/CloseButton";
 import DiscardAlarm from "../../views/DiscardAlarm/DiscardAlarm";
 import AcceptAlarmFR from "../../views/AcceptAlarmFR/AcceptAlarmFR";
 import Loader from "../Loader/Loader";
-import FullLoader from "../Loader/FullLoader";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
@@ -34,25 +33,6 @@ const AlarmDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { alarmFiles } = useSelector((state) => state.attachments);
-
-  useEffect(() => {
-    setLoader(true);
-    dispatch(clearMessage());
-    dispatch(
-      alarmStatus({
-        alarmId: idVideo,
-        statusId: 2,
-        comments: "",
-      })
-    ).unwrap();
-    dispatch(alarmAttachments({ alarmId: idVideo }))
-      .unwrap()
-      .then(() => setLoader(false));
-
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-  }, [idVideo, dispatch]);
 
   const sendAlarmStatus = async () => {
     const chatMessage = {
@@ -73,6 +53,70 @@ const AlarmDetails = () => {
     }
   };
 
+  useEffect(() => {
+    setLoader(true);
+    dispatch(clearMessage());
+    dispatch(alarmAttachments({ alarmId: idVideo }))
+      .unwrap()
+      .then(() => setLoader(false));
+
+    if (alarmFiles.status === "Validada") {
+      console.log("The status is validada");
+    } else if (alarmFiles.status === "Descartada") {
+      console.log("The status is descartada");
+    } else {
+      dispatch(
+        alarmStatus({
+          alarmId: alarmFiles.alarmId,
+          statusId: 2,
+          comments: "",
+        })
+      ).unwrap();
+    }
+
+    const newConnection = Connector();
+    setConnection(newConnection);
+    newConnection.start();
+
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      if (e) {
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
+        sendAlarmStatus();
+        e.preventDefault();
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
+    });
+
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
+    });
+  }, [idVideo, dispatch]);
+
+  const dateTime = () => {
+    const alarmDateTime = new Date(alarmFiles.creationDate);
+    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
+    return alarmTime;
+  };
+
   const closeAlarm = () => {
     setBtnLoader(true);
     dispatch(
@@ -86,12 +130,6 @@ const AlarmDetails = () => {
         navigate("/alarms-panel");
         setBtnLoader(false);
       });
-  };
-
-  const dateTime = () => {
-    const alarmDateTime = new Date(alarmFiles.creationDate);
-    const alarmTime = alarmDateTime.toLocaleTimeString("es-MX");
-    return alarmTime;
   };
 
   return (
@@ -166,7 +204,7 @@ const AlarmDetails = () => {
                   </Tab>
                   <Tab eventKey="vehiculo" title="Vehiculo">
                     <img
-                      src={`${alarmFiles.attachments[1].attachmentValue}`}
+                      src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
                       alt="Vehículo"
                       className="tab-image"
                     />

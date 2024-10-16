@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
-import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
+import { USER_LOGOUT } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
 import { Connector } from "../signalr/signalr-connection";
 import NewAlarm from "../views/AlarmsPanel/NewAlarm";

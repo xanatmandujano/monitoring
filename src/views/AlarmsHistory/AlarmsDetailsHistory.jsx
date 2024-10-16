@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
+import { addPlate } from "../../store/actions/useCasesActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React router dom
@@ -15,9 +16,11 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import CloseButton from "react-bootstrap/CloseButton";
 import Loader from "../../components/Loader/Loader";
+import ModalMessage from "../../components/ModalMessage/ModalMessage";
 
 const AlarmsDetailsHistory = () => {
   const [loader, setLoader] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -31,6 +34,14 @@ const AlarmsDetailsHistory = () => {
       .unwrap()
       .then(() => setLoader(false));
   }, [idVideo, dispatch]);
+
+  const sendPlateNumber = (plate, useCaseCode) => {
+    dispatch(addPlate({ plateText: plate, useCaseCode: useCaseCode }))
+      .unwrap()
+      .then((res) => {
+        setModalShow(true);
+      });
+  };
 
   const closeAlarm = () => {
     return navigate("/alarms-history");
@@ -57,6 +68,33 @@ const AlarmsDetailsHistory = () => {
               aria-label="Hide"
               onClick={() => closeAlarm()}
             />
+            {alarmFiles && alarmFiles.isEvent ? (
+              <div style={{ justifyContent: "flex-end" }}>
+                <Button
+                  style={{ marginRight: ".5rem" }}
+                  variant="main"
+                  onClick={() =>
+                    sendPlateNumber(
+                      alarmFiles.additionalInformation,
+                      "BlackList"
+                    )
+                  }
+                >
+                  Agregar a lista negra
+                </Button>
+                <Button
+                  variant="main"
+                  onClick={() =>
+                    sendPlateNumber(
+                      alarmFiles.additionalInformation,
+                      "WhiteList"
+                    )
+                  }
+                >
+                  Agregar a lista blanca
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           <Row>
@@ -110,7 +148,7 @@ const AlarmsDetailsHistory = () => {
                       </Tab>
                       <Tab eventKey="vehiculo" title="Vehiculo">
                         <img
-                          src={`${alarmFiles.attachments[1].attachmentValue}`}
+                          src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
                           alt="Vehículo"
                           className="tab-image"
                         />
@@ -123,6 +161,16 @@ const AlarmsDetailsHistory = () => {
               </div>
             </Col>
           </Row>
+
+          <ModalMessage
+            show={modalShow}
+            btnAction={() => setModalShow(false)}
+            onHide={() => setModalShow(false)}
+            headermessage="Confirmación"
+            message="La placa se agregó con éxito"
+            btntext="Aceptar"
+            display="none"
+          />
         </>
       )}
     </Container>

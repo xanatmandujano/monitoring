@@ -55,7 +55,7 @@ export const todayAlarms = createAsyncThunk(
 export const alarmsHistory = createAsyncThunk(
   "alarms/alarmsHistory",
   async (
-    { pageNumber, pageSize, columnName, sortDirection, searchText },
+    { pageNumber, pageSize, columnName, sortDirection, searchText, isEvent },
     thunkAPI
   ) => {
     try {
@@ -64,7 +64,8 @@ export const alarmsHistory = createAsyncThunk(
         pageSize,
         columnName,
         sortDirection,
-        searchText
+        searchText,
+        isEvent
       );
       thunkAPI.dispatch(setAlarmsPages(data.totalPages));
 

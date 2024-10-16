@@ -19,7 +19,12 @@ const ModalMessage = ({ ...props }) => {
       </Modal.Header>
       <Modal.Body>{props.message}</Modal.Body>
       <Modal.Footer className="btns-container">
-        <Button variant="outline-light" onClick={props.onHide} size="sm">
+        <Button
+          style={{ display: props.display }}
+          variant="outline-light"
+          onClick={props.onHide}
+          size="sm"
+        >
           Cancelar
         </Button>
         <Button variant="main" onClick={props.btnAction} size="sm">

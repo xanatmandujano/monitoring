@@ -24,10 +24,14 @@ const AlarmHistoryData = ({ ...props }) => {
     return concat;
   };
 
+  const handleColor = (item) => {
+    item.isEvent ? { color: "red" } : { color: "white" };
+  };
+
   const alarmType = (alarmTypeId, alarmId) => {
     if (alarmTypeId === 1) {
       return `seproban/${alarmId}`;
-    } else if (alarmTypeId === 2) {
+    } else if (alarmTypeId === 2 || 5 || 6) {
       return `${alarmId}`;
     } else if (alarmTypeId === 3) {
       return `blackList/${alarmId}`;
@@ -41,7 +45,8 @@ const AlarmHistoryData = ({ ...props }) => {
       <Table variant="dark" striped hover bordered>
         <thead>
           <tr>
-            <th>Código de alarma</th>
+            <th>Código</th>
+            <th>Placa</th>
             <th>Sucursal</th>
             <th>Fecha</th>
             <th>Sensor</th>
@@ -53,7 +58,14 @@ const AlarmHistoryData = ({ ...props }) => {
           {props.alarms &&
             props.alarms.map((item) => (
               <tr key={item.alarmId}>
-                <td>{item.alarmCode}</td>
+                <td
+                  style={
+                    item.isEvent ? { color: "white" } : { color: "#fb5757" }
+                  }
+                >
+                  {item.alarmCode}
+                </td>
+                <td>{item.additionalInformation}</td>
                 <td>{item.branchCodeName}</td>
                 <td>{dateTime(item.creationDate)}</td>
                 <td>{item.deviceName}</td>

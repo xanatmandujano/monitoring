@@ -203,7 +203,7 @@ const AlarmsSidebar = () => {
           cardBtn.setAttribute("disabled", "");
           if (alarmTypeId === 1) {
             return navigate(`seproban/${alarmId}`);
-          } else if (alarmTypeId === 2) {
+          } else if (alarmTypeId === 2 || 5 || 6) {
             return navigate(`${alarmId}`);
           } else if (alarmTypeId === 3) {
             return navigate(`blackList/${alarmId}`);

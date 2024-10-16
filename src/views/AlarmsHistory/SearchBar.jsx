@@ -15,7 +15,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 const SearchBar = ({ submit }) => {
   const [placeholder, setPlaceholder] = useState("");
   const [type, setType] = useState("text");
-  const [statusFilter, setStatusFilter] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("status");
 
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -25,36 +25,53 @@ const SearchBar = ({ submit }) => {
 
   return (
     <>
-      <Formik initialValues={{ search: "", filter: "" }} onSubmit={submit}>
+      <Formik
+        initialValues={{ search: "", filter: "", isEvent: null }}
+        onSubmit={submit}
+      >
         {(props) => (
           <Form className="search-field">
             <FormikObserver
               onChange={(values, initialValues) => {
                 if (values.values.filter === "creationDate") {
-                  setStatusFilter(false);
+                  setStatusFilter("");
                   setPlaceholder("aaaa/mm/dd");
                   setType("date");
                 } else if (values.values.filter === "status") {
-                  setStatusFilter(true);
+                  setStatusFilter("status");
+                } else if (values.values.filter === "isEvent") {
+                  setStatusFilter("isEvent");
                 } else {
-                  setStatusFilter(false);
+                  setStatusFilter("");
                   setPlaceholder("Búsqueda...");
                   setType("text");
                 }
               }}
             />
-            {statusFilter ? (
+            {statusFilter === "status" ? (
               <SelectField
                 name="search"
                 value={props.values.search}
                 onChange={props.handleChange}
                 aria-label="Default select example"
               >
+                <option> </option>
                 <option>Creada</option>
                 <option>Vista</option>
                 <option>Validada</option>
                 <option>Descartada</option>
                 <option value="Envio cancelado">Cancelada</option>
+              </SelectField>
+            ) : statusFilter === "isEvent" ? (
+              <SelectField
+                name="isEvent"
+                value={props.values.isEvent}
+                onChange={props.handleChange}
+              >
+                <option> </option>
+                {/* <option value={null}>Todas</option> */}
+                <option value={false}>Alarma</option>
+                <option value={true}>Evento</option>
               </SelectField>
             ) : (
               <TextFieldControl
@@ -73,8 +90,10 @@ const SearchBar = ({ submit }) => {
               aria-label="Default select example"
             >
               <option value="">--Selecciona--</option>
+              <option value="additionalInformation">Placa</option>
+              <option value="isEvent">Tipo</option>
               <option value="creationDate">Fecha</option>
-              <option value="alarmCode">Código de alarma</option>
+              <option value="alarmCode">Código</option>
               <option value="branchName">Sucursal</option>
               <option value="deviceName">Sensor</option>
               <option value="status">Estatus</option>

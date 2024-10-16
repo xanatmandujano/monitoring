@@ -13,11 +13,12 @@ export const getAlarmsHistory = async (
   pageSize,
   columnName,
   sortDirection,
-  searchText
+  searchText,
+  isEvent
 ) => {
   const response = await axios({
     method: "GET",
-    url: `${baseURL}/alarm/getalarms`,
+    url: `${baseURL}/alarm/getEventsAndAlarms`,
     headers: {
       Authorization: `Bearer ${token}`,
       "Access-Control-Allow-Origin": `${baseURL}`,
@@ -28,6 +29,7 @@ export const getAlarmsHistory = async (
       columnName: columnName,
       sortDirection: sortDirection,
       searchText: searchText,
+      isEvent: isEvent,
     },
   });
   if (response.data.isSuccess) {
