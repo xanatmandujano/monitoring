@@ -38,20 +38,60 @@ const AlarmDetails = () => {
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
-    dispatch(
-      alarmStatus({
-        alarmId: idVideo,
-        statusId: 2,
-        comments: "",
-      })
-    ).unwrap();
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
       .then(() => setLoader(false));
 
+    if (alarmFiles.status === "Validada") {
+      console.log("The status is validada");
+    } else if (alarmFiles.status === "Descartada") {
+      console.log("The status is descartada");
+    } else {
+      dispatch(
+        alarmStatus({
+          alarmId: alarmFiles.alarmId,
+          statusId: 2,
+          comments: "",
+        })
+      ).unwrap();
+    }
+
     const newConnection = Connector();
     setConnection(newConnection);
     newConnection.start();
+
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      if (e) {
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
+        sendAlarmStatus();
+        e.preventDefault();
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
+    });
+
+    //Release alarm when user go back
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
+    });
   }, [idVideo, dispatch]);
 
   const sendAlarmStatus = async () => {

@@ -80,21 +80,25 @@ const AlarmDetailsVideo = () => {
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
-    dispatch(
-      alarmStatus({
-        alarmId: idVideo,
-        statusId: 2,
-        comments: "",
-      })
-    )
+    dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => {
-        dispatch(alarmAttachments({ alarmId: idVideo }))
-          .unwrap()
-          .then(() => {
-            setLoader(false);
-          });
-      });
+      .then(() => setLoader(false));
+
+    if (alarmFiles.status === "Validada") {
+      console.log("This alarm has been validated");
+      setLoader(true);
+    } else if (alarmFiles.status === "Descartada") {
+      console.log("This alarm has been discarded");
+      setLoader(true);
+    } else {
+      dispatch(
+        alarmStatus({
+          alarmId: alarmFiles.alarmId,
+          statusId: 2,
+          comments: "",
+        })
+      ).unwrap();
+    }
 
     const newConnection = Connector();
     setConnection(newConnection);
@@ -103,8 +107,6 @@ const AlarmDetailsVideo = () => {
     //Release alarm when tab is closed
     window.addEventListener("beforeunload", (e) => {
       if (e) {
-        sendAlarmStatus();
-        e.preventDefault();
         dispatch(
           releaseAlarm({
             alarmId: alarmFiles.alarmId,
@@ -114,10 +116,24 @@ const AlarmDetailsVideo = () => {
           .then(() => {
             console.log("Success");
           });
-
+        sendAlarmStatus();
+        e.preventDefault();
         //window.open(window.location.origin, "_blank");
         return false;
       }
+    });
+
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
     });
   }, [idVideo, dispatch]);
 
