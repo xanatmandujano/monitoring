@@ -38,7 +38,7 @@ const AlarmsHistory = () => {
         pageNumber: currPage,
         pageSize: 50,
         columnName: value.columnName,
-        sortDirection: "desc",
+        //sortDirection: "desc",
         searchText: value.searchText,
         isEvent: value.isEvent,
       })
@@ -65,7 +65,7 @@ const AlarmsHistory = () => {
         pageNumber: 1,
         pageSize: 50,
         columnName: values.filter,
-        sortDirection: "asc",
+        //sortDirection: "desc",
         searchText: values.search,
         isEvent: values.isEvent,
       })

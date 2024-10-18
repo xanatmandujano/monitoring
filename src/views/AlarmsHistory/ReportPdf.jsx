@@ -7,7 +7,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { Table, TR, TH, TD } from "@ag-media/react-pdf-table";
-import banbajio from "/config.json";
+import oxxo from "/config.json";
 
 const styles = StyleSheet.create({
   page: { flexDirection: "column", padding: 25 },
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 100,
-    height: 50,
+    //height: 50,
   },
   tdHeader: {
     fontSize: "10px",
@@ -60,7 +60,7 @@ const ReportPdf = ({ report }) => {
     <Document title="Reporte de alarmas">
       <Page size={"A4"} style={styles.page} wrap orientation="landscape">
         <View style={styles.view}>
-          <Image style={styles.image} src={banbajio.assets.banbajio} />
+          <Image style={styles.image} src={oxxo.assets.oxxo} />
           <Text style={styles.title}>Reporte de alarmas</Text>
         </View>
         <Table>

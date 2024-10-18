@@ -22,8 +22,6 @@ import Loader from "../Loader/Loader";
 
 const AlarmDetails = () => {
   const [loader, setLoader] = useState(false);
-  //const [images, setImages] = useState([]);
-  //const [urls, setUrls] = useState([]);
   const [btnLoader, setBtnLoader] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [show, setShow] = useState(false);
@@ -59,20 +57,13 @@ const AlarmDetails = () => {
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
       .then(() => setLoader(false));
-
-    if (alarmFiles.status === "Validada") {
-      console.log("The status is validada");
-    } else if (alarmFiles.status === "Descartada") {
-      console.log("The status is descartada");
-    } else {
-      dispatch(
-        alarmStatus({
-          alarmId: alarmFiles.alarmId,
-          statusId: 2,
-          comments: "",
-        })
-      ).unwrap();
-    }
+    dispatch(
+      alarmStatus({
+        alarmId: alarmFiles.alarmId,
+        statusId: 2,
+        comments: "",
+      })
+    ).unwrap();
 
     const newConnection = Connector();
     setConnection(newConnection);
@@ -133,94 +124,110 @@ const AlarmDetails = () => {
   };
 
   return (
-    <Container fluid className="alarm-details">
-      <div className="btns-container">
-        <div className="action-btns">
-          <Button variant="main" size="sm" onClick={() => setShow(true)}>
-            Validar
-          </Button>
-          <Button variant="main" size="sm" onClick={() => setShowDiscard(true)}>
-            Descartar
-          </Button>
-        </div>
-        {btnLoader ? (
-          <Loader />
-        ) : (
-          <CloseButton
-            variant="white"
-            aria-label="Hide"
-            onClick={() => closeAlarm()}
-          />
-        )}
-      </div>
-
-      <Row>
-        <Col sm={9} className="main-image">
-          {alarmFiles ? (
-            <Image
-              src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
-              alt="image"
-              width="100%"
-            />
-          ) : (
-            <p>No se encontró información</p>
+    <>
+      <Container fluid className="alarm-details">
+        <div className="btns-container">
+          {alarmFiles.status === "Validada" ? null : alarmFiles.status ===
+            "Descartada" ? null : (
+            <div className="action-btns">
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShow(true)}
+                disabled={loader}
+              >
+                Validar
+              </Button>
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShowDiscard(true)}
+                disabled={loader}
+              >
+                Descartar
+              </Button>
+            </div>
           )}
-        </Col>
-        <Col sm={3}>
-          <div className="alarm-data">
+          {btnLoader ? (
+            <Loader />
+          ) : (
+            <CloseButton
+              variant="white"
+              aria-label="Hide"
+              onClick={() => closeAlarm()}
+            />
+          )}
+        </div>
+
+        <Row>
+          <Col sm={9} className="main-image">
             {alarmFiles ? (
-              <>
-                <p>
-                  {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />
-                </p>
-                <p>
-                  Número de placa: <br />
-                  {alarmFiles.additionalInformation} <br />
-                </p>
-                <p>
-                  {alarmFiles.comments} <br />
-                </p>
-                <p>
-                  Ubicación: <br />
-                  {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
-                </p>
-                <p>
-                  Hora de la alarma: <br />
-                  {dateTime()}
-                </p>
-                <Tabs
-                  defaultActiveKey="placa"
-                  id="fill-tab-example"
-                  className="mb-3"
-                  data-bs-theme="dark"
-                  fill
-                >
-                  <Tab eventKey="placa" title="Placa">
-                    <img
-                      src={`data:image/png;base64, ${alarmFiles.attachments[0].attachmentValue}`}
-                      alt="Placa"
-                      className="tab-image"
-                    />
-                  </Tab>
-                  <Tab eventKey="vehiculo" title="Vehiculo">
-                    <img
-                      src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
-                      alt="Vehículo"
-                      className="tab-image"
-                    />
-                  </Tab>
-                </Tabs>
-              </>
+              <Image
+                src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
+                alt="image"
+                width="100%"
+              />
             ) : (
               <p>No se encontró información</p>
             )}
-          </div>
-        </Col>
-      </Row>
+          </Col>
+          <Col sm={3}>
+            <div className="alarm-data">
+              {alarmFiles ? (
+                <>
+                  <p>
+                    {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}
+                    <br />
+                  </p>
+                  <p>
+                    Número de placa: <br />
+                    {alarmFiles.additionalInformation} <br />
+                  </p>
+                  <p>
+                    {alarmFiles.comments} <br />
+                  </p>
+                  <p>
+                    Ubicación: <br />
+                    {`${alarmFiles.branchCode} - ${alarmFiles.branchName}, ${alarmFiles.stateCode} (${alarmFiles.countryCode})`}{" "}
+                  </p>
+                  <p>
+                    Hora de la alarma: <br />
+                    {dateTime()}
+                  </p>
+                  <Tabs
+                    defaultActiveKey="placa"
+                    id="fill-tab-example"
+                    className="mb-3"
+                    data-bs-theme="dark"
+                    fill
+                  >
+                    <Tab eventKey="placa" title="Placa">
+                      <img
+                        src={`data:image/png;base64, ${alarmFiles.attachments[0].attachmentValue}`}
+                        alt="Placa"
+                        className="tab-image"
+                      />
+                    </Tab>
+                    <Tab eventKey="vehiculo" title="Vehiculo">
+                      <img
+                        src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
+                        alt="Vehículo"
+                        className="tab-image"
+                      />
+                    </Tab>
+                  </Tabs>
+                </>
+              ) : (
+                <p>No se encontró información</p>
+              )}
+            </div>
+          </Col>
+        </Row>
 
-      <AcceptAlarmFR show={show} onHide={() => setShow(false)} />
-      <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
-    </Container>
+        <AcceptAlarmFR show={show} onHide={() => setShow(false)} />
+        <DiscardAlarm show={showDiscard} onHide={() => setShowDiscard(false)} />
+      </Container>
+    </>
   );
 };
 

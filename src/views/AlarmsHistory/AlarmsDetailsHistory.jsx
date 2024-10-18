@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { addPlate } from "../../store/actions/useCasesActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";

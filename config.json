@@ -1,7 +1,7 @@
 {
   "server": {
-    "apiUrl": "https://192.168.1.251:3091",
-    "streamingUrl": "https://192.168.1.251:3091"
+    "apiUrl": "https://caelumgroup.ddns.net:4091",
+    "streamingUrl": "https://caelumgroup.ddns.net:4091"
   },
 
   "assets": {
