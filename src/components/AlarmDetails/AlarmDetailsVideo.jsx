@@ -84,21 +84,13 @@ const AlarmDetailsVideo = () => {
       .unwrap()
       .then(() => setLoader(false));
 
-    if (alarmFiles.status === "Validada") {
-      console.log("This alarm has been validated");
-      setLoader(true);
-    } else if (alarmFiles.status === "Descartada") {
-      console.log("This alarm has been discarded");
-      setLoader(true);
-    } else {
-      dispatch(
-        alarmStatus({
-          alarmId: alarmFiles.alarmId,
-          statusId: 2,
-          comments: "",
-        })
-      ).unwrap();
-    }
+    dispatch(
+      alarmStatus({
+        alarmId: alarmFiles.alarmId,
+        statusId: 2,
+        comments: "",
+      })
+    ).unwrap();
 
     const newConnection = Connector();
     setConnection(newConnection);
@@ -170,30 +162,34 @@ const AlarmDetailsVideo = () => {
     <>
       <Container fluid className="alarm-details">
         <div className="btns-container">
-          <div className="action-btns">
-            <Button
-              variant="main"
-              size="sm"
-              onClick={() => setShow(true)}
-              disabled={loader}
-              style={{
-                display:
-                  alarmFiles && alarmFiles.attachments.length <= 0
-                    ? "none"
-                    : "inline-block",
-              }}
-            >
-              Validar
-            </Button>
-            <Button
-              variant="main"
-              size="sm"
-              onClick={() => setShowDiscard(true)}
-              disabled={loader}
-            >
-              Descartar
-            </Button>
-          </div>
+          {alarmFiles.status === "Validada" ? null : alarmFiles.status ===
+            "Descartada" ? null : alarmFiles.status ===
+            "Envío cancelado" ? null : (
+            <div className="action-btns">
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShow(true)}
+                disabled={loader}
+                style={{
+                  display:
+                    alarmFiles && alarmFiles.attachments.length <= 0
+                      ? "none"
+                      : "inline-block",
+                }}
+              >
+                Validar
+              </Button>
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShowDiscard(true)}
+                disabled={loader}
+              >
+                Descartar
+              </Button>
+            </div>
+          )}
           {btnLoader ? (
             <Loader />
           ) : (
