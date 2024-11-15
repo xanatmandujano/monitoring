@@ -16,6 +16,7 @@ const SearchBar = ({ submit }) => {
   const [placeholder, setPlaceholder] = useState("");
   const [type, setType] = useState("text");
   const [statusFilter, setStatusFilter] = useState("status");
+  const [isEvent, setIsEvent] = useState(null);
 
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -26,7 +27,7 @@ const SearchBar = ({ submit }) => {
   return (
     <>
       <Formik
-        initialValues={{ search: "", filter: "", isEvent: null }}
+        initialValues={{ search: "", filter: "", isEvent: isEvent }}
         onSubmit={submit}
       >
         {(props) => (
@@ -34,14 +35,26 @@ const SearchBar = ({ submit }) => {
             <FormikObserver
               onChange={(values, initialValues) => {
                 if (values.values.filter === "creationDate") {
+                  setIsEvent(null);
                   setStatusFilter("");
                   setPlaceholder("aaaa/mm/dd");
                   setType("date");
                 } else if (values.values.filter === "status") {
+                  setIsEvent(null);
+                  values.values.search = "";
                   setStatusFilter("status");
                 } else if (values.values.filter === "isEvent") {
+                  values.values.search = "";
                   setStatusFilter("isEvent");
+                  if (values.values.search === "Alarma") {
+                    setIsEvent(false);
+                  } else if (values.values.search === "Evento") {
+                    setIsEvent(true);
+                  } else {
+                    setIsEvent(null);
+                  }
                 } else {
+                  setIsEvent(null);
                   setStatusFilter("");
                   setPlaceholder("Búsqueda...");
                   setType("text");
