@@ -55,6 +55,7 @@ const SearchBar = ({ submit }) => {
                 <option>Validada</option>
                 <option>Descartada</option>
                 <option value="Envio cancelado">Cancelada</option>
+                <option>Reactivada</option>
               </SelectField>
             ) : (
               <TextFieldControl

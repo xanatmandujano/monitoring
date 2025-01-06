@@ -90,7 +90,7 @@ const Login = () => {
                 type="submit"
                 disabled={loader && <Loader size="sm" />}
               >
-                {loader ? <Loader size="sm" /> : "Entrar"}
+                Entrar {loader ? <Loader variant="light" size="sm" /> : null}
               </Button>
             </div>
 

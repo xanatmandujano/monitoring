@@ -99,7 +99,7 @@ const NavBar = () => {
   return (
     <>
       <Navbar key="lg" expand="lg" className="nav-bar-main">
-        <Container fluid>
+        <Container>
           <Navbar.Brand>
             <img
               src={

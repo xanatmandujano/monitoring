@@ -162,7 +162,8 @@ const AlarmDetailsVideo = () => {
     <>
       <Container fluid className="alarm-details">
         <div className="btns-container">
-          {alarmFiles.status === "Validada" ? null : alarmFiles.status ===
+          {alarmFiles &&
+          alarmFiles.status === "Validada" ? null : alarmFiles.status ===
             "Descartada" ? null : alarmFiles.status ===
             "Envío cancelado" ? null : (
             <div className="action-btns">
