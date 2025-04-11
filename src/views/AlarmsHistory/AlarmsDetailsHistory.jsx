@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
-import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -18,6 +18,7 @@ import Loader from "../../components/Loader/Loader";
 
 const AlarmsDetailsHistory = () => {
   const [loader, setLoader] = useState(false);
+  const [block, setBlock] = useState(false);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -29,7 +30,17 @@ const AlarmsDetailsHistory = () => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => setLoader(false));
+      .then(async (res) => {
+        setLoader(false);
+        const permission = await hasPermission(res.alarmCode);
+        if (!permission.data) {
+          setBlock(true);
+          navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
+      });
   }, [idVideo, dispatch]);
 
   const closeAlarm = () => {
@@ -63,7 +74,11 @@ const AlarmsDetailsHistory = () => {
             <Col sm={9} className="main-image">
               {alarmFiles ? (
                 <Image
-                  src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
+                  src={
+                    block
+                      ? null
+                      : `data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`
+                  }
                   alt="image"
                   width="100%"
                 />
@@ -73,7 +88,7 @@ const AlarmsDetailsHistory = () => {
             </Col>
             <Col sm={3}>
               <div className="alarm-data">
-                {alarmFiles ? (
+                {block ? null : alarmFiles ? (
                   <>
                     <p>
                       {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}

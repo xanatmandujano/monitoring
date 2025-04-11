@@ -5,6 +5,7 @@ import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
+import { hasPermission } from "../../services/authService";
 //React-router-dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -24,6 +25,7 @@ const FaceRecognitionAlarm = () => {
   const [showDiscard, setShowDiscard] = useState(false);
   const [btnLoader, setBtnLoader] = useState(false);
   const [connection, setConnection] = useState(null);
+  const [block, setBlock] = useState(true);
 
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
@@ -34,21 +36,27 @@ const FaceRecognitionAlarm = () => {
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
+    dispatch(alarmAttachments({ alarmId: idVideo }))
+      .unwrap()
+      .then(async (res) => {
+        setLoader(false);
+        const userPermission = await hasPermission(res.alarmCode);
+        if (!userPermission.data) {
+          setBlock(true);
+          navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
+      });
+
     dispatch(
       alarmStatus({
         alarmId: idVideo,
         statusId: 2,
         comments: "",
       })
-    )
-      .unwrap()
-      .then(() => {
-        dispatch(alarmAttachments({ alarmId: idVideo }))
-          .unwrap()
-          .then(() => {
-            setLoader(false);
-          });
-      });
+    ).unwrap();
 
     const newConnection = Connector();
     setConnection(newConnection);
@@ -120,7 +128,9 @@ const FaceRecognitionAlarm = () => {
         <Col sm={9} className="main-image">
           {alarmFiles ? (
             <Image
-              src={`${alarmFiles.attachments[0].attachmentValue}`}
+              src={
+                block ? null : `${alarmFiles.attachments[0].attachmentValue}`
+              }
               alt="rostro"
               width="100%"
             />
@@ -130,7 +140,7 @@ const FaceRecognitionAlarm = () => {
         </Col>
         <Col sm={3}>
           <div className="alarm-data">
-            {alarmFiles ? (
+            {block ? null : alarmFiles ? (
               <>
                 <p>
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />

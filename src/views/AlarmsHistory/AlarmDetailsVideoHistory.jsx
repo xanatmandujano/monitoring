@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -19,6 +20,7 @@ import ReactivateAlarm from "./ReactivateAlarm";
 const AlarmDetailsVideoHistory = () => {
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
+  const [block, setBlock] = useState(true);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -30,8 +32,16 @@ const AlarmDetailsVideoHistory = () => {
     setLoader(true);
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => {
+      .then(async (res) => {
         setLoader(false);
+        const userPermission = await hasPermission(res.alarmCode);
+        if (!userPermission.data) {
+          setBlock(true);
+          navigate("/na", { replace: true });
+        } else {
+          setBlock(false);
+          null;
+        }
       });
   }, [idVideo, dispatch]);
 
@@ -121,7 +131,7 @@ const AlarmDetailsVideoHistory = () => {
                           height="100%"
                           width="100%"
                           controls
-                          src={item.attachmentValue}
+                          src={block ? null : item.attachmentValue}
                           ref={(node) => {
                             const map = getMap();
                             if (node) {
@@ -143,7 +153,7 @@ const AlarmDetailsVideoHistory = () => {
               </Col>
               <Col sm={3}>
                 <div className="alarm-data">
-                  {alarmFiles ? (
+                  {block ? null : alarmFiles ? (
                     <>
                       <p>
                         {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}

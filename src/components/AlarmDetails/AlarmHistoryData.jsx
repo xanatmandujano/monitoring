@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import { Table } from "react-bootstrap";
@@ -59,7 +59,10 @@ const AlarmHistoryData = ({ ...props }) => {
                 <td>{item.deviceName}</td>
                 <td>{item.status}</td>
                 <td>
-                  <Link to={alarmType(item.alarmTypeId, item.alarmId)}>
+                  <Link
+                    to={alarmType(item.alarmTypeId, item.alarmId)}
+                    state={{ code: item.alarmCode }}
+                  >
                     <Button variant="main" size="sm">
                       Ver
                     </Button>

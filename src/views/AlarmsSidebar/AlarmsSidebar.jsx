@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { todayAlarms, releaseAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
+import { hasPermission } from "../../services/authService";
 import { Connector } from "../../signalr/signalr-connection";
+//Scripts
+import { getPermissions } from "../../scripts/getPermissions";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 //React-router-dom
@@ -124,32 +127,38 @@ const AlarmsSidebar = () => {
 
     const alarmData = async () => {
       try {
-        const data = await getAlarmData(alarmCode && alarmCode).then((res) => {
-          if (res.data.isSuccess) {
-            const updatedNotifications = [...latestAlarm.current];
-            updatedNotifications.unshift(res.data.result);
-            setNotifications(updatedNotifications);
+        const permission = await hasPermission(alarmCode && alarmCode);
+        if (permission.data) {
+          const data = await getAlarmData(alarmCode && alarmCode).then(
+            (res) => {
+              if (res.data.isSuccess) {
+                const updatedNotifications = [...latestAlarm.current];
+                updatedNotifications.unshift(res.data.result);
+                setNotifications(updatedNotifications);
 
-            notifications.reverse();
+                notifications.reverse();
 
-            setShow(true);
-            notifiyMe(
-              res.data.result.alarmDescription,
-              alarmCode,
-              alarmPng,
-              res.data.result.alarmId
-            );
-          }
-        });
+                setShow(true);
+                notifiyMe(
+                  res.data.result.alarmDescription,
+                  alarmCode,
+                  alarmPng,
+                  res.data.result.alarmId
+                );
+              }
+            }
+          );
+        }
       } catch (error) {
         console.log(error.message);
       }
     };
 
-    //console.log("Notifications lenght", notifications.length);
     setCounter(notifications.length + 1);
 
-    alarmData();
+    if (alarmCode) {
+      alarmData();
+    }
   }, [dispatch, alarmCode]);
 
   const handleCount = () => {
@@ -243,9 +252,14 @@ const AlarmsSidebar = () => {
   };
 
   //Filter alarms
+  const permissions = getPermissions();
+
+  const permissionAlarms =
+    alarms && alarms.filter((el) => permissions.includes(el.permissionId));
+
   const filteredAlarms =
-    alarms &&
-    alarms.filter((el) => {
+    permissionAlarms &&
+    permissionAlarms.filter((el) => {
       if (search === "") {
         return el;
       } else {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { alarmsHistory } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { getPermissions } from "../../scripts/getPermissions";
 //React-router-dom
 import { Outlet, useParams } from "react-router-dom";
 //Components
@@ -28,6 +29,7 @@ const AlarmsHistory = () => {
   const { allAlarms, alarmsPages } = useSelector((state) => state.alarms);
   const dispatch = useDispatch();
   const { idVideo } = useParams();
+  const permissions = getPermissions();
 
   useEffect(() => {
     setLoader(true);
@@ -39,6 +41,7 @@ const AlarmsHistory = () => {
         columnName: value.columnName,
         //sortDirection: "desc",
         searchText: value.searchText,
+        permissions: permissions,
       })
     )
       .unwrap()
@@ -64,10 +67,12 @@ const AlarmsHistory = () => {
         columnName: values.filter,
         //sortDirection: "asc",
         searchText: values.search,
+        permissions: permissions,
       })
     )
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log(res);
         setLoader(false);
       })
       .catch((error) => {
@@ -77,21 +82,9 @@ const AlarmsHistory = () => {
       });
   };
 
-  const handleNextPage = () => {
-    setCurrentPage(currPage + 1);
-  };
-
-  const handleFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage(currPage - 1);
-  };
-
-  const handleLastPage = () => {
-    setCurrentPage(alarmsPages);
-  };
+  // const permissionsAlarms =
+  //   allAlarms &&
+  //   allAlarms.filter((el) => permissions.includes(el.permissionId));
 
   return (
     <Container className="alarms-history">
@@ -118,11 +111,11 @@ const AlarmsHistory = () => {
           <Pagination data-bs-theme="dark">
             <div className="arrow">
               <Pagination.First
-                onClick={handleFirstPage}
+                onClick={() => setCurrentPage(1)}
                 disabled={currPage === 1}
               />
               <Pagination.Prev
-                onClick={handlePrevPage}
+                onClick={() => setCurrentPage(currPage - 1)}
                 disabled={currPage === 1}
               />
             </div>
@@ -131,11 +124,11 @@ const AlarmsHistory = () => {
             }/${alarmsPages}`}</p>
             <div className="arrow">
               <Pagination.Next
-                onClick={handleNextPage}
+                onClick={() => setCurrentPage(currPage + 1)}
                 disabled={currPage === alarmsPages}
               />
               <Pagination.Last
-                onClick={handleLastPage}
+                onClick={() => setCurrentPage(alarmsPages)}
                 disabled={currPage === alarmsPages}
               />
             </div>

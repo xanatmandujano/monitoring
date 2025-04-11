@@ -85,6 +85,7 @@ const NavBar = () => {
         .then(() => {
           navigate("/");
           window.location.reload();
+          setModalShow(false);
         });
     } else {
       dispatch(USER_LOGOUT({ isLogged: false }))
@@ -92,6 +93,7 @@ const NavBar = () => {
         .then(() => {
           navigate("/");
           window.location.reload();
+          setModalShow(false);
         });
     }
   };

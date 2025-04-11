@@ -5,6 +5,7 @@ import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
+import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -28,6 +29,7 @@ const AlarmDetails = () => {
   const [btnLoader, setBtnLoader] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [show, setShow] = useState(false);
+  const [block, setBlock] = useState(true);
   const [connection, setConnection] = useState(null);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
@@ -40,7 +42,16 @@ const AlarmDetails = () => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => setLoader(false));
+      .then(async (res) => {
+        setLoader(false);
+        const permission = await hasPermission(res.alarmCode);
+        if (!permission.data) {
+          setBlock(true), navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
+      });
 
     dispatch(
       alarmStatus({
@@ -175,7 +186,11 @@ const AlarmDetails = () => {
         <Col sm={9} className="main-image">
           {alarmFiles ? (
             <Image
-              src={`data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`}
+              src={
+                block
+                  ? null
+                  : `data:image/png;base64, ${alarmFiles.attachments[1].attachmentValue}`
+              }
               alt="image"
               width="100%"
             />
@@ -185,7 +200,7 @@ const AlarmDetails = () => {
         </Col>
         <Col sm={3}>
           <div className="alarm-data">
-            {alarmFiles ? (
+            {block ? null : alarmFiles ? (
               <>
                 <p>
                   {alarmFiles.alarmCode} - {alarmFiles.alarmDescription} <br />

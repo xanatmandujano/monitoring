@@ -8,6 +8,7 @@ import {
 } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
+import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -30,6 +31,7 @@ const AlarmDetailsVideo = () => {
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [connection, setConnection] = useState(null);
+  const [block, setBlock] = useState(false);
 
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
@@ -82,7 +84,17 @@ const AlarmDetailsVideo = () => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => setLoader(false));
+      .then(async (res) => {
+        setLoader(false);
+        const userPermission = await hasPermission(res.alarmCode);
+        if (!userPermission.data) {
+          setBlock(true);
+          navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
+      });
 
     dispatch(
       alarmStatus({
@@ -255,8 +267,10 @@ const AlarmDetailsVideo = () => {
                                 )
                               }
                               src={
-                                alarmAttachment &&
-                                alarmAttachment.attachmentValue
+                                block
+                                  ? null
+                                  : alarmAttachment &&
+                                    alarmAttachment.attachmentValue
                               }
                               id={`video-${
                                 alarmAttachment &&
@@ -273,7 +287,7 @@ const AlarmDetailsVideo = () => {
                 </Col>
                 <Col sm={3}>
                   <div className="alarm-data">
-                    {alarmFiles ? (
+                    {block ? null : alarmFiles ? (
                       <>
                         <p>
                           {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}

@@ -1,5 +1,6 @@
 import axios from "axios";
 import url from "/config.json";
+import QueryString from "qs";
 
 const baseURL = url.server.apiUrl;
 const localInfo = localStorage.getItem("persist:root");
@@ -13,8 +14,10 @@ export const getAlarmsHistory = async (
   pageSize,
   columnName,
   sortDirection,
-  searchText
+  searchText,
+  permissions
 ) => {
+  const perm = permissions;
   const response = await axios({
     method: "GET",
     url: `${baseURL}/alarm/getEventsAndAlarms`,
@@ -29,9 +32,13 @@ export const getAlarmsHistory = async (
       columnName: columnName,
       sortDirection: sortDirection,
       searchText: searchText,
+      permissions: perm,
     },
+    paramsSerializer: (params) =>
+      QueryString.stringify(params, { arrayFormat: "repeat" }),
   });
   if (response.data.isSuccess) {
+    console.log(response);
     return response.data;
   } else console.log(response);
 };
@@ -133,8 +140,10 @@ export const getAlarmsReport = async (
   pageSize,
   columnName,
   sortDirection,
-  searchText
+  searchText,
+  permissions
 ) => {
+  const perm = permissions;
   const response = await axios({
     method: "GET",
     url: `${baseURL}/alarm/getAlarmsReport`,
@@ -149,7 +158,10 @@ export const getAlarmsReport = async (
       columnName: columnName,
       sortDirection: sortDirection,
       searchText: searchText,
+      permissions: perm,
     },
+    paramsSerializer: (params) =>
+      QueryString.stringify(params, { arrayFormat: "repeat" }),
   });
   if (response.data.isSuccess) {
     return response.data;
