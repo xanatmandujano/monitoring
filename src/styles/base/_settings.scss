@@ -9,7 +9,7 @@ $secondary: #0f0f0f;
 $active-color: #000000;
 $transparency-second: #1b171798;
 $tertiary-color: #fff;
-$transparency-tertiary: #ffffff8f;
+$transparency-tertiary: #ffffff2c;
 $disabled: #3a3a3a;
 
 /*Theme colors*/
@@ -18,6 +18,8 @@ $theme-colors: (
   "transparency": $transparency,
   "secondary": $secondary,
   "transparency-second": $transparency-second,
+  "tertiary-color": $tertiary-color,
+  "transparency-tertiary": $transparency-tertiary,
 );
 
 /*Fonts*/

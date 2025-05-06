@@ -19,12 +19,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
 import { releaseAlarm } from "../../store/actions/alarmsActions";
 //React-router-dom
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Connector } from "../../signalr/signalr-connection";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const { idVideo } = useParams();
+  let location = useLocation();
+
   const { isLoggedIn, userName, userId } = useSelector(
     (state) => state.persist.authState.authInfo
   );
@@ -33,14 +35,39 @@ const NavBar = () => {
   const [modalShow, setModalShow] = useState(false);
   const [manualShow, setManualShow] = useState(false);
   const [connection, setConnection] = useState("");
+  const [activeStyle, setActiveStyle] = useState({
+    alarmsPanel: { variant: "secondary" },
+    alarmsHistory: { variant: "secondary" },
+    divarStatus: { variant: "secondary" },
+  });
 
   const mode = import.meta.env.MODE;
 
   useEffect(() => {
+    if (location.pathname === "/alarms-panel") {
+      setActiveStyle({
+        alarmsPanel: { variant: "transparency-tertiary" },
+        alarmsHistory: { variant: "secondary" },
+        divarStatus: { variant: "secondary" },
+      });
+    } else if (location.pathname === "/alarms-history") {
+      setActiveStyle({
+        alarmsPanel: { variant: "secondary" },
+        alarmsHistory: { variant: "transparency-tertiary" },
+        divarStatus: { variant: "secondary" },
+      });
+    } else if (location.pathname === "/divar-status") {
+      setActiveStyle({
+        alarmsPanel: { variant: "secondary" },
+        alarmsHistory: { variant: "secondary" },
+        divarStatus: { variant: "transparency-tertiary" },
+      });
+    }
+
     const newConnection = Connector();
     setConnection(newConnection);
     newConnection.start();
-  }, []);
+  }, [location]);
 
   //Send message
   const sendAlarmStatus = async () => {
@@ -120,19 +147,39 @@ const NavBar = () => {
           {isLoggedIn ? (
             <>
               <Button
+                id="nav-al-pan"
                 onClick={() => handleChangeWindow("alarms-panel")}
                 className="page-title"
-                variant="secondary"
+                variant={activeStyle.alarmsPanel.variant}
+                active
               >
                 Panel de alarmas
               </Button>
               <Button
+                id="nav-al-his"
                 onClick={() => handleChangeWindow("alarms-history")}
-                style={{ color: "white", marginLeft: "1rem" }}
+                style={{
+                  color: "white",
+                  marginLeft: "1rem",
+                }}
                 className="page-title"
-                variant="secondary"
+                variant={activeStyle.alarmsHistory.variant}
+                active
               >
                 Historial de alarmas
+              </Button>
+              <Button
+                id="nav-divar"
+                onClick={() => handleChangeWindow("divar-status")}
+                style={{
+                  color: "white",
+                  marginLeft: "1rem",
+                }}
+                className="page-title"
+                variant={activeStyle.divarStatus.variant}
+                active
+              >
+                Divar estatus
               </Button>
             </>
           ) : (

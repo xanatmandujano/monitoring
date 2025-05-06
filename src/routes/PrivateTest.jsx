@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Connector } from "../signalr/signalr-connection";
 import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import NewAlarm from "../views/AlarmsPanel/NewAlarm";
+import DevicesStatusNotification from "../views/DevicesStatus/DevicesStatusNotification";
 
 const PrivateTest = () => {
   const [connection, setConnection] = useState("");
@@ -35,6 +36,7 @@ const PrivateTest = () => {
   return isLoggedIn ? (
     <>
       <NewAlarm />
+      <DevicesStatusNotification />
       <Outlet connection={connection} />
     </>
   ) : (

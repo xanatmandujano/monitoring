@@ -26,6 +26,7 @@ import AlarmDetailsFRHistory from "./views/AlarmsHistory/AlarmDetailsFRHistory.j
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
 import AlarmsDetailsHistory from "./views/AlarmsHistory/AlarmsDetailsHistory.jsx";
 import UnauthorizedPage from "./components/ErrorPage/UnauthorizedPage.jsx";
+import DevicesStatus from "./views/DevicesStatus/DevicesStatus.jsx";
 
 const router = createHashRouter([
   {
@@ -94,6 +95,10 @@ const router = createHashRouter([
                 errorElement: <ErrorPage />,
               },
             ],
+          },
+          {
+            path: "divar-status",
+            element: <DevicesStatus />,
           },
         ],
       },

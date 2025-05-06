@@ -3,6 +3,7 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 import { combineReducers } from "@reduxjs/toolkit";
 import { thunk } from "redux-thunk";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 //Reducers
 import messageReducer from "./slices/messageSlice";
@@ -10,6 +11,8 @@ import authReducer from "./slices/authSlice";
 import alarmsReducer from "./slices/alarmsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
 import attachmentsReducer from "./slices/attachmentsSlice";
+//API
+import { branchesStatusApi } from "./api/branchesStatusApi";
 
 const persistConfig = {
   key: "root",
@@ -31,6 +34,7 @@ export const store = configureStore({
     alarms: alarmsReducer,
     notifications: notificationsReducer,
     attachments: attachmentsReducer,
+    [branchesStatusApi.reducerPath]: branchesStatusApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -48,8 +52,12 @@ export const store = configureStore({
           "register",
           "rehydrate",
           "meta.arg.signal",
+          "meta.baseQueryMeta.request",
+          "meta.baseQueryMeta.response",
         ],
       },
       thunk,
-    }),
+    }).concat(branchesStatusApi.middleware),
 });
+
+setupListeners(store.dispatch);

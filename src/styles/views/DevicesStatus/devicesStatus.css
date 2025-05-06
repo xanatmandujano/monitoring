@@ -1,0 +1,24 @@
+.devices-status-container {
+  min-height: 100vh;
+  margin-top: 3rem;
+
+  table > thead > tr > th {
+    background-color: #000000;
+  }
+
+  .branches-states:hover {
+    cursor: pointer;
+  }
+
+  .branches-states > td {
+    background-color: #1b1b1b;
+  }
+
+  .second-headers > td {
+    background-color: #131313;
+  }
+
+  .branches > td {
+    background-color: #2b2a2a;
+  }
+}
