@@ -28,6 +28,7 @@ import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHis
 import AlarmsDetailsHistory from "./views/AlarmsHistory/AlarmsDetailsHistory.jsx";
 import UnauthorizedPage from "./components/ErrorPage/UnauthorizedPage.jsx";
 import DevicesStatus from "./views/DevicesStatus/DevicesStatus.jsx";
+import Dashboards from "./views/Dashboards/Dashboards.jsx";
 
 const router = createHashRouter([
   {
@@ -100,6 +101,12 @@ const router = createHashRouter([
           {
             path: "divar-status",
             element: <DevicesStatus />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "dashboards",
+            element: <Dashboards />,
+            errorElement: <ErrorPage />,
           },
         ],
       },

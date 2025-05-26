@@ -66,6 +66,7 @@ const ControlBar = ({ ...props }) => {
                   values.values.filter === ""
                 ) {
                   setActive(true);
+                  values.values.search = "";
                 } else if (
                   values.values.filter === "branchCode" ||
                   values.values.filter === "branchName"

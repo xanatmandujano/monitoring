@@ -14,7 +14,7 @@
 @import "./views/AlarmsHistory/alarmsHistory";
 @import "./views/DevicesStatus/devicesStatus.css";
 @import "./views/ControlBar/controlBar.css";
-
+@import "./views/Dashboards/dashboards";
 //Components
 @import "./components/PasswordField/passwordField";
 @import "./components/TextField/textField";
@@ -28,7 +28,5 @@
 @import "./components/AlarmHistoryData/alarmHistoryData";
 @import "./components/Loader/loader";
 @import "./components/ErrorMessage/unauthorizedPage";
-@import "./components/VideoPlayer/videoPlayer";
-@import "./components/VideoPlayer/sliderTime";
-/*Video player*/
-@import "@vidstack/react/player/styles/default/theme.css";
+//@import "./components/VideoPlayer/videoPlayer";
+//@import "./components/VideoPlayer/sliderTime";

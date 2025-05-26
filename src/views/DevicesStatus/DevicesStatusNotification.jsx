@@ -7,7 +7,10 @@ import GeneralNotification from "../../components/AlarmNotification/GeneralNotif
 const DevicesStatusNotification = () => {
   const { data } = useGetBranchesStatusQuery(
     { branchName: "" },
-    { pollingInterval: 300000, refetchOnMountOrArgChange: true }
+    {
+      //pollingInterval: 600000,
+      //refetchOnMountOrArgChange: true,
+    }
   );
   const [showToast, setShowToast] = useState(false);
 

@@ -1,114 +1,23 @@
-.video-player-container {
-  z-index: 0;
-  /* grid-column: span 3 / span 3;
-  grid-row: span 2 / span 2; */
-  position: relative;
-  align-self: center;
-  justify-self: center;
-
-  .vds-buffering-indicator {
-    /* CSS variables available for customization (defaults shown). */
-    --media-buffering-size: 30%;
-    --media-buffering-transition: opacity 200ms ease;
-    --media-buffering-track-color: #f5f5f5;
-    --media-buffering-track-opacity: 0.25;
-    --media-buffering-track-width: 8;
-    --media-buffering-track-fill-color: var(--media-brand);
-    --media-buffering-track-fill-opacity: 0.75;
-    --media-buffering-track-fill-width: 9;
-    --media-buffering-track-fill-offset: 50;
-  }
-
-  .vds-controls {
-    /* CSS variables available for customizing this component. */
-    /* Remove any you don't need, default values are shown below. */
-    --media-controls-padding: 0px;
-    --media-controls-in-transition: opacity 0.2s ease-in;
-    --media-controls-out-transition: opacity 0.2s ease-out;
-
-    height: 100%;
-  }
-
-  .media-player {
-    /* Player CSS variables (defaults shown). */
-    --media-font-family: sans-serif;
-    --media-controls-color: #f5f5f5;
-    --media-focus-ring: 0 0 0 3px rgb(78 156 246);
-  }
-
-  .close-btn {
+.video-player {
+  .video-controls {
+    background-color: rgba(0, 0, 0, 0.438);
     position: relative;
-    top: 64px;
-    left: -14px;
-    /* z-index: 1; */
-
-    display: flex;
-    justify-content: flex-end;
-  }
-  .video-info {
-    position: relative;
-    top: 29px;
-    left: 16px;
-    /* z-index: 1; */
-    color: white;
-    font-weight: 600;
-    font-size: 95%;
-  }
-
-  .top-controls {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
+    top: -70px;
     padding: 0.5rem;
-    margin: 0;
-    /*Blur*/
-    /* background: rgba(0, 0, 0, 0.17);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); */
-    /* backdrop-filter: blur(5.6px);
-    -webkit-backdrop-filter: blur(5.6px); */
 
-    p {
-      margin: 0;
-      color: white;
-    }
-  }
+    .btns {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.2rem;
+      button {
+        background-color: transparent;
+        color: white;
+        border: solid;
+        border-color: rgb(119, 119, 119);
+        border-width: 1px;
 
-  .bottom-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem;
-    margin: 0;
-
-    background: rgba(0, 0, 0, 0.17);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-
-    .bottom-rigth-controls {
-      align-items: center;
+        margin-right: 3px;
+      }
     }
   }
 }
-
-// .video-player {
-//   .video-controls {
-//     background-color: rgba(0, 0, 0, 0.438);
-//     position: relative;
-//     top: -70px;
-//     padding: 0.5rem;
-
-//     .btns {
-//       display: flex;
-//       justify-content: center;
-//       margin-top: 0.2rem;
-//       button {
-//         background-color: transparent;
-//         color: white;
-//         border: solid;
-//         border-color: rgb(119, 119, 119);
-//         border-width: 1px;
-
-//         margin-right: 3px;
-//       }
-//     }
-//   }
-// }

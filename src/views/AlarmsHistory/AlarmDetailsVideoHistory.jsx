@@ -16,11 +16,6 @@ import CloseButton from "react-bootstrap/CloseButton";
 //Components
 import Loader from "../../components/Loader/Loader";
 import ReactivateAlarm from "./ReactivateAlarm";
-import VideoPlayer from "../../components/VideoPlayer/VideoPlayer";
-import {
-  VideoToFrames,
-  VideoToFramesMethod,
-} from "../../scripts/VideoToFrames";
 
 const AlarmDetailsVideoHistory = () => {
   const [loader, setLoader] = useState(false);
@@ -133,6 +128,7 @@ const AlarmDetailsVideoHistory = () => {
                         <video
                           crossOrigin="anonymous"
                           autoPlay
+                          muted={true}
                           loop
                           height="100%"
                           width="100%"
@@ -153,21 +149,6 @@ const AlarmDetailsVideoHistory = () => {
                         >
                           Tu navegador no admite el elemento <code>video</code>
                         </video>
-                        {/* <VideoPlayer
-                          src={block ? null : item.attachmentValue}
-                          // ref={(node) => {
-                          //   const map = getMap();
-                          //   if (node) {
-                          //     map.set(item.alarmAttachmentId, node);
-                          //   } else {
-                          //     map.delete(item.alarmAttachmentId);
-                          //   }
-                          // }}
-                          // onLoadStart={() =>
-                          //   setPlaySpeed(item.alarmAttachmentId)
-                          // }
-                          id={`video-${item.alarmAttachmentId}`}
-                        /> */}
                       </Tab>
                     ))}
                 </Tabs>
