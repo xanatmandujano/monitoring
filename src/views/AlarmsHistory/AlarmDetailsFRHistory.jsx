@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { hasPermission } from "../../services/authService";
 //React-router-dom
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
@@ -15,6 +16,7 @@ import Loader from "../../components/Loader/Loader";
 
 const AlarmDetailsFRHistory = () => {
   const [loader, setLoader] = useState(false);
+  const [block, setBlock] = useState(true);
 
   const { idVideo } = useParams();
   const navigate = useNavigate();
@@ -26,14 +28,18 @@ const AlarmDetailsFRHistory = () => {
     dispatch(clearMessage());
     dispatch(alarmAttachments({ alarmId: idVideo }))
       .unwrap()
-      .then(() => {
+      .then(async (res) => {
         setLoader(false);
+        const permission = await hasPermission(res.alarmCode);
+        if (!permission.data) {
+          setBlock(true);
+          navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
       });
   }, [idVideo, dispatch]);
-
-  const handleBtn = () => {
-    return navigate("/alarms-history");
-  };
 
   const dateTime = () => {
     const alarmDateTime = new Date(alarmFiles.creationDate);
@@ -54,14 +60,18 @@ const AlarmDetailsFRHistory = () => {
             <CloseButton
               variant="white"
               aria-label="Hide"
-              onClick={() => handleBtn()}
+              onClick={() => navigate("/alarms-history")}
             />
           </div>
           <Row>
             <Col sm={9} className="main-image">
               {alarmFiles ? (
                 <Image
-                  src={`${alarmFiles.attachments[0].attachmentValue}`}
+                  src={
+                    block
+                      ? null
+                      : `${alarmFiles.attachments[0].attachmentValue}`
+                  }
                   alt="rostro"
                   width="100%"
                 />
@@ -71,7 +81,7 @@ const AlarmDetailsFRHistory = () => {
             </Col>
             <Col sm={3}>
               <div className="alarm-data">
-                {alarmFiles ? (
+                {block ? null : alarmFiles ? (
                   <>
                     <p>
                       {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}

@@ -8,6 +8,7 @@ import {
 } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { Connector } from "../../signalr/signalr-connection";
+import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -30,6 +31,7 @@ const AlarmDetailsVideo = () => {
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [connection, setConnection] = useState(null);
+  const [block, setBlock] = useState(false);
 
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
@@ -80,21 +82,27 @@ const AlarmDetailsVideo = () => {
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
+    dispatch(alarmAttachments({ alarmId: idVideo }))
+      .unwrap()
+      .then(async (res) => {
+        setLoader(false);
+        const userPermission = await hasPermission(res.alarmCode);
+        if (!userPermission.data) {
+          setBlock(true);
+          navigate("/na");
+        } else {
+          setBlock(false);
+          null;
+        }
+      });
+
     dispatch(
       alarmStatus({
-        alarmId: idVideo,
+        alarmId: alarmFiles.alarmId,
         statusId: 2,
         comments: "",
       })
-    )
-      .unwrap()
-      .then(() => {
-        dispatch(alarmAttachments({ alarmId: idVideo }))
-          .unwrap()
-          .then(() => {
-            setLoader(false);
-          });
-      });
+    ).unwrap();
 
     const newConnection = Connector();
     setConnection(newConnection);
@@ -103,8 +111,6 @@ const AlarmDetailsVideo = () => {
     //Release alarm when tab is closed
     window.addEventListener("beforeunload", (e) => {
       if (e) {
-        sendAlarmStatus();
-        e.preventDefault();
         dispatch(
           releaseAlarm({
             alarmId: alarmFiles.alarmId,
@@ -114,10 +120,24 @@ const AlarmDetailsVideo = () => {
           .then(() => {
             console.log("Success");
           });
-
+        sendAlarmStatus();
+        e.preventDefault();
         //window.open(window.location.origin, "_blank");
         return false;
       }
+    });
+
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
     });
   }, [idVideo, dispatch]);
 
@@ -154,36 +174,35 @@ const AlarmDetailsVideo = () => {
     <>
       <Container fluid className="alarm-details">
         <div className="btns-container">
-          <div className="action-btns">
-            <Button
-              variant="main"
-              size="sm"
-              onClick={() => setShow(true)}
-              disabled={loader}
-              style={{
-                display:
-                  alarmFiles && alarmFiles.attachments.length <= 0
-                    ? "none"
-                    : "inline-block",
-              }}
-            >
-              Validar
-            </Button>
-            <Button
-              variant="main"
-              size="sm"
-              onClick={() => setShowDiscard(true)}
-              disabled={loader}
-              style={{
-                display:
-                  alarmFiles && alarmFiles.attachments.length <= 0
-                    ? "none"
-                    : "inline-block",
-              }}
-            >
-              Descartar
-            </Button>
-          </div>
+          {alarmFiles &&
+          alarmFiles.status === "Validada" ? null : alarmFiles.status ===
+            "Descartada" ? null : alarmFiles.status ===
+            "Envío cancelado" ? null : (
+            <div className="action-btns">
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShow(true)}
+                disabled={loader}
+                style={{
+                  display:
+                    alarmFiles && alarmFiles.attachments.length <= 0
+                      ? "none"
+                      : "inline-block",
+                }}
+              >
+                Validar
+              </Button>
+              <Button
+                variant="main"
+                size="sm"
+                onClick={() => setShowDiscard(true)}
+                disabled={loader}
+              >
+                Descartar
+              </Button>
+            </div>
+          )}
           {btnLoader ? (
             <Loader />
           ) : (
@@ -248,8 +267,10 @@ const AlarmDetailsVideo = () => {
                                 )
                               }
                               src={
-                                alarmAttachment &&
-                                alarmAttachment.attachmentValue
+                                block
+                                  ? null
+                                  : alarmAttachment &&
+                                    alarmAttachment.attachmentValue
                               }
                               id={`video-${
                                 alarmAttachment &&
@@ -266,7 +287,7 @@ const AlarmDetailsVideo = () => {
                 </Col>
                 <Col sm={3}>
                   <div className="alarm-data">
-                    {alarmFiles ? (
+                    {block ? null : alarmFiles ? (
                       <>
                         <p>
                           {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}

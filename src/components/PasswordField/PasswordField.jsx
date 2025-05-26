@@ -32,7 +32,7 @@ const PasswordField = ({ ...props }) => {
           isInvalid={meta.touched && !!meta.error}
           type={showPass}
         />
-        <Button size="sm" onClick={handleOnClick}>
+        <Button size="sm" onClick={handleOnClick} variant="main">
           {showPass === "password" ? <FaRegEyeSlash /> : <FaRegEye />}
         </Button>
         {meta.error && meta.touched && (

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 //Redux
 import { useDispatch } from "react-redux";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { hasPermission } from "../../services/authService";
 //Hub
 import { getAlarmData } from "../../services/alarmsService";
 import { Connector } from "../../signalr/signalr-connection";
@@ -45,13 +46,16 @@ const NewAlarm = () => {
 
           const alarmData = async () => {
             try {
-              const data = await getAlarmData(newAlarmCode).then((res) => {
-                if (res.data.isSuccess) {
-                  setAlarmCode(newAlarmCode);
-                  setAlarm(res.data.result);
-                  setShow(true);
-                }
-              });
+              const permission = await hasPermission(newAlarmCode);
+              if (permission.data) {
+                const data = await getAlarmData(newAlarmCode).then((res) => {
+                  if (res.data.isSuccess) {
+                    setAlarmCode(newAlarmCode);
+                    setAlarm(res.data.result);
+                    setShow(true);
+                  }
+                });
+              }
             } catch (error) {
               console.log(error.message);
             }

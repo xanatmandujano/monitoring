@@ -25,6 +25,7 @@ import FaceRecognitionAlarm from "./components/AlarmDetails/FaceRecognitionAlarm
 import AlarmDetailsFRHistory from "./views/AlarmsHistory/AlarmDetailsFRHistory.jsx";
 import AlarmDetailsVideoHistory from "./views/AlarmsHistory/AlarmDetailsVideoHistory.jsx";
 import AlarmsDetailsHistory from "./views/AlarmsHistory/AlarmsDetailsHistory.jsx";
+import UnauthorizedPage from "./components/ErrorPage/UnauthorizedPage.jsx";
 
 const router = createHashRouter([
   {
@@ -36,6 +37,10 @@ const router = createHashRouter([
         element: <PrivateTest />,
         errorElement: <ErrorPage />,
         children: [
+          {
+            path: "na",
+            element: <UnauthorizedPage />,
+          },
           {
             path: "alarms-panel",
             element: <AlarmsPanel />,

@@ -3,6 +3,7 @@ import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import ReportPdf from "./ReportPdf";
 import { getAlarmsReport } from "../../services/alarmsService";
+import { getPermissions } from "../../scripts/getPermissions";
 //Formik
 import { Formik, Form } from "formik";
 //Bootstrap
@@ -25,10 +26,21 @@ const ReportModal = ({ ...props }) => {
     return fullDate;
   };
 
+  const permissions = getPermissions();
+
   const reportValues = async (values) => {
     setLoader(true);
     try {
-      getAlarmsReport(values.start, values.end, 1, 0)
+      getAlarmsReport(
+        values.start,
+        values.end,
+        1,
+        0,
+        null,
+        null,
+        null,
+        permissions
+      )
         .then(async (res) => {
           const fileName = "report.pdf";
           const blob = await pdf(<ReportPdf report={res.result} />).toBlob();

@@ -8,6 +8,7 @@ const baseURL = url.server.apiUrl;
 const localInfo = localStorage.getItem("persist:root");
 const parse = JSON.parse(localInfo);
 const authState = JSON.parse(parse && parse.authState);
+const userId = authState && authState.authInfo.userId;
 const token = authState && authState.authInfo.userToken;
 const refresh = authState && authState.authInfo.refresh;
 
@@ -50,6 +51,29 @@ export const refreshToken = async () => {
     //sessionStorage.setItem("refresh", response.data.result.refreshToken);
     //sessionStorage.setItem("expiration", response.data.result.expiration);
     return response.data.result;
+  } else {
+    console.log(response);
+    return response;
+  }
+};
+
+export const hasPermission = async (alarmCode) => {
+  const response = await axios({
+    method: "GET",
+    url: `${baseURL}/user/hasPermission`,
+    headers: {
+      //"Content-Type": "application/json",
+      "Access-Control-Allow-Origin": `${baseURL}`,
+      //Authorization: `Bearer ${token}`,
+    },
+    params: {
+      userId: userId,
+      alarmCode: alarmCode,
+    },
+  });
+  if (response) {
+    console.log(response);
+    return response;
   } else {
     console.log(response);
     return response;

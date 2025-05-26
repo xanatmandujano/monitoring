@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { setAuthInfo } from "../slices/authSlice";
 import { setMessage } from "../slices/messageSlice";
 //Services
-import { login, refreshToken } from "../../services/authService";
+import { login, refreshToken, hasPermission } from "../../services/authService";
 import { releaseViewedAlarm } from "../../services/alarmsService";
 
 export const USER_LOGIN = createAsyncThunk(
@@ -11,6 +11,9 @@ export const USER_LOGIN = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const response = await login(email, password);
+      const permissionsId = response.permissions.map(
+        (item) => item.permissionId
+      );
       thunkAPI.dispatch(
         setAuthInfo({
           isLoggedIn: response.isSuccess,
@@ -20,9 +23,9 @@ export const USER_LOGIN = createAsyncThunk(
           userToken: response.token.accessToken,
           expiration: response.token.expiration,
           refresh: response.token.refreshToken,
+          permissions: permissionsId,
         })
       );
-      console.log(response);
       return response;
     } catch (error) {
       console.log(error);
@@ -81,6 +84,7 @@ export const USER_LOGOUT = createAsyncThunk(
             userToken: "",
             expiration: "",
             refresh: "",
+            permissions: "",
           })
         );
         console.log(response);
@@ -98,6 +102,27 @@ export const USER_LOGOUT = createAsyncThunk(
           })
         );
       }
+    } catch (error) {
+      console.log(error);
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const HAS_PERMISSION = createAsyncThunk(
+  "auth/hasPermission",
+  async (alarmCode, thunkAPI) => {
+    try {
+      const response = await hasPermission(alarmCode);
+      console.log(response);
+      return response;
     } catch (error) {
       console.log(error);
       const message =

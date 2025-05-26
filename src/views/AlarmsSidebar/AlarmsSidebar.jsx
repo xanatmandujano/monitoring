@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { todayAlarms, releaseAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
+import { hasPermission } from "../../services/authService";
 import { Connector } from "../../signalr/signalr-connection";
+//Scripts
+import { getPermissions } from "../../scripts/getPermissions";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 //React-router-dom
@@ -80,7 +83,7 @@ const AlarmsSidebar = () => {
         .start()
         .then(() => {
           newConnection.on("ReceiveMessage", (message) => {
-            console.log(message);
+            //console.log(message);
             let newNotification = JSON.parse(message.message);
             if (Object.hasOwn(newNotification, "Code")) {
               let newAlarm = JSON.parse(message.message);
@@ -109,6 +112,12 @@ const AlarmsSidebar = () => {
                 let cardBtn = element.lastChild.lastChild.lastChild;
                 element.className = "alarm-card card";
                 cardBtn.removeAttribute("disabled");
+              } else if (viewAction === "reactivated") {
+                let element = document.getElementById(notificationAlarmId);
+                let cardBtn = element.lastChild.lastChild.lastChild;
+                element.style.display = "block";
+                element.className = "alarm-card card";
+                cardBtn.removeAttribute("disabled");
               }
             }
           });
@@ -118,32 +127,38 @@ const AlarmsSidebar = () => {
 
     const alarmData = async () => {
       try {
-        const data = await getAlarmData(alarmCode && alarmCode).then((res) => {
-          if (res.data.isSuccess) {
-            const updatedNotifications = [...latestAlarm.current];
-            updatedNotifications.unshift(res.data.result);
-            setNotifications(updatedNotifications);
+        const permission = await hasPermission(alarmCode && alarmCode);
+        if (permission.data) {
+          const data = await getAlarmData(alarmCode && alarmCode).then(
+            (res) => {
+              if (res.data.isSuccess) {
+                const updatedNotifications = [...latestAlarm.current];
+                updatedNotifications.unshift(res.data.result);
+                setNotifications(updatedNotifications);
 
-            notifications.reverse();
+                notifications.reverse();
 
-            setShow(true);
-            notifiyMe(
-              res.data.result.alarmDescription,
-              alarmCode,
-              alarmPng,
-              res.data.result.alarmId
-            );
-          }
-        });
+                setShow(true);
+                notifiyMe(
+                  res.data.result.alarmDescription,
+                  alarmCode,
+                  alarmPng,
+                  res.data.result.alarmId
+                );
+              }
+            }
+          );
+        }
       } catch (error) {
         console.log(error.message);
       }
     };
 
-    //console.log("Notifications lenght", notifications.length);
     setCounter(notifications.length + 1);
 
-    alarmData();
+    if (alarmCode) {
+      alarmData();
+    }
   }, [dispatch, alarmCode]);
 
   const handleCount = () => {
@@ -237,9 +252,14 @@ const AlarmsSidebar = () => {
   };
 
   //Filter alarms
+  const permissions = getPermissions();
+
+  const permissionAlarms =
+    alarms && alarms.filter((el) => permissions.includes(el.permissionId));
+
   const filteredAlarms =
-    alarms &&
-    alarms.filter((el) => {
+    permissionAlarms &&
+    permissionAlarms.filter((el) => {
       if (search === "") {
         return el;
       } else {
@@ -251,7 +271,7 @@ const AlarmsSidebar = () => {
     <>
       <div className="search-bar">
         {/* <p>{`Total de alarmas: ${handleCount()}`}</p> */}
-        <SearchField changeEvent={handleSearch} disabled={!alarms} />
+        <SearchField changeEvent={handleSearch} />
       </div>
       <Container className="alarms-side-bar">
         {notifications &&

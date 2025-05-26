@@ -85,6 +85,7 @@ const NavBar = () => {
         .then(() => {
           navigate("/");
           window.location.reload();
+          setModalShow(false);
         });
     } else {
       dispatch(USER_LOGOUT({ isLogged: false }))
@@ -92,6 +93,7 @@ const NavBar = () => {
         .then(() => {
           navigate("/");
           window.location.reload();
+          setModalShow(false);
         });
     }
   };
@@ -99,7 +101,7 @@ const NavBar = () => {
   return (
     <>
       <Navbar key="lg" expand="lg" className="nav-bar-main">
-        <Container fluid>
+        <Container>
           <Navbar.Brand>
             <img
               src={
