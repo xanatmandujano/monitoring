@@ -11,10 +11,11 @@ import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import ControlBar from "../ControlBar/ControlBar";
 
 const DevicesStatus = () => {
-  const [searchBranch, setSearchBranch] = useState("");
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("");
 
   const { data, isFetching } = useGetBranchesStatusQuery(
-    { branchName: searchBranch },
+    { columnName: filter, searchText: search },
     {
       pollingInterval: 600000,
       refetchOnMountOrArgChange: true,
@@ -33,19 +34,31 @@ const DevicesStatus = () => {
     });
   };
 
+  const handleConnectionColor = (value) => {
+    if (value) {
+      return { color: "#198754" };
+    } else if (value === null) {
+      return {
+        color: "grey",
+      };
+    } else {
+      return { color: "#ff8e8e" };
+    }
+  };
+
   return (
     <Container className="devices-status-container">
       <ControlBar
         submit={async (values) => {
-          setSearchBranch(values.search);
+          setSearch(values.search);
+          setFilter(values.filter);
         }}
-        clear={() => setSearchBranch("")}
       />
       <Table variant="dark" responsive bordered>
         <thead>
           <tr>
-            <th colSpan={3}>Estado</th>
-            <th colSpan={1}>Estatus</th>
+            <th colSpan={2}>Estado</th>
+            <th colSpan={2}>Estatus</th>
           </tr>
         </thead>
         <tbody>
@@ -57,15 +70,21 @@ const DevicesStatus = () => {
                   onClick={() => handleCollapseInfo(item.stateCode)}
                   className="branches-states"
                 >
-                  <td colSpan={3}>{item.stateName}</td>
+                  <td colSpan={2}>{item.stateName}</td>
                   <td
                     style={{
                       color: item.allOnline ? "green" : "orange",
                       textAlign: "center",
                     }}
-                    colSpan={1}
+                    colSpan={2}
                   >
-                    {item.allOnline ? "En línea" : <TiWarning />}
+                    {item.allOnline ? (
+                      "En línea"
+                    ) : (
+                      <span>
+                        Elementos fuera de línea - <TiWarning />
+                      </span>
+                    )}
                   </td>
                 </tr>
 
@@ -75,9 +94,10 @@ const DevicesStatus = () => {
                   className="second-headers"
                 >
                   <td>Sucursal</td>
-                  <td>Estatus</td>
-                  <td>Dirección IP</td>
-                  <td>Información adicional</td>
+                  <td>IP</td>
+                  {/* <td>Estatus</td> */}
+                  <td>Estatus listener</td>
+                  <td>Estatus downloader</td>
                 </tr>
 
                 {item.branches &&
@@ -89,12 +109,20 @@ const DevicesStatus = () => {
                       className="branches"
                     >
                       <td>{j.branchCodeName}</td>
-                      <td style={{ color: j.isOnline ? "#198754" : "#ff8e8e" }}>
-                        {j.isOnline ? "En línea" : "Desconectado"}
-                      </td>
                       <td>{j.ipAddress}</td>
-                      <td style={{ color: j.isOnline ? "white" : "#ff8e8e" }}>
-                        {j.additionalInformation}
+                      {/* <td style={handleConnectionColor(j.isOnline)}>
+                        {j.isOnline === null
+                          ? "--"
+                          : j.isOnline
+                          ? "En línea"
+                          : "Desconectado"}
+                      </td> */}
+
+                      <td style={handleConnectionColor(j.isListenerOnline)}>
+                        {j.listenerInformation}
+                      </td>
+                      <td style={handleConnectionColor(j.isDownloaderOnline)}>
+                        {j.downloaderInformation}
                       </td>
                     </tr>
                   ))}

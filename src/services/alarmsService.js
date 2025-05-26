@@ -38,7 +38,7 @@ export const getAlarmsHistory = async (
       QueryString.stringify(params, { arrayFormat: "repeat" }),
   });
   if (response.data.isSuccess) {
-    console.log(response);
+    //console.log(response);
     return response.data;
   } else console.log(response);
 };

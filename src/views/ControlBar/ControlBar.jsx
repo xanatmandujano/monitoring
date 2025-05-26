@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 //Formik
 import { Form, Formik } from "formik";
 //Bootstrap
@@ -10,10 +10,13 @@ import { BsSearch } from "react-icons/bs";
 import { BsEraser } from "react-icons/bs";
 //Components
 import TextFieldControl from "../../components/TextField/TextFieldControl";
+import SelectField from "../../components/SelectField/SelectField";
+import FormikObserver from "../../components/FormikObserver/FormikObserver";
 
 const ControlBar = ({ ...props }) => {
-  /*Search bar and refresh button*/
+  const [active, setActive] = useState(false);
 
+  /*Search bar and refresh button*/
   const renderTooltip = (prps) => (
     <Tooltip id="button-tooltip" {...prps}>
       Borrar búsqueda
@@ -48,16 +51,51 @@ const ControlBar = ({ ...props }) => {
 
   return (
     <div className="control-bar">
-      <Formik initialValues={{ search: "" }} onSubmit={props.submit}>
+      <Formik
+        initialValues={{ search: "", filter: "" }}
+        onSubmit={props.submit}
+      >
         {(p) => (
           <Form className="search-field">
+            <FormikObserver
+              onChange={(values, initialValues) => {
+                if (
+                  values.values.filter === "online" ||
+                  values.values.filter === "offline" ||
+                  values.values.filter === "notUpgraded" ||
+                  values.values.filter === ""
+                ) {
+                  setActive(true);
+                } else if (
+                  values.values.filter === "branchCode" ||
+                  values.values.filter === "branchName"
+                ) {
+                  setActive(false);
+                }
+              }}
+            />
+
             <TextFieldControl
               name="search"
               type="text"
               value={p.values.search}
               onChange={p.handleChange}
               placeholder="Sucursal"
+              disabled={active}
             />
+
+            <SelectField
+              name="filter"
+              value={p.values.filter}
+              onChange={p.handleChange}
+            >
+              <option value="">--Selecciona--</option>
+              <option value="online">En línea</option>
+              <option value="offline">Fuera de línea</option>
+              <option value="notUpgraded">No actualizadas</option>
+              <option value="branchCode">Código sucursal</option>
+              <option value="branchName">Nombre sucursal</option>
+            </SelectField>
 
             <Button variant="main" type="submit">
               <BsSearch />
@@ -68,7 +106,10 @@ const ControlBar = ({ ...props }) => {
               delay={{ show: 250, hide: 400 }}
               overlay={renderTooltip}
             >
-              <Button variant="transparency-second" onClick={props.clear}>
+              <Button
+                variant="transparency-second"
+                onClick={() => window.location.reload()}
+              >
                 <BsEraser />
               </Button>
             </OverlayTrigger>

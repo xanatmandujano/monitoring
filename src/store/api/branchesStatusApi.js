@@ -17,7 +17,7 @@ export const branchesStatusApi = createApi({
         params: params,
       }),
       transformResponse: (res, meta, arg) => {
-        console.log(arg);
+        //console.log(arg);
         return res;
       },
       transformErrorResponse: (res, meta, arg) => {
@@ -26,7 +26,7 @@ export const branchesStatusApi = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled.then((res) => {
-            console.log(res);
+            //console.log(res);
             return res;
           });
         } catch (error) {

@@ -111,16 +111,16 @@ const NavBar = () => {
         .unwrap()
         .then(() => {
           navigate("/");
-          window.location.reload();
           setModalShow(false);
+          window.location.reload();
         });
     } else {
       dispatch(USER_LOGOUT({ isLogged: false }))
         .unwrap()
         .then(() => {
           navigate("/");
-          window.location.reload();
           setModalShow(false);
+          window.location.reload();
         });
     }
   };

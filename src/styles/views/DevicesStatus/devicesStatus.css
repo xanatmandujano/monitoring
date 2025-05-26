@@ -6,6 +6,12 @@
     background-color: #000000;
   }
 
+  table > tbody > tr > td > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .branches-states:hover {
     cursor: pointer;
   }

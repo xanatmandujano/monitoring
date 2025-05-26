@@ -28,3 +28,7 @@
 @import "./components/AlarmHistoryData/alarmHistoryData";
 @import "./components/Loader/loader";
 @import "./components/ErrorMessage/unauthorizedPage";
+@import "./components/VideoPlayer/videoPlayer";
+@import "./components/VideoPlayer/sliderTime";
+/*Video player*/
+@import "@vidstack/react/player/styles/default/theme.css";
