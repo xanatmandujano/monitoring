@@ -63,6 +63,7 @@ const DevicesStatus = () => {
         </thead>
         <tbody>
           {data &&
+            data.result.stateBranches &&
             data.result.stateBranches.map((item, index) => (
               <>
                 <tr
@@ -92,6 +93,7 @@ const DevicesStatus = () => {
                   style={{ visibility: "collapse" }}
                   id={item.stateCode}
                   className="second-headers"
+                  key={item.stateCode}
                 >
                   <td>Sucursal</td>
                   <td>IP</td>

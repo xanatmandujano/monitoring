@@ -21,6 +21,7 @@ export const branchesStatusApi = createApi({
         return res;
       },
       transformErrorResponse: (res, meta, arg) => {
+        console.log(res);
         return res;
       },
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {

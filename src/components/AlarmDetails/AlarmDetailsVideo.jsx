@@ -48,7 +48,7 @@ const AlarmDetailsVideo = () => {
     const map = getMap();
     const node = map.get(id);
     if (node) {
-      node.playbackRate = 0.25;
+      node.playbackRate = 0.0625;
     }
   }
 
