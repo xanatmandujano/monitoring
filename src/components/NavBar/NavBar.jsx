@@ -92,16 +92,11 @@ const NavBar = () => {
 
   const handleChangeWindow = (link) => {
     if (idVideo) {
-      console.log("1");
       dispatch(releaseAlarm({ alarmId: idVideo }));
-      console.log("2");
       sendAlarmStatus(idVideo);
-      console.log("3");
       navigate(link);
-      console.log("3");
       //window.location.reload();
     } else {
-      console.log("5");
       navigate(link);
       //window.location.reload();
     }
