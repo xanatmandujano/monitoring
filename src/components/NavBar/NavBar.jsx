@@ -68,10 +68,10 @@ const NavBar = () => {
       dispatch(releaseAlarm({ alarmId: idVideo }));
       sendAlarmStatus(idVideo);
       navigate(link);
-      //window.location.reload();
+      window.location.reload();
     } else {
       navigate(link);
-      //window.location.reload();
+      window.location.reload();
     }
   };
   //Logout
