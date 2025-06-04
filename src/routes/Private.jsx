@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useSendMessageMutation } from "../store/api/signalRApi";
 import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
 import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
-//import { Connector } from "../signalr/signalr-connection";
 import NewAlarm from "../views/AlarmsPanel/NewAlarm";
 
 const expirationTime = 3600 * 1000;
@@ -66,14 +66,9 @@ const Private = () => {
   const [state, setState] = useState("Active");
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
-  const [connection, setConnection] = useState("");
   const { idVideo } = useParams();
+  const [sendMessage] = useSendMessageMutation();
 
-  // useEffect(() => {
-  //   const newConnection = Connector();
-  //   setConnection(newConnection);
-  //   newConnection.start();
-  // }, []);
   //Redux
   const { isLoggedIn, userId, expiration } = useSelector(
     (state) => state.persist.authState.authInfo
@@ -83,23 +78,14 @@ const Private = () => {
 
   //Send message
   const sendAlarmStatus = async () => {
-    const releaseAction = {
+    const viewAction = {
       user: userId,
       message: JSON.stringify({
         action: "release",
         alarmId: idVideo,
       }),
     };
-
-    try {
-      if (connection) {
-        await connection.send("SendToAll", releaseAction).then(() => {
-          console.log("Alarm release: idle");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await sendMessage(viewAction).unwrap();
   };
 
   //Idle timer
@@ -120,7 +106,7 @@ const Private = () => {
     setState("Idle");
     setOpen(false);
     if (idVideo) {
-      //sendAlarmStatus(idVideo);
+      sendAlarmStatus();
       dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
         .unwrap()
         .then(() => {
@@ -168,7 +154,7 @@ const Private = () => {
     //const res = 20_000;
     setTimeout(() => {
       if (idVideo) {
-        //sendAlarmStatus(idVideo);
+        sendAlarmStatus();
         dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
           .unwrap()
           .then(() => {

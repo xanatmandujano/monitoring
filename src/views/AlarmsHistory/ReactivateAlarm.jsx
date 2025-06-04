@@ -1,48 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 //Redux
 import { useDispatch } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
-//import { Connector } from "../../signalr/signalr-connection";
+import { useSendMessageMutation } from "../../store/api/signalRApi";
 //Router dom
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 const ReactivateAlarm = ({ ...props }) => {
   const dispatch = useDispatch();
+  const [sendMessage] = useSendMessageMutation();
   const { idVideo } = useParams();
   const navigate = useNavigate();
 
-  const [connection, setConnection] = useState(null);
-
-  // useEffect(() => {
-  //   const newConnection = Connector();
-  //   setConnection(newConnection);
-  //   newConnection.start();
-  // }, []);
-
   const sendAlarmStatus = async () => {
-    const chatMessage = {
+    const viewAction = {
       user: "",
       message: JSON.stringify({
         action: "reactivated",
         alarmId: idVideo,
       }),
     };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          console.log("Alarm reactivated send");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await sendMessage(viewAction).unwrap();
   };
 
   const handleAlarmStatus = () => {
-    //sendAlarmStatus();
+    sendAlarmStatus();
     dispatch(
       alarmStatus({
         alarmId: idVideo,
@@ -52,7 +38,6 @@ const ReactivateAlarm = ({ ...props }) => {
     )
       .unwrap()
       .then(() => {
-        console.log("Alarma reactivada");
         navigate("/alarms-history");
         window.location.reload();
       });

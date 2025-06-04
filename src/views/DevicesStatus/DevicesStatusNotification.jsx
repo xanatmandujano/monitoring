@@ -8,15 +8,14 @@ const DevicesStatusNotification = () => {
   const { data } = useGetBranchesStatusQuery(
     { branchName: "" },
     {
-      //pollingInterval: 600000,
-      //refetchOnMountOrArgChange: true,
+      pollingInterval: 600000,
+      refetchOnMountOrArgChange: true,
     }
   );
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     if (data && !data.result.allOnline) {
-      console.log(data);
       setShowToast(true);
     } else {
       setShowToast(false);

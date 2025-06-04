@@ -18,9 +18,9 @@ import asur from "/config.json";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
 import { releaseAlarm } from "../../store/actions/alarmsActions";
+import { useSendMessageMutation } from "../../store/api/signalRApi";
 //React-router-dom
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-//import { Connector } from "../../signalr/signalr-connection";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -30,11 +30,11 @@ const NavBar = () => {
   const { isLoggedIn, userName, userId } = useSelector(
     (state) => state.persist.authState.authInfo
   );
+  const [sendMessage] = useSendMessageMutation();
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [manualShow, setManualShow] = useState(false);
-  const [connection, setConnection] = useState("");
   const [activeStyle, setActiveStyle] = useState({
     alarmsPanel: { variant: "secondary" },
     alarmsHistory: { variant: "secondary" },
@@ -63,15 +63,11 @@ const NavBar = () => {
         divarStatus: { variant: "transparency-tertiary" },
       });
     }
-
-    // const newConnection = Connector();
-    // setConnection(newConnection);
-    // newConnection.start();
   }, [location]);
 
   //Send message
   const sendAlarmStatus = async () => {
-    const releaseAction = {
+    const viewAction = {
       user: userId,
       message: JSON.stringify({
         action: "release",
@@ -79,21 +75,13 @@ const NavBar = () => {
       }),
     };
 
-    try {
-      if (connection) {
-        await connection.send("SendToAll", releaseAction).then(() => {
-          //console.log("Alarm release: from change window");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await sendMessage(viewAction).unwrap();
   };
 
   const handleChangeWindow = (link) => {
     if (idVideo) {
       dispatch(releaseAlarm({ alarmId: idVideo }));
-      //sendAlarmStatus(idVideo);
+      sendAlarmStatus();
       navigate(link);
       //window.location.reload();
     } else {
@@ -106,7 +94,7 @@ const NavBar = () => {
     setLoader(true);
     //setModalShow(false);
     if (idVideo) {
-      //sendAlarmStatus(idVideo);
+      sendAlarmStatus();
       dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
         .unwrap()
         .then(() => {

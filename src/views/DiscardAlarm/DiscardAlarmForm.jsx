@@ -4,9 +4,9 @@ import * as yup from "yup";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
+import { useSendMessageToAllMutation } from "../../store/api/signalRApi";
 //React-router-dom
 import { useNavigate } from "react-router-dom";
-//import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import Button from "react-bootstrap/Button";
@@ -16,35 +16,21 @@ import Loader from "../../components/Loader/Loader";
 const DiscardAlarmForm = ({ onHide }) => {
   const [loader, setLoader] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [connection, setConnection] = useState(null);
-  const [show, setShow] = useState(true);
   const dispatch = useDispatch();
+  const [sendMessageToAll] = useSendMessageToAllMutation();
   const { alarmFiles } = useSelector((state) => state.attachments);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const newConnection = Connector();
-  //   setConnection(newConnection);
-  //   newConnection.start();
-  // }, []);
-
   const sendAlarmStatus = async () => {
-    const chatMessage = {
+    const viewAction = {
       user: sessionStorage.getItem("userId"),
       message: JSON.stringify({
         action: "discarded",
         alarmId: alarmFiles.alarmId,
       }),
     };
-    try {
-      if (connection) {
-        await connection.send("SendToAll", chatMessage).then(() => {
-          console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await sendMessageToAll(viewAction).unwrap();
   };
 
   const discardAlarm = (values) => {
@@ -61,7 +47,7 @@ const DiscardAlarmForm = ({ onHide }) => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
-        //sendAlarmStatus();
+        sendAlarmStatus();
         navigate("/alarms-panel");
         //window.location.reload();
       })
@@ -108,7 +94,7 @@ const DiscardAlarmForm = ({ onHide }) => {
                 type="submit"
                 disabled={loader && <Loader />}
               >
-                {loader ? <Loader /> : "Aceptar"}
+                Aceptar {loader ? <Loader variant="light" size="sm" /> : null}
               </Button>
             </div>
           </Form>

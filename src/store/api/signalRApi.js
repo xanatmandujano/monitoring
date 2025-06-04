@@ -4,6 +4,7 @@ import * as signalR from "@microsoft/signalr";
 import { getHubConnection } from "../../signalr/signalr-connection";
 import { hasPermission } from "../../services/authService";
 import { getAlarmData } from "../../services/alarmsService";
+import { sendMessage } from "@microsoft/signalr/dist/esm/Utils";
 
 const baseUrl = url.server.apiUrl;
 
@@ -15,10 +16,7 @@ export const signalRApi = createApi({
   endpoints: (builder) => ({
     getMessages: builder.query({
       queryFn: () => ({
-        data: {
-          alarms: [],
-          actions: [],
-        },
+        data: [],
       }),
       async onCacheEntryAdded(
         arg,
@@ -36,11 +34,7 @@ export const signalRApi = createApi({
             let newNotification = JSON.parse(event.message);
             updateCachedData((draft) => {
               //Either the notification has a code or has an action
-              if (Object.hasOwn(newNotification, "Code")) {
-                draft.alarms.unshift(newNotification);
-              } else if (Object.hasOwn(newNotification, "action")) {
-                draft.actions.unshift(newNotification);
-              }
+              draft.unshift(newNotification);
             });
           });
 
@@ -65,7 +59,25 @@ export const signalRApi = createApi({
           }
 
           await hubConnection.invoke("SendToOthers", action);
-          //Retornar algún otro valor necesario
+
+          return { data: { success: true } };
+        } catch (error) {
+          return {
+            error: { message: error.message || "Error al enviar el mensaje" },
+          };
+        }
+      },
+    }),
+    sendMessageToAll: builder.mutation({
+      queryFn: async (action) => {
+        const hubConnection = getHubConnection(`${baseUrl}/hubs/notifications`);
+
+        try {
+          if (hubConnection.state === signalR.HubConnectionState.Disconnected) {
+            await hubConnection.start();
+          }
+          await hubConnection.invoke("SendToAll", action);
+
           return { data: { success: true } };
         } catch (error) {
           return {
@@ -77,4 +89,8 @@ export const signalRApi = createApi({
   }),
 });
 
-export const { useGetMessagesQuery, useSendMessageMutation } = signalRApi;
+export const {
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  useSendMessageToAllMutation,
+} = signalRApi;

@@ -50,7 +50,7 @@ const Login = () => {
   }
 
   const validationSchema = yup.object().shape({
-    email: yup.string().required("yup.email"),
+    email: yup.string().email().required("yup.email"),
     password: yup.string().required("yup.password"),
   });
 

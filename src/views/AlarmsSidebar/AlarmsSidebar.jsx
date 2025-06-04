@@ -97,14 +97,12 @@ const AlarmsSidebar = () => {
     //             let element = document.getElementById(notificationAlarmId);
     //             element.style.display = "none";
     //           } else if (viewAction === "viewed") {
-    //             //console.log(message);
     //             let element = document.getElementById(notificationAlarmId);
     //             let cardBtn = element.lastChild.lastChild.lastChild;
     //             element.className = "alarm-disabled card";
     //             cardBtn.setAttribute("disabled", "");
     //             //setDisabled(true);
     //           } else if (viewAction === "release") {
-    //             //console.log(message);
     //             let element = document.getElementById(notificationAlarmId);
     //             let cardBtn = element.lastChild.lastChild.lastChild;
     //             element.className = "alarm-card card";
@@ -202,7 +200,6 @@ const AlarmsSidebar = () => {
       }),
     };
     try {
-      console.log("View alarm function");
       if (alarmTypeId === 1) {
         return navigate(`seproban/${alarmId}`);
       } else if (alarmTypeId === 2) {

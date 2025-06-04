@@ -5,12 +5,12 @@
   padding-right: 0.2rem;
   padding-left: 0rem;
 
-  .intermitent {
-    background-color: $active-color;
-    border-style: solid;
-    border-color: #8a0b0b;
-    border-width: 3px;
-  }
+  // .intermitent {
+  //   background-color: $active-color;
+  //   border-style: solid;
+  //   border-color: #fc800c;
+  //   border-width: 3px;
+  // }
 
   .newAlarm {
     animation: slide-in-top 1s cubic-bezier(0.23, 1, 0.32, 1) both;

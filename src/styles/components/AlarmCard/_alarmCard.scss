@@ -32,6 +32,17 @@
   }
 }
 
+.intermitent {
+  background-color: $active-color;
+  border-style: solid;
+  border-color: #fc800c;
+  border-width: 3px;
+
+  .card-title {
+    color: #fc800c;
+  }
+}
+
 .alarm-disabled {
   background-color: $disabled;
   width: 100%;

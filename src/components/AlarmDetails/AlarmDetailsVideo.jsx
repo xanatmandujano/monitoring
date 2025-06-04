@@ -7,8 +7,8 @@ import {
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-//import { Connector } from "../../signalr/signalr-connection";
 import { hasPermission } from "../../services/authService";
+import { useSendMessageMutation } from "../../store/api/signalRApi";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -30,13 +30,13 @@ const AlarmDetailsVideo = () => {
   const [btnLoader, setBtnLoader] = useState(false);
   const [show, setShow] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
-  const [connection, setConnection] = useState(null);
   const [block, setBlock] = useState(false);
 
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [sendMessage] = useSendMessageMutation();
   const { alarmFiles, alarmAttachment, loading } = useSelector(
     (state) => state.attachments
   );
@@ -48,7 +48,7 @@ const AlarmDetailsVideo = () => {
     const map = getMap();
     const node = map.get(id);
     if (node) {
-      node.playbackRate = 0.0625;
+      node.playbackRate = 0.1;
     }
   }
 
@@ -61,22 +61,15 @@ const AlarmDetailsVideo = () => {
   }
 
   const sendAlarmStatus = async () => {
-    const chatMessage = {
+    const viewAction = {
       user: userId,
       message: JSON.stringify({
         action: "release",
         alarmId: alarmFiles.alarmId,
       }),
     };
-    try {
-      if (connection) {
-        await connection.send("SendToOthers", chatMessage).then(() => {
-          //console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await sendMessage(viewAction).unwrap();
   };
 
   useEffect(() => {
@@ -106,41 +99,38 @@ const AlarmDetailsVideo = () => {
       ).unwrap();
     }
 
-    // const newConnection = Connector();
-    // setConnection(newConnection);
-    // newConnection.start();
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      if (e) {
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
+        sendAlarmStatus();
+        e.preventDefault();
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
+    });
 
-    // //Release alarm when tab is closed
-    // window.addEventListener("beforeunload", (e) => {
-    //   if (e) {
-    //     dispatch(
-    //       releaseAlarm({
-    //         alarmId: alarmFiles.alarmId,
-    //       })
-    //     )
-    //       .unwrap()
-    //       .then(() => {
-    //         console.log("Success");
-    //       });
-    //     sendAlarmStatus();
-    //     e.preventDefault();
-    //     //window.open(window.location.origin, "_blank");
-    //     return false;
-    //   }
-    // });
-
-    // window.addEventListener("popstate", (e) => {
-    //   dispatch(
-    //     releaseAlarm({
-    //       alarmId: idVideo,
-    //     })
-    //   )
-    //     .unwrap()
-    //     .then(() => {
-    //       sendAlarmStatus();
-    //     });
-    //   e.preventDefault();
-    // });
+    //Release alarm when user go back
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
+    });
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
@@ -166,7 +156,7 @@ const AlarmDetailsVideo = () => {
     )
       .unwrap()
       .then(() => {
-        //sendAlarmStatus();
+        sendAlarmStatus();
         navigate("/alarms-panel");
         setBtnLoader(false);
       });
@@ -205,6 +195,9 @@ const AlarmDetailsVideo = () => {
               </Button>
             </div>
           )}
+          <h5 style={{ color: "white" }}>
+            {alarmFiles.alarmCode} - {alarmFiles.alarmDescription}{" "}
+          </h5>
           {btnLoader ? (
             <Loader />
           ) : (

@@ -83,7 +83,7 @@ const AcceptFRForm = ({ onHide }) => {
                 type="submit"
                 disabled={loader && <Loader />}
               >
-                {loader ? <Loader /> : "Aceptar"}
+                Aceptar {loader ? <Loader variant="light" size="sm" /> : null}
               </Button>
             </div>
           </Form>

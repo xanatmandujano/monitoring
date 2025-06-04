@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { todayAlarms, releaseAlarm } from "../../store/actions/alarmsActions";
+import {
+  todayAlarms,
+  releaseAlarm,
+  alarmStatus,
+} from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
 import { hasPermission } from "../../services/authService";
@@ -30,7 +34,6 @@ const AlarmsSidebarTest = () => {
 
   //Notifications
   const [notifications, setNotifications] = useState([]);
-  const [lastAction, setLastAction] = useState();
   const [show, setShow] = useState("none");
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
@@ -58,15 +61,24 @@ const AlarmsSidebarTest = () => {
       }
     }
 
+    let alarmCode = null;
+    let alarmAction = null;
+    let alarmActionId = null;
+
+    if (data && data.length > 0) {
+      if (Object.hasOwn(data && data[0], "Code")) {
+        alarmCode = data[0].Code;
+      } else if (data && Object.hasOwn(data && data[0], "action")) {
+        alarmAction = data[0].action;
+        alarmActionId = data[0].alarmId;
+      }
+    }
+
     const alarmData = async () => {
       try {
-        const permission = await hasPermission(
-          data && data.alarms[0] && data.alarms[0].Code
-        );
+        const permission = await hasPermission(alarmCode);
         if (permission.data) {
-          await getAlarmData(
-            data && data.alarms[0] && data.alarms[0].Code
-          ).then((res) => {
+          await getAlarmData(alarmCode).then((res) => {
             if (res.data.isSuccess) {
               const updatedNotifications = [...latestAlarm.current];
               updatedNotifications.unshift(res.data.result);
@@ -89,27 +101,30 @@ const AlarmsSidebarTest = () => {
       }
     };
 
-    let alarmCode =
-      data && data.alarms && data.alarms[0] && data.alarms[0].Code;
-
     if (alarmCode) {
       alarmData();
     }
 
-    let alarmAction =
-      data && data.actions && data.actions[0] && data.actions[0].action;
-    let alarmActionId =
-      data && data.actions && data.actions[0] && data.actions[0].alarmId;
-
     //Card visibility style
     const styleActions = () => {
-      if (alarmAction === "viewed") {
+      if (alarmAction === "discarded" || alarmAction === "accepted") {
         let element = document.getElementById(alarmActionId);
-        element.className = "alarm-disabled card";
+        console.log(element);
+        if (element) element.style.display = "none";
+      } else if (alarmAction === "viewed") {
+        let element = document.getElementById(alarmActionId);
+        if (element) element.className = "alarm-disabled card";
+      } else if (alarmAction === "release") {
+        let element = document.getElementById(alarmActionId);
+        if (element) element.className = "alarm-card card";
+      } else if (alarmAction === "reactivated") {
+        let element = document.getElementById(alarmActionId);
+        if (element) element.style.display = "block";
+        if (element) element.className = "alarm-card card";
       }
     };
 
-    if (data && data.actions && data.actions[0]) {
+    if (alarmAction) {
       styleActions();
     }
   }, [data]);
@@ -137,16 +152,44 @@ const AlarmsSidebarTest = () => {
       }),
     };
 
-    await sendMessage(viewAction).unwrap();
+    const releaseAction = {
+      user: userId,
+      message: JSON.stringify({
+        action: "release",
+        alarmId: idVideo,
+      }),
+    };
 
-    if (alarmTypeId === 1) {
-      return navigate(`seproban/${alarmId}`);
-    } else if (alarmTypeId === 2) {
-      return navigate(`${alarmId}`);
-    } else if (alarmTypeId === 3) {
-      return navigate(`blackList/${alarmId}`);
-    } else if (alarmTypeId === 4) {
-      return navigate(`whiteList/${alarmId}`);
+    //Alarm released from card
+    if (idVideo) {
+      await sendMessage(releaseAction);
+      await sendMessage(viewAction);
+      dispatch(releaseAlarm({ alarmId: idVideo }))
+        .unwrap()
+        .then(() => {
+          let element = document.getElementById(idVideo);
+          if (element) element.className = "alarm-card card";
+          if (alarmTypeId === 1) {
+            return navigate(`seproban/${alarmId}`);
+          } else if (alarmTypeId === 2) {
+            return navigate(`${alarmId}`);
+          } else if (alarmTypeId === 3) {
+            return navigate(`blackList/${alarmId}`);
+          } else if (alarmTypeId === 4) {
+            return navigate(`whiteList/${alarmId}`);
+          }
+        });
+    } else {
+      await sendMessage(viewAction).unwrap();
+      if (alarmTypeId === 1) {
+        return navigate(`seproban/${alarmId}`);
+      } else if (alarmTypeId === 2) {
+        return navigate(`${alarmId}`);
+      } else if (alarmTypeId === 3) {
+        return navigate(`blackList/${alarmId}`);
+      } else if (alarmTypeId === 4) {
+        return navigate(`whiteList/${alarmId}`);
+      }
     }
   };
 
@@ -191,9 +234,10 @@ const AlarmsSidebarTest = () => {
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
               display={{ display: show }}
-              classN={item.alarmId === idVideo ? "newAlarm intermitent" : ""}
+              classN={item.alarmId == idVideo ? "intermitent" : ""}
               activeId={item.alarmId}
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
+              disabled={item.alarmId == idVideo}
             />
           ))}
 
@@ -218,7 +262,7 @@ const AlarmsSidebarTest = () => {
               activeId={item.alarmId}
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
               //disabled={item.inUse}
-              disabled={item.alarmId == idVideo}
+              disabled={item.alarmId == idVideo || item.inUse}
             />
           ))}
       </Container>

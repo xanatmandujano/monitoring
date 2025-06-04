@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { hasPermission } from "../../services/authService";
+import { useGetMessagesQuery } from "../../store/api/signalRApi";
 //Hub
 import { getAlarmData } from "../../services/alarmsService";
-//import { Connector } from "../../signalr/signalr-connection";
 //Sound
 import useSound from "use-sound";
 import newSound from "/assets/sound/notification-sound.mp3";
@@ -15,56 +15,49 @@ import AlarmNotification from "../../components/AlarmNotification/AlarmNotificat
 const NewAlarm = () => {
   const [show, setShow] = useState(false);
   const [alarm, setAlarm] = useState("");
+  const { data } = useGetMessagesQuery();
   let [alarmCode, setAlarmCode] = useState("");
-  const [notifications, setNotifications] = useState([]);
 
   const [play] = useSound(newSound, { volume: 2 });
 
-  const latestAlarm = useRef(null);
-  latestAlarm.current = notifications;
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(clearMessage());
-  //   const newConnection = Connector();
-  //   if (newConnection) {
-  //     newConnection
-  //       .start()
-  //       .then(() => {
-  //         //console.log("Connected from New alarm");
-  //       })
-  //       .catch((e) => console.log(`Connection failed: ${e}`));
+  useEffect(() => {
+    dispatch(clearMessage());
 
-  //     newConnection.on("ReceiveMessage", (message) => {
-  //       let newNotification = JSON.parse(message.message);
-  //       if (Object.hasOwn(newNotification, "Code")) {
-  //         let newAlarm = JSON.parse(message.message);
-  //         let newAlarmCode = newAlarm.Code;
-  //         //play();
-  //         let btn = document.getElementById("btn-sound");
-  //         btn.click();
+    let alarmCode = null;
 
-  //         const alarmData = async () => {
-  //           try {
-  //             const permission = await hasPermission(newAlarmCode);
-  //             if (permission.data) {
-  //               const data = await getAlarmData(newAlarmCode).then((res) => {
-  //                 if (res.data.isSuccess) {
-  //                   setAlarmCode(newAlarmCode);
-  //                   setAlarm(res.data.result);
-  //                   setShow(true);
-  //                 }
-  //               });
-  //             }
-  //           } catch (error) {
-  //             console.log(error.message);
-  //           }
-  //         };
-  //         alarmData();
-  //       }
-  //     });
-  //   }
-  // }, [dispatch]);
+    if (data && data.length > 0) {
+      if (Object.hasOwn(data && data[0], "Code")) {
+        let btn = document.getElementById("btn-sound");
+        btn.click();
+        alarmCode = data[0].Code;
+      } else {
+        alarmCode = null;
+      }
+    }
+
+    const alarmData = async () => {
+      try {
+        const permission = await hasPermission(alarmCode);
+        if (permission.data) {
+          await getAlarmData(alarmCode).then((res) => {
+            if (res.data.isSuccess) {
+              setAlarmCode(alarmCode);
+              setAlarm(res.data.result);
+              setShow(true);
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (alarmCode) {
+      alarmData();
+    }
+  }, [data]);
 
   return (
     <>

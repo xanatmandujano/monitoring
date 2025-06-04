@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-//import { Connector } from "../../signalr/signalr-connection";
 import { hasPermission } from "../../services/authService";
+import { useSendMessageMutation } from "../../store/api/signalRApi";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
 //Bootstrap
@@ -30,11 +30,11 @@ const AlarmDetails = () => {
   const [showDiscard, setShowDiscard] = useState(false);
   const [show, setShow] = useState(false);
   const [block, setBlock] = useState(true);
-  const [connection, setConnection] = useState(null);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
   const { idVideo } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [sendMessage] = useSendMessageMutation();
   const { alarmFiles } = useSelector((state) => state.attachments);
 
   useEffect(() => {
@@ -61,62 +61,50 @@ const AlarmDetails = () => {
       })
     ).unwrap();
 
-    // const newConnection = Connector();
-    // setConnection(newConnection);
-    // newConnection.start();
+    //Release alarm when tab is closed
+    window.addEventListener("beforeunload", (e) => {
+      if (e) {
+        dispatch(
+          releaseAlarm({
+            alarmId: alarmFiles.alarmId,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            console.log("Success");
+          });
+        sendAlarmStatus();
+        e.preventDefault();
+        //window.open(window.location.origin, "_blank");
+        return false;
+      }
+    });
 
-    // //Release alarm when tab is closed
-    // window.addEventListener("beforeunload", (e) => {
-    //   if (e) {
-    //     dispatch(
-    //       releaseAlarm({
-    //         alarmId: alarmFiles.alarmId,
-    //       })
-    //     )
-    //       .unwrap()
-    //       .then(() => {
-    //         console.log("Success");
-    //       });
-    //     sendAlarmStatus();
-    //     e.preventDefault();
-    //     //window.open(window.location.origin, "_blank");
-    //     return false;
-    //   }
-    // });
-
-    // //Release alarm when user go back
-    // window.addEventListener("popstate", (e) => {
-    //   dispatch(
-    //     releaseAlarm({
-    //       alarmId: idVideo,
-    //     })
-    //   )
-    //     .unwrap()
-    //     .then(() => {
-    //       sendAlarmStatus();
-    //     });
-    //   e.preventDefault();
-    // });
+    //Release alarm when user go back
+    window.addEventListener("popstate", (e) => {
+      dispatch(
+        releaseAlarm({
+          alarmId: idVideo,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          sendAlarmStatus();
+        });
+      e.preventDefault();
+    });
   }, [idVideo, dispatch]);
 
   const sendAlarmStatus = async () => {
-    const chatMessage = {
+    const viewAction = {
       user: userId,
       message: JSON.stringify({
         action: "release",
         alarmId: alarmFiles.alarmId,
       }),
     };
-    try {
-      if (connection) {
-        // await connection.send("SendToOthers", chatMessage).then(() => {
-        //   console.log("Message sent");
-        // });
-        console.log("Message sent: send alarm status");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await sendMessage(viewAction).unwrap();
   };
 
   const closeAlarm = () => {
@@ -128,7 +116,7 @@ const AlarmDetails = () => {
     )
       .unwrap()
       .then(() => {
-        //sendAlarmStatus();
+        sendAlarmStatus();
         navigate("/alarms-panel");
         setBtnLoader(false);
       });

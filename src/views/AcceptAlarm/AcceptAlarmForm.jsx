@@ -6,9 +6,9 @@ import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { validateSeprobanAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
+import { useSendMessageToAllMutation } from "../../store/api/signalRApi";
 //React-router-dom
 import { useNavigate } from "react-router-dom";
-//import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import TextField from "../../components/TextField/TextField";
@@ -26,12 +26,12 @@ const AcceptAlarmForm = () => {
   const [disabled, setDisabled] = useState(false);
   const [cancelBtn, setCancelBtn] = useState(true);
   const [sendBtn, setSendBtn] = useState(false);
-  const [connection, setConnection] = useState(null);
   const [checked, setChecked] = useState(null);
   const abortControllerRef = useRef(new AbortController());
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [sendMessageToAll] = useSendMessageToAllMutation();
   const { alarmFiles } = useSelector((state) => state.attachments);
   const { userName, userId } = useSelector(
     (state) => state.persist.authState.authInfo
@@ -39,28 +39,18 @@ const AcceptAlarmForm = () => {
 
   useEffect(() => {
     dispatch(clearMessage(""));
-    // const newConnection = Connector();
-    // setConnection(newConnection);
-    // newConnection.start();
   }, []);
 
   const sendAlarmStatus = async (action) => {
-    const chatMessage = {
+    const viewAction = {
       user: sessionStorage.getItem("userId"),
       message: JSON.stringify({
         action: action,
         alarmId: alarmFiles.alarmId,
       }),
     };
-    try {
-      if (connection) {
-        await connection.send("SendToAll", chatMessage).then(() => {
-          console.log("Message sent");
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await sendMessageToAll(viewAction).unwrap();
   };
 
   const findNull = () => {
@@ -133,7 +123,7 @@ const AcceptAlarmForm = () => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
-        //sendAlarmStatus("accepted");
+        sendAlarmStatus("accepted");
         navigate("/alarms-panel");
       })
       .catch(() => {
@@ -143,7 +133,7 @@ const AcceptAlarmForm = () => {
           setShow(true);
           setDisabled(true);
           setCancelBtn(true);
-          //sendAlarmStatus("discarded");
+          sendAlarmStatus("discarded");
           element.lastChild.style.display = "block";
           navigate("/alarms-panel");
         }
@@ -362,7 +352,7 @@ const AcceptAlarmForm = () => {
               </Button>
 
               <Button variant="main" type="submit" disabled={sendBtn}>
-                {loader ? <Loader /> : "Aceptar"}
+                Aceptar {loader ? <Loader variant="light" size="sm" /> : null}
               </Button>
             </div>
           </Form>
