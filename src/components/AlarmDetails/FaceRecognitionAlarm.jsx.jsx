@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 import { hasPermission } from "../../services/authService";
 //React-router-dom
 import { useParams, useNavigate } from "react-router-dom";
@@ -58,9 +58,9 @@ const FaceRecognitionAlarm = () => {
       })
     ).unwrap();
 
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // newConnection.start();
   }, [idVideo, dispatch]);
 
   const sendAlarmStatus = async () => {
@@ -91,7 +91,7 @@ const FaceRecognitionAlarm = () => {
     )
       .unwrap()
       .then(() => {
-        sendAlarmStatus();
+        //sendAlarmStatus();
         navigate("/alarms-panel");
         setBtnLoader(false);
       });

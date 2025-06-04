@@ -9,6 +9,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 //Components
 import AlarmsSidebar from "../AlarmsSidebar/AlarmsSidebar";
+import AlarmsSidebarTest from "../AlarmsSidebar/AlarmsSidebarTest";
 import IdleAlarm from "../../components/AlarmDetails/IdleAlarm";
 
 const AlarmsPanel = () => {
@@ -23,7 +24,8 @@ const AlarmsPanel = () => {
         </div> */}
         <Row>
           <Col sm={2} style={{ paddingRight: "0" }}>
-            <AlarmsSidebar />
+            {/* <AlarmsSidebar /> */}
+            <AlarmsSidebarTest />
           </Col>
           <Col sm={10}>{idVideo ? <Outlet /> : <IdleAlarm />}</Col>
         </Row>

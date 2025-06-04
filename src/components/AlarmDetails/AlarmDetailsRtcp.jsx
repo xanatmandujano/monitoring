@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus, releaseAlarm } from "../../store/actions/alarmsActions";
 import { alarmAttachments } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //RTC
 import { webRTC, dataChannel, peerConn } from "../../scripts/webrtc";
 //React router dom
@@ -51,9 +51,9 @@ const AlarmDetailsRtcp = () => {
         dispatch(alarmAttachments({ alarmId: idVideo })).unwrap();
       });
 
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // newConnection.start();
     //webRTC("videoElement");
   }, [idVideo, dispatch]);
 
@@ -106,7 +106,7 @@ const AlarmDetailsRtcp = () => {
     )
       .unwrap()
       .then(() => {
-        sendAlarmStatus();
+        //sendAlarmStatus();
         navigate("/alarms-panel");
         setBtnLoader(false);
       });

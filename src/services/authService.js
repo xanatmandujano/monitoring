@@ -71,11 +71,10 @@ export const hasPermission = async (alarmCode) => {
       alarmCode: alarmCode,
     },
   });
-  if (response) {
-    console.log(response);
+  if (response.data.isSuccess) {
+    //console.log(response);
     return response;
   } else {
-    console.log(response);
     return response;
   }
 };

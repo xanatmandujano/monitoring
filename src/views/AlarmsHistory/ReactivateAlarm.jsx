@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 //Redux
 import { useDispatch } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //Router dom
 import { useParams, useNavigate, Link } from "react-router-dom";
 //Bootstrap
@@ -16,11 +16,11 @@ const ReactivateAlarm = ({ ...props }) => {
 
   const [connection, setConnection] = useState(null);
 
-  useEffect(() => {
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-  }, []);
+  // useEffect(() => {
+  //   const newConnection = Connector();
+  //   setConnection(newConnection);
+  //   newConnection.start();
+  // }, []);
 
   const sendAlarmStatus = async () => {
     const chatMessage = {
@@ -42,7 +42,7 @@ const ReactivateAlarm = ({ ...props }) => {
   };
 
   const handleAlarmStatus = () => {
-    sendAlarmStatus();
+    //sendAlarmStatus();
     dispatch(
       alarmStatus({
         alarmId: idVideo,

@@ -25,6 +25,7 @@ export const getAlarmsHistory = async (
       Authorization: `Bearer ${token}`,
       "Access-Control-Allow-Origin": `${baseURL}`,
     },
+    timeout: 5000,
     params: {
       isEvent: false,
       pageNumber: pageNumber,
@@ -83,6 +84,7 @@ export const getAlarmAttachments = async (alarmId) => {
       params: {
         alarmId: alarmId,
       },
+      timeout: 5000,
     });
     if (response.data.isSuccess) {
       //console.log(response.data.result);
@@ -104,6 +106,7 @@ export const getAttachment = async (attachmentId) => {
     params: {
       alarmAttachmentId: attachmentId,
     },
+    timeout: 5000,
   });
   if (response.data.isSuccess) {
     //console.log(response);

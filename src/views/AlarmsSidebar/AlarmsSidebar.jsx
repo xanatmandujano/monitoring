@@ -5,7 +5,7 @@ import { todayAlarms, releaseAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
 import { hasPermission } from "../../services/authService";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //Scripts
 import { getPermissions } from "../../scripts/getPermissions";
 //Bootstrap
@@ -17,9 +17,7 @@ import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
 import alarmPng from "/assets/images/alarm.png";
 import FullLoader from "../../components/Loader/FullLoader";
-import PlaceholderCard from "./PlaceholderCard";
 import Loader from "../../components/Loader/Loader";
-//import { alarmNotificationHub } from "../../store/actions/notificationActions";
 
 const AlarmsSidebar = () => {
   const { alarms, alarmsCount, loading } = useSelector((state) => state.alarms);
@@ -59,7 +57,6 @@ const AlarmsSidebar = () => {
         Notification.requestPermission().then(
           (res) =>
             function (permission) {
-              //console.log(res);
               if (permission === "granted") {
                 let notification = new Notification(title, {
                   body: body,
@@ -76,54 +73,54 @@ const AlarmsSidebar = () => {
     }
 
     dispatch(clearMessage());
-    const newConnection = Connector();
-    setConnection(newConnection);
-    if (newConnection) {
-      newConnection
-        .start()
-        .then(() => {
-          newConnection.on("ReceiveMessage", (message) => {
-            //console.log(message);
-            let newNotification = JSON.parse(message.message);
-            if (Object.hasOwn(newNotification, "Code")) {
-              let newAlarm = JSON.parse(message.message);
-              let newAlarmCode = newAlarm.Code;
-              setAlarmCode(newAlarmCode);
-            }
-            if (Object.hasOwn(newNotification, "action")) {
-              let viewNotification = JSON.parse(message.message);
-              let viewAction = viewNotification.action;
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // if (newConnection) {
+    //   newConnection
+    //     .start()
+    //     .then(() => {
+    //       newConnection.on("ReceiveMessage", (message) => {
+    //         //console.log(message);
+    //         let newNotification = JSON.parse(message.message);
+    //         if (Object.hasOwn(newNotification, "Code")) {
+    //           let newAlarm = JSON.parse(message.message);
+    //           let newAlarmCode = newAlarm.Code;
+    //           setAlarmCode(newAlarmCode);
+    //         }
+    //         if (Object.hasOwn(newNotification, "action")) {
+    //           let viewNotification = JSON.parse(message.message);
+    //           let viewAction = viewNotification.action;
 
-              let notificationAlarmId = viewNotification.alarmId;
+    //           let notificationAlarmId = viewNotification.alarmId;
 
-              if (viewAction === "discarded" || viewAction === "accepted") {
-                let element = document.getElementById(notificationAlarmId);
-                element.style.display = "none";
-              } else if (viewAction === "viewed") {
-                //console.log(message);
-                let element = document.getElementById(notificationAlarmId);
-                let cardBtn = element.lastChild.lastChild.lastChild;
-                element.className = "alarm-disabled card";
-                cardBtn.setAttribute("disabled", "");
-                //setDisabled(true);
-              } else if (viewAction === "release") {
-                //console.log(message);
-                let element = document.getElementById(notificationAlarmId);
-                let cardBtn = element.lastChild.lastChild.lastChild;
-                element.className = "alarm-card card";
-                cardBtn.removeAttribute("disabled");
-              } else if (viewAction === "reactivated") {
-                let element = document.getElementById(notificationAlarmId);
-                let cardBtn = element.lastChild.lastChild.lastChild;
-                element.style.display = "block";
-                element.className = "alarm-card card";
-                cardBtn.removeAttribute("disabled");
-              }
-            }
-          });
-        })
-        .catch((e) => console.log(`Connection failed: ${e}`));
-    }
+    //           if (viewAction === "discarded" || viewAction === "accepted") {
+    //             let element = document.getElementById(notificationAlarmId);
+    //             element.style.display = "none";
+    //           } else if (viewAction === "viewed") {
+    //             //console.log(message);
+    //             let element = document.getElementById(notificationAlarmId);
+    //             let cardBtn = element.lastChild.lastChild.lastChild;
+    //             element.className = "alarm-disabled card";
+    //             cardBtn.setAttribute("disabled", "");
+    //             //setDisabled(true);
+    //           } else if (viewAction === "release") {
+    //             //console.log(message);
+    //             let element = document.getElementById(notificationAlarmId);
+    //             let cardBtn = element.lastChild.lastChild.lastChild;
+    //             element.className = "alarm-card card";
+    //             cardBtn.removeAttribute("disabled");
+    //           } else if (viewAction === "reactivated") {
+    //             let element = document.getElementById(notificationAlarmId);
+    //             let cardBtn = element.lastChild.lastChild.lastChild;
+    //             element.style.display = "block";
+    //             element.className = "alarm-card card";
+    //             cardBtn.removeAttribute("disabled");
+    //           }
+    //         }
+    //       });
+    //     })
+    //     .catch((e) => console.log(`Connection failed: ${e}`));
+    //}
 
     const alarmData = async () => {
       try {
@@ -154,7 +151,7 @@ const AlarmsSidebar = () => {
       }
     };
 
-    setCounter(notifications.length + 1);
+    //setCounter(notifications.length + 1);
 
     if (alarmCode) {
       alarmData();
@@ -205,40 +202,51 @@ const AlarmsSidebar = () => {
       }),
     };
     try {
-      if (connection) {
-        await connection.send("SendToOthers", viewAction).then(() => {
-          let element = document.getElementById(alarmId);
-          let cardBtn = element.lastChild.lastChild.lastChild;
-          cardBtn.setAttribute("disabled", "");
-          if (alarmTypeId === 1) {
-            return navigate(`seproban/${alarmId}`);
-          } else if (alarmTypeId === 2) {
-            return navigate(`${alarmId}`);
-          } else if (alarmTypeId === 3) {
-            return navigate(`blackList/${alarmId}`);
-          } else if (alarmTypeId === 4) {
-            return navigate(`whiteList/${alarmId}`);
-          }
-        });
-        if (idVideo) {
-          dispatch(releaseAlarm({ alarmId: idVideo }));
-          await connection.send("SendToAll", releaseAction).then(() => {
-            //console.log("Alarm release from card");
-            let element = document.getElementById(alarmId);
-            let cardBtn = element.lastChild.lastChild.lastChild;
-            cardBtn.setAttribute("disabled", "");
-            if (alarmTypeId === 1) {
-              return navigate(`seproban/${alarmId}`);
-            } else if (alarmTypeId === 2) {
-              return navigate(`${alarmId}`);
-            } else if (alarmTypeId === 3) {
-              return navigate(`blackList/${alarmId}`);
-            } else if (alarmTypeId === 4) {
-              return navigate(`whiteList/${alarmId}`);
-            }
-          });
-        }
+      console.log("View alarm function");
+      if (alarmTypeId === 1) {
+        return navigate(`seproban/${alarmId}`);
+      } else if (alarmTypeId === 2) {
+        return navigate(`${alarmId}`);
+      } else if (alarmTypeId === 3) {
+        return navigate(`blackList/${alarmId}`);
+      } else if (alarmTypeId === 4) {
+        return navigate(`whiteList/${alarmId}`);
       }
+
+      // if (connection) {
+      //   await connection.send("SendToOthers", viewAction).then(() => {
+      //     let element = document.getElementById(alarmId);
+      //     let cardBtn = element.lastChild.lastChild.lastChild;
+      //     cardBtn.setAttribute("disabled", "");
+      //     if (alarmTypeId === 1) {
+      //       return navigate(`seproban/${alarmId}`);
+      //     } else if (alarmTypeId === 2) {
+      //       return navigate(`${alarmId}`);
+      //     } else if (alarmTypeId === 3) {
+      //       return navigate(`blackList/${alarmId}`);
+      //     } else if (alarmTypeId === 4) {
+      //       return navigate(`whiteList/${alarmId}`);
+      //     }
+      //   });
+      //   if (idVideo) {
+      //     dispatch(releaseAlarm({ alarmId: idVideo }));
+      //     await connection.send("SendToAll", releaseAction).then(() => {
+      //       //console.log("Alarm release from card");
+      //       let element = document.getElementById(alarmId);
+      //       let cardBtn = element.lastChild.lastChild.lastChild;
+      //       cardBtn.setAttribute("disabled", "");
+      //       if (alarmTypeId === 1) {
+      //         return navigate(`seproban/${alarmId}`);
+      //       } else if (alarmTypeId === 2) {
+      //         return navigate(`${alarmId}`);
+      //       } else if (alarmTypeId === 3) {
+      //         return navigate(`blackList/${alarmId}`);
+      //       } else if (alarmTypeId === 4) {
+      //         return navigate(`whiteList/${alarmId}`);
+      //       }
+      //     });
+      //   }
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -274,7 +282,7 @@ const AlarmsSidebar = () => {
         <SearchField changeEvent={handleSearch} />
       </div>
       <Container className="alarms-side-bar">
-        {notifications &&
+        {/* {notifications &&
           notifications.map((item) => (
             <AlarmCard
               key={item.alarmId}
@@ -295,7 +303,7 @@ const AlarmsSidebar = () => {
               onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
               //disabled={item.inUse}
             />
-          ))}
+          ))} */}
         {filteredAlarms &&
           filteredAlarms.map((item) => (
             <AlarmCard

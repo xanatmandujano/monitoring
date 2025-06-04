@@ -4,83 +4,118 @@ import { useDispatch, useSelector } from "react-redux";
 import { todayAlarms, releaseAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
-import { Connector } from "../../signalr/signalr-connection";
-import url from "/config.json";
+import { hasPermission } from "../../services/authService";
+import {
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "../../store/api/signalRApi";
+//Scripts
+import { getPermissions } from "../../scripts/getPermissions";
 //Bootstrap
 import Container from "react-bootstrap/Container";
 //React-router-dom
-import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
-import { alarmNotificationHub } from "../../store/actions/notificationActions";
+import alarmPng from "/assets/images/alarm.png";
 
-const AlarmsSidebar = () => {
+const AlarmsSidebarTest = () => {
   const { alarms } = useSelector((state) => state.alarms);
   const { userId } = useSelector((state) => state.persist.authState.authInfo);
-  const { newAction, newNotification } = useSelector(
-    (state) => state.notifications
-  );
+  const { data } = useGetMessagesQuery();
+  const [sendMessage] = useSendMessageMutation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [show, setShow] = useState("none");
-  const [allNotifications, setAllNotifications] = useState("");
-  const [notifications, setNotifications] = useState([]);
-  const [connection, setConnection] = useState("");
-  const [alarmCode, setAlarmCode] = useState();
   const { idVideo } = useParams();
-  const location = useLocation();
+
+  //Notifications
+  const [notifications, setNotifications] = useState([]);
+  const [lastAction, setLastAction] = useState();
+  const [show, setShow] = useState("none");
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
-  const hubUrl = url.server.apiUrl;
+  const navigate = useNavigate();
+  let location = window.location.href;
 
   useEffect(() => {
-    dispatch(clearMessage());
-    dispatch(alarmNotificationHub({ url: `${hubUrl}/hubs/notifications` }))
-      .unwrap()
-      .then(() => {
-        if (
-          newAction.action === "discarded" ||
-          newAction.action === "accepted"
-        ) {
-          let element = document.getElementById(newAction.notificationId);
-          element.style.display = "none";
-        } else if (newAction.action === "viewed") {
-          let element = document.getElementById(newAction.notificationId);
-          let cardBtn = element.lastChild.lastChild.lastChild;
-          element.className = "alarm-disabled card";
-          cardBtn.setAttribute("disabled", "");
-        } else if (newAction.action === "release") {
-          let element = document.getElementById(newAction.notificationId);
-          let cardBtn = element.lastChild.lastChild.lastChild;
-          element.className = "alarm-card card";
-          cardBtn.removeAttribute("disabled");
-        }
-
-        if (newNotification) {
-          //setAllNotifications(newNotification);
-          const alarmData = async () => {
-            try {
-              const data = await getAlarmData(newNotification).then((res) => {
-                if (res.data.isSuccess) {
-                  const updatedNotifications = [...latestAlarm.current];
-                  updatedNotifications.unshift(res.data.result);
-                  setNotifications(updatedNotifications);
-                  notifications.reverse();
-                  setShow(true);
-                }
-              });
-            } catch (error) {
-              console.log(error);
-            }
+    //Notification push
+    function notifyMe(title, body, icon) {
+      let notification = new Notification(title, { body: body, icon: icon });
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications");
+      } else if (Notification.permission === "granted") {
+        notification.onclick = (e) => {
+          e.preventDefault();
+          window.open(`${location}`, "_blank");
+        };
+      } else if (Notification.permission === "denied") {
+        Notification.requestPermission().then((res) => {
+          notification.onclick = (e) => {
+            e.preventDefault();
+            window.open(`${location}`, "_blank");
           };
-          alarmData();
+        });
+      }
+    }
+
+    const alarmData = async () => {
+      try {
+        const permission = await hasPermission(
+          data && data.alarms[0] && data.alarms[0].Code
+        );
+        if (permission.data) {
+          await getAlarmData(
+            data && data.alarms[0] && data.alarms[0].Code
+          ).then((res) => {
+            if (res.data.isSuccess) {
+              const updatedNotifications = [...latestAlarm.current];
+              updatedNotifications.unshift(res.data.result);
+              setNotifications(updatedNotifications);
+
+              notifications.reverse();
+              setShow(true);
+
+              notifyMe(
+                res.data.result.alarmDescription,
+                res.data.result.alarmCode,
+                alarmPng,
+                res.data.result.alarmId
+              );
+            }
+          });
         }
-        console.log("Message recieved on sidebar");
-      });
-  }, [dispatch, newNotification]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    let alarmCode =
+      data && data.alarms && data.alarms[0] && data.alarms[0].Code;
+
+    if (alarmCode) {
+      alarmData();
+    }
+
+    let alarmAction =
+      data && data.actions && data.actions[0] && data.actions[0].action;
+    let alarmActionId =
+      data && data.actions && data.actions[0] && data.actions[0].alarmId;
+
+    //Card visibility style
+    const styleActions = () => {
+      if (alarmAction === "viewed") {
+        let element = document.getElementById(alarmActionId);
+        element.className = "alarm-disabled card";
+      }
+    };
+
+    if (data && data.actions && data.actions[0]) {
+      styleActions();
+    }
+  }, [data]);
 
   useEffect(() => {
+    //Show today alarms
     dispatch(clearMessage());
     dispatch(
       todayAlarms({
@@ -92,6 +127,29 @@ const AlarmsSidebar = () => {
     );
   }, [dispatch]);
 
+  //Click on alarm button
+  const viewAlarm = async (alarmTypeId, alarmId) => {
+    const viewAction = {
+      user: userId,
+      message: JSON.stringify({
+        action: "viewed",
+        alarmId: alarmId,
+      }),
+    };
+
+    await sendMessage(viewAction).unwrap();
+
+    if (alarmTypeId === 1) {
+      return navigate(`seproban/${alarmId}`);
+    } else if (alarmTypeId === 2) {
+      return navigate(`${alarmId}`);
+    } else if (alarmTypeId === 3) {
+      return navigate(`blackList/${alarmId}`);
+    } else if (alarmTypeId === 4) {
+      return navigate(`whiteList/${alarmId}`);
+    }
+  };
+
   //Search bar
   const [search, setSearch] = useState("");
   let handleSearch = (e) => {
@@ -99,10 +157,15 @@ const AlarmsSidebar = () => {
     setSearch(toLowerCase);
   };
 
-  //Filter alarms
+  //Filter today alarms
+  const permissions = getPermissions();
+
+  const permissionAlarms =
+    alarms && alarms.filter((el) => permissions.includes(el.permissionId));
+
   const filteredAlarms =
-    alarms &&
-    alarms.filter((el) => {
+    permissionAlarms &&
+    permissionAlarms.filter((el) => {
       if (search === "") {
         return el;
       } else {
@@ -113,7 +176,7 @@ const AlarmsSidebar = () => {
   return (
     <>
       <div className="search-bar">
-        <SearchField changeEvent={handleSearch} disabled={!alarms} />
+        <SearchField changeEvent={handleSearch} disabled={alarms} />
       </div>
       <Container className="alarms-side-bar">
         {notifications &&
@@ -127,18 +190,10 @@ const AlarmsSidebar = () => {
               deviceCode={item.deviceCode}
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
-              //alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
               display={{ display: show }}
-              classN={
-                item.alarmId == idVideo
-                  ? "newAlarm intermitent"
-                  : "" || item.inUse === true
-                  ? "alarm-disabled"
-                  : ""
-              }
+              classN={item.alarmId === idVideo ? "newAlarm intermitent" : ""}
               activeId={item.alarmId}
-              //onClick={() => closeAlarm(item.alarmId)}
-              //disabled={item.inUse}
+              onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
             />
           ))}
 
@@ -153,7 +208,6 @@ const AlarmsSidebar = () => {
               deviceCode={item.deviceCode}
               deviceIPAddress={item.deviceIPAddress}
               creationDate={item.creationDate}
-              //alarmParams={alarmType(item.alarmTypeId, item.alarmId)}
               classN={
                 item.alarmId == idVideo
                   ? "intermitent"
@@ -162,8 +216,9 @@ const AlarmsSidebar = () => {
                   : ""
               }
               activeId={item.alarmId}
-              onClick={() => closeAlarm(item.alarmId)}
-              disabled={item.inUse}
+              onClick={() => viewAlarm(item.alarmTypeId, item.alarmId)}
+              //disabled={item.inUse}
+              disabled={item.alarmId == idVideo}
             />
           ))}
       </Container>
@@ -171,4 +226,4 @@ const AlarmsSidebar = () => {
   );
 };
 
-export default AlarmsSidebar;
+export default AlarmsSidebarTest;

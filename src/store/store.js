@@ -9,10 +9,10 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import messageReducer from "./slices/messageSlice";
 import authReducer from "./slices/authSlice";
 import alarmsReducer from "./slices/alarmsSlice";
-import notificationsReducer from "./slices/notificationsSlice";
 import attachmentsReducer from "./slices/attachmentsSlice";
 //API
 import { branchesStatusApi } from "./api/branchesStatusApi";
+import { signalRApi } from "./api/signalRApi";
 
 const persistConfig = {
   key: "root",
@@ -32,9 +32,9 @@ export const store = configureStore({
     //auth: authReducer,
     persist: persistedReducer,
     alarms: alarmsReducer,
-    notifications: notificationsReducer,
     attachments: attachmentsReducer,
     [branchesStatusApi.reducerPath]: branchesStatusApi.reducer,
+    [signalRApi.reducerPath]: signalRApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -57,7 +57,7 @@ export const store = configureStore({
         ],
       },
       thunk,
-    }).concat(branchesStatusApi.middleware),
+    }).concat(branchesStatusApi.middleware, signalRApi.middleware),
 });
 
 setupListeners(store.dispatch);

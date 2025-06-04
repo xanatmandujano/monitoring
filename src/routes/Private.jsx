@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { IdleTimerProvider, useIdleTimerContext } from "react-idle-timer";
 import { USER_LOGOUT, REFRESH_TOKEN } from "../store/actions/authAction";
 import ModalMessage from "../components/ModalMessage/ModalMessage";
-import { Connector } from "../signalr/signalr-connection";
+//import { Connector } from "../signalr/signalr-connection";
 import NewAlarm from "../views/AlarmsPanel/NewAlarm";
 
 const expirationTime = 3600 * 1000;
@@ -69,11 +69,11 @@ const Private = () => {
   const [connection, setConnection] = useState("");
   const { idVideo } = useParams();
 
-  useEffect(() => {
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-  }, []);
+  // useEffect(() => {
+  //   const newConnection = Connector();
+  //   setConnection(newConnection);
+  //   newConnection.start();
+  // }, []);
   //Redux
   const { isLoggedIn, userId, expiration } = useSelector(
     (state) => state.persist.authState.authInfo
@@ -120,7 +120,7 @@ const Private = () => {
     setState("Idle");
     setOpen(false);
     if (idVideo) {
-      sendAlarmStatus(idVideo);
+      //sendAlarmStatus(idVideo);
       dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
         .unwrap()
         .then(() => {
@@ -168,7 +168,7 @@ const Private = () => {
     //const res = 20_000;
     setTimeout(() => {
       if (idVideo) {
-        sendAlarmStatus(idVideo);
+        //sendAlarmStatus(idVideo);
         dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
           .unwrap()
           .then(() => {
@@ -200,7 +200,8 @@ const Private = () => {
       <Child />
       <NewAlarm />
       <Prompt show={open} onHide={() => setOpen} />
-      <Outlet connection={connection} />
+      {/* <Outlet connection={connection} /> */}
+      <Outlet />
     </IdleTimerProvider>
   ) : (
     <Navigate to="/" />

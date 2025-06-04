@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { alarmStatus } from "../../store/actions/alarmsActions";
 //React-router-dom
 import { useNavigate } from "react-router-dom";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import Button from "react-bootstrap/Button";
@@ -22,11 +22,11 @@ const DiscardAlarmForm = ({ onHide }) => {
   const { alarmFiles } = useSelector((state) => state.attachments);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-  }, []);
+  // useEffect(() => {
+  //   const newConnection = Connector();
+  //   setConnection(newConnection);
+  //   newConnection.start();
+  // }, []);
 
   const sendAlarmStatus = async () => {
     const chatMessage = {
@@ -61,7 +61,7 @@ const DiscardAlarmForm = ({ onHide }) => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
-        sendAlarmStatus();
+        //sendAlarmStatus();
         navigate("/alarms-panel");
         //window.location.reload();
       })

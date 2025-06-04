@@ -4,7 +4,6 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createHashRouter } from "react-router-dom";
 //Styles
 import "./styles/styles.scss";
-
 //Views
 import Root from "./routes/Root.jsx";
 import ErrorPage from "./components/ErrorPage/ErrorPage.jsx";

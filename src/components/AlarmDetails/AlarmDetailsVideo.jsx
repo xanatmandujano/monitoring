@@ -7,7 +7,7 @@ import {
   getAlarmAttachment,
 } from "../../store/actions/attachmentsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 import { hasPermission } from "../../services/authService";
 //React router dom
 import { useParams, useNavigate } from "react-router-dom";
@@ -96,49 +96,51 @@ const AlarmDetailsVideo = () => {
         }
       });
 
-    dispatch(
-      alarmStatus({
-        alarmId: alarmFiles.alarmId,
-        statusId: 2,
-        comments: "",
-      })
-    ).unwrap();
-
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
-
-    //Release alarm when tab is closed
-    window.addEventListener("beforeunload", (e) => {
-      if (e) {
-        dispatch(
-          releaseAlarm({
-            alarmId: alarmFiles.alarmId,
-          })
-        )
-          .unwrap()
-          .then(() => {
-            console.log("Success");
-          });
-        sendAlarmStatus();
-        e.preventDefault();
-        //window.open(window.location.origin, "_blank");
-        return false;
-      }
-    });
-
-    window.addEventListener("popstate", (e) => {
+    if (alarmFiles) {
       dispatch(
-        releaseAlarm({
-          alarmId: idVideo,
+        alarmStatus({
+          alarmId: alarmFiles.alarmId,
+          statusId: 2,
+          comments: "",
         })
-      )
-        .unwrap()
-        .then(() => {
-          sendAlarmStatus();
-        });
-      e.preventDefault();
-    });
+      ).unwrap();
+    }
+
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // newConnection.start();
+
+    // //Release alarm when tab is closed
+    // window.addEventListener("beforeunload", (e) => {
+    //   if (e) {
+    //     dispatch(
+    //       releaseAlarm({
+    //         alarmId: alarmFiles.alarmId,
+    //       })
+    //     )
+    //       .unwrap()
+    //       .then(() => {
+    //         console.log("Success");
+    //       });
+    //     sendAlarmStatus();
+    //     e.preventDefault();
+    //     //window.open(window.location.origin, "_blank");
+    //     return false;
+    //   }
+    // });
+
+    // window.addEventListener("popstate", (e) => {
+    //   dispatch(
+    //     releaseAlarm({
+    //       alarmId: idVideo,
+    //     })
+    //   )
+    //     .unwrap()
+    //     .then(() => {
+    //       sendAlarmStatus();
+    //     });
+    //   e.preventDefault();
+    // });
   }, [idVideo, dispatch]);
 
   const fetchAttachment = (attachmentId) => {
@@ -164,7 +166,7 @@ const AlarmDetailsVideo = () => {
     )
       .unwrap()
       .then(() => {
-        sendAlarmStatus();
+        //sendAlarmStatus();
         navigate("/alarms-panel");
         setBtnLoader(false);
       });

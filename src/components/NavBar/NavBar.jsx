@@ -20,7 +20,7 @@ import { USER_LOGOUT } from "../../store/actions/authAction";
 import { releaseAlarm } from "../../store/actions/alarmsActions";
 //React-router-dom
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -64,9 +64,9 @@ const NavBar = () => {
       });
     }
 
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // newConnection.start();
   }, [location]);
 
   //Send message
@@ -93,7 +93,7 @@ const NavBar = () => {
   const handleChangeWindow = (link) => {
     if (idVideo) {
       dispatch(releaseAlarm({ alarmId: idVideo }));
-      sendAlarmStatus(idVideo);
+      //sendAlarmStatus(idVideo);
       navigate(link);
       //window.location.reload();
     } else {
@@ -106,20 +106,20 @@ const NavBar = () => {
     setLoader(true);
     //setModalShow(false);
     if (idVideo) {
-      sendAlarmStatus(idVideo);
+      //sendAlarmStatus(idVideo);
       dispatch(USER_LOGOUT({ alarmId: idVideo, isLogged: false }))
         .unwrap()
         .then(() => {
-          navigate("/");
           setModalShow(false);
+          navigate("/");
           window.location.reload();
         });
     } else {
       dispatch(USER_LOGOUT({ isLogged: false }))
         .unwrap()
         .then(() => {
-          navigate("/");
           setModalShow(false);
+          navigate("/");
           window.location.reload();
         });
     }

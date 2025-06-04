@@ -8,7 +8,7 @@ import { validateSeprobanAlarm } from "../../store/actions/alarmsActions";
 import { clearMessage } from "../../store/slices/messageSlice";
 //React-router-dom
 import { useNavigate } from "react-router-dom";
-import { Connector } from "../../signalr/signalr-connection";
+//import { Connector } from "../../signalr/signalr-connection";
 //Components
 import TextFieldArea from "../../components/TextField/TextFieldArea";
 import TextField from "../../components/TextField/TextField";
@@ -39,9 +39,9 @@ const AcceptAlarmForm = () => {
 
   useEffect(() => {
     dispatch(clearMessage(""));
-    const newConnection = Connector();
-    setConnection(newConnection);
-    newConnection.start();
+    // const newConnection = Connector();
+    // setConnection(newConnection);
+    // newConnection.start();
   }, []);
 
   const sendAlarmStatus = async (action) => {
@@ -133,7 +133,7 @@ const AcceptAlarmForm = () => {
       .then(() => {
         setLoader(false);
         setDisabled(false);
-        sendAlarmStatus("accepted");
+        //sendAlarmStatus("accepted");
         navigate("/alarms-panel");
       })
       .catch(() => {
@@ -143,7 +143,7 @@ const AcceptAlarmForm = () => {
           setShow(true);
           setDisabled(true);
           setCancelBtn(true);
-          sendAlarmStatus("discarded");
+          //sendAlarmStatus("discarded");
           element.lastChild.style.display = "block";
           navigate("/alarms-panel");
         }

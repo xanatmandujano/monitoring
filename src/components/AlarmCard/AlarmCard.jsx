@@ -36,7 +36,7 @@ const AlarmCard = ({ ...props }) => {
             size="md"
             className="card-btn"
             onClick={props.onClick}
-            //disabled={props.disabled}
+            disabled={props.disabled}
           >
             Ver
           </Button>

@@ -17,8 +17,8 @@ const DevicesStatus = () => {
   const { data, isFetching } = useGetBranchesStatusQuery(
     { columnName: filter, searchText: search },
     {
-      //pollingInterval: 600000,
-      //refetchOnMountOrArgChange: true,
+      pollingInterval: 600000,
+      refetchOnMountOrArgChange: true,
     }
   );
 
