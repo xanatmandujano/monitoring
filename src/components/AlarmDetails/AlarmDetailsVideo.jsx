@@ -72,6 +72,21 @@ const AlarmDetailsVideo = () => {
     await sendMessage(viewAction).unwrap();
   };
 
+  const closeAlarm = () => {
+    setBtnLoader(true);
+    dispatch(
+      releaseAlarm({
+        alarmId: alarmFiles.alarmId,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        sendAlarmStatus();
+        navigate("/alarms-panel");
+        setBtnLoader(false);
+      });
+  };
+
   useEffect(() => {
     setLoader(true);
     dispatch(clearMessage());
@@ -89,15 +104,15 @@ const AlarmDetailsVideo = () => {
         }
       });
 
-    if (alarmFiles) {
-      dispatch(
-        alarmStatus({
-          alarmId: alarmFiles.alarmId,
-          statusId: 2,
-          comments: "",
-        })
-      ).unwrap();
-    }
+    // if (alarmFiles) {
+    //   dispatch(
+    //     alarmStatus({
+    //       alarmId: alarmFiles.alarmId,
+    //       statusId: 2,
+    //       comments: "",
+    //     })
+    //   ).unwrap();
+    // }
 
     //Release alarm when tab is closed
     window.addEventListener("beforeunload", (e) => {
@@ -145,21 +160,6 @@ const AlarmDetailsVideo = () => {
       minute: "2-digit",
     });
     return alarmTime;
-  };
-
-  const closeAlarm = () => {
-    setBtnLoader(true);
-    dispatch(
-      releaseAlarm({
-        alarmId: alarmFiles.alarmId,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        sendAlarmStatus();
-        navigate("/alarms-panel");
-        setBtnLoader(false);
-      });
   };
 
   return (

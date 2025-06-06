@@ -11,6 +11,7 @@ import { MdOutlineLiveHelp } from "react-icons/md";
 import PdfViewer from "../PdfViewer/PdfViewer";
 //Logo
 import banbajio from "/config.json";
+import demo from "/config.json";
 import oxxo from "/config.json";
 import afirme from "/config.json";
 import asur from "/config.json";
@@ -18,7 +19,7 @@ import asur from "/config.json";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_LOGOUT } from "../../store/actions/authAction";
 import { releaseAlarm } from "../../store/actions/alarmsActions";
-import { useSendMessageMutation } from "../../store/api/signalRApi";
+import { useSendMessageMutation, signalRApi } from "../../store/api/signalRApi";
 //React-router-dom
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
@@ -83,12 +84,19 @@ const NavBar = () => {
       dispatch(releaseAlarm({ alarmId: idVideo }));
       sendAlarmStatus();
       navigate(link);
+      dispatch(
+        signalRApi.util.updateQueryData("getMessages", undefined, () => [])
+      );
       //window.location.reload();
     } else {
       navigate(link);
+      dispatch(
+        signalRApi.util.updateQueryData("getMessages", undefined, () => [])
+      );
       //window.location.reload();
     }
   };
+
   //Logout
   const logoutUser = () => {
     setLoader(true);
@@ -120,7 +128,9 @@ const NavBar = () => {
           <Navbar.Brand>
             <img
               src={
-                mode === "ox"
+                mode === "dm"
+                  ? demo.assets.demo
+                  : mode === "ox"
                   ? oxxo.assets.oxxo
                   : mode === "bb"
                   ? banbajio.assets.banbajio

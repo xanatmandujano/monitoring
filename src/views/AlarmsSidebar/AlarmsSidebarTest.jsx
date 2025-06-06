@@ -10,6 +10,7 @@ import { clearMessage } from "../../store/slices/messageSlice";
 import { getAlarmData } from "../../services/alarmsService";
 import { hasPermission } from "../../services/authService";
 import {
+  signalRApi,
   useGetMessagesQuery,
   useSendMessageMutation,
 } from "../../store/api/signalRApi";
@@ -22,7 +23,6 @@ import { useParams, useNavigate } from "react-router-dom";
 //Components
 import AlarmCard from "../../components/AlarmCard/AlarmCard";
 import SearchField from "../../components/SearchField/SearchField";
-import alarmPng from "/assets/images/alarm.png";
 
 const AlarmsSidebarTest = () => {
   const { alarms } = useSelector((state) => state.alarms);
@@ -38,29 +38,8 @@ const AlarmsSidebarTest = () => {
   const latestAlarm = useRef(null);
   latestAlarm.current = notifications;
   const navigate = useNavigate();
-  let location = window.location.href;
 
   useEffect(() => {
-    //Notification push
-    function notifyMe(title, body, icon) {
-      let notification = new Notification(title, { body: body, icon: icon });
-      if (!("Notification" in window)) {
-        alert("This browser does not support desktop notifications");
-      } else if (Notification.permission === "granted") {
-        notification.onclick = (e) => {
-          e.preventDefault();
-          window.open(`${location}`, "_blank");
-        };
-      } else if (Notification.permission === "denied") {
-        Notification.requestPermission().then((res) => {
-          notification.onclick = (e) => {
-            e.preventDefault();
-            window.open(`${location}`, "_blank");
-          };
-        });
-      }
-    }
-
     let alarmCode = null;
     let alarmAction = null;
     let alarmActionId = null;
@@ -86,13 +65,6 @@ const AlarmsSidebarTest = () => {
 
               notifications.reverse();
               setShow(true);
-
-              notifyMe(
-                res.data.result.alarmDescription,
-                res.data.result.alarmCode,
-                alarmPng,
-                res.data.result.alarmId
-              );
             }
           });
         }
@@ -109,14 +81,17 @@ const AlarmsSidebarTest = () => {
     const styleActions = () => {
       if (alarmAction === "discarded" || alarmAction === "accepted") {
         let element = document.getElementById(alarmActionId);
-        console.log(element);
         if (element) element.style.display = "none";
       } else if (alarmAction === "viewed") {
         let element = document.getElementById(alarmActionId);
         if (element) element.className = "alarm-disabled card";
       } else if (alarmAction === "release") {
         let element = document.getElementById(alarmActionId);
-        if (element) element.className = "alarm-card card";
+        if (element) {
+          element.className = "alarm-card card";
+          let cardBtn = element.lastChild.lastChild.lastChild;
+          if (cardBtn) cardBtn.removeAttribute("disabled");
+        }
       } else if (alarmAction === "reactivated") {
         let element = document.getElementById(alarmActionId);
         if (element) element.style.display = "block";
@@ -139,6 +114,9 @@ const AlarmsSidebarTest = () => {
         columnName: "creationDate",
         sortDirection: "desc",
       })
+    );
+    dispatch(
+      signalRApi.util.updateQueryData("getMessages", undefined, () => [])
     );
   }, [dispatch]);
 
@@ -164,6 +142,13 @@ const AlarmsSidebarTest = () => {
     if (idVideo) {
       await sendMessage(releaseAction);
       await sendMessage(viewAction);
+      dispatch(
+        alarmStatus({
+          alarmId: alarmId,
+          statusId: 2,
+          comments: "",
+        })
+      ).unwrap();
       dispatch(releaseAlarm({ alarmId: idVideo }))
         .unwrap()
         .then(() => {
@@ -181,6 +166,13 @@ const AlarmsSidebarTest = () => {
         });
     } else {
       await sendMessage(viewAction).unwrap();
+      dispatch(
+        alarmStatus({
+          alarmId: alarmId,
+          statusId: 2,
+          comments: "",
+        })
+      ).unwrap();
       if (alarmTypeId === 1) {
         return navigate(`seproban/${alarmId}`);
       } else if (alarmTypeId === 2) {
@@ -219,7 +211,10 @@ const AlarmsSidebarTest = () => {
   return (
     <>
       <div className="search-bar">
-        <SearchField changeEvent={handleSearch} disabled={alarms} />
+        <SearchField
+          changeEvent={handleSearch}
+          disabled={alarms && alarms.length === 0}
+        />
       </div>
       <Container className="alarms-side-bar">
         {notifications &&

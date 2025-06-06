@@ -9,6 +9,7 @@ import { getAlarmData } from "../../services/alarmsService";
 //Sound
 import useSound from "use-sound";
 import newSound from "/assets/sound/notification-sound.mp3";
+import alarmPng from "/assets/images/alarm.png";
 //Components
 import AlarmNotification from "../../components/AlarmNotification/AlarmNotification";
 
@@ -17,6 +18,7 @@ const NewAlarm = () => {
   const [alarm, setAlarm] = useState("");
   const { data } = useGetMessagesQuery();
   let [alarmCode, setAlarmCode] = useState("");
+  let location = window.location.href;
 
   const [play] = useSound(newSound, { volume: 2 });
 
@@ -24,6 +26,27 @@ const NewAlarm = () => {
 
   useEffect(() => {
     dispatch(clearMessage());
+    Notification.requestPermission();
+
+    //Notification push
+    function notifyMe(title, body, icon) {
+      let notification = new Notification(title, { body: body, icon: icon });
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications");
+      } else if (Notification.permission === "granted") {
+        notification.onclick = (e) => {
+          e.preventDefault();
+          window.open(`${location}`, "_blank");
+        };
+      } else if (Notification.permission === "denied") {
+        Notification.requestPermission().then((res) => {
+          notification.onclick = (e) => {
+            e.preventDefault();
+            window.open(`${location}`, "_blank");
+          };
+        });
+      }
+    }
 
     let alarmCode = null;
 
@@ -46,6 +69,13 @@ const NewAlarm = () => {
               setAlarmCode(alarmCode);
               setAlarm(res.data.result);
               setShow(true);
+
+              notifyMe(
+                res.data.result.alarmDescription,
+                res.data.result.alarmCode,
+                alarmPng,
+                res.data.result.alarmId
+              );
             }
           });
         }
